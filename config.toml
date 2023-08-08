@@ -1,0 +1,6 @@
+[app]
+host = "127.0.0.1"
+port = 8000
+
+[database]
+url = "postgres://zuramai:zuramai@127.0.0.1:5432/rust_llm_test"
