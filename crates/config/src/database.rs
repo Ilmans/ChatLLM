@@ -3,5 +3,5 @@ use std::net::SocketAddr;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct DatabaseConfig {
-    pub url: SocketAddr,
+    pub url: String,
 }

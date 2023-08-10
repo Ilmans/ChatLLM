@@ -17,3 +17,11 @@ pub trait AuthService {
         unimplemented!()
     }
 }
+
+pub struct AuthServiceImpl {
+
+}
+
+impl AuthService for AuthServiceImpl {
+    
+}
