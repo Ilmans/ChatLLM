@@ -1,3 +1,8 @@
+use async_trait::async_trait;
+
+use crate::error::ServiceError;
+
+#[async_trait]
 pub trait AuthService {
     async fn login(&self) -> Result<(), ServiceError> {
         unimplemented!()
