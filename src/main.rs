@@ -15,20 +15,13 @@ async fn run(config: Config) -> eyre::Result<()> {
     tracing::info!("Connecting to database..");
 
     // Connect to database
-    let pool = match PgPoolOptions::new()
+    let pool = PgPoolOptions::new()
         .max_connections(30)
         .connect(&config.database.url.to_string())
-        .await 
-        {
-            Ok(conn) => {
-                tracing::info!("Connection to database established");
-                conn 
-            },
-            Err(err) => {
-                tracing::error!("Failed to connect to database");
-                std::process::exit(0);
-            }
-        };
+        .await?;
+
+    let app = router::router(state);
+
     
     Ok(())
 }
