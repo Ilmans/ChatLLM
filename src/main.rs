@@ -30,7 +30,7 @@ async fn run(config: Config) -> eyre::Result<()> {
         auth_service: Arc::from(AuthServiceImpl {})
     };
 
-    let app = router::router(state);
+    let app = router::router(&state).await;
     
     tracing::info!("Serving at {}", &config.app.host.to_string());
     axum::Server::bind(&config.app.host)

@@ -1,11 +1,12 @@
 use std::sync::Arc;
 use axum::{Router, routing::get, extract::FromRef, response::{IntoResponse, ErrorResponse}, Json, http::StatusCode};
 use error::{ApiError, ApiErrorPayload};
-use services::error::ServiceError;
+use services::{error::ServiceError};
 
 pub mod error;
 pub mod users;
 pub mod home;
+pub mod auth;
 
 
 type UserService = Arc<dyn services::user::UserService + Send + Sync>;
@@ -22,12 +23,16 @@ pub struct ApiResponse<T> {
     pub data: Option<T>
 }
 
-pub fn router(state: RouterState) -> Router {
+pub async fn router(state: &RouterState) -> Router {
     Router::new()
+        .with_state(state.clone())
         .route("/", get(home::home))
-        .route("/users", get(users::index))
+        .nest("/api/v1", 
+            Router::new()
+                .merge(users::router(state.clone()).await)
+                .merge(auth::router(state.clone()).await)
+        )
         .fallback(not_found_handler)
-        .with_state(state)
 }
 
 pub async fn not_found_handler() -> impl IntoResponse {
