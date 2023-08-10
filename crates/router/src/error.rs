@@ -20,11 +20,11 @@ impl From<services::error::ServiceError> for ApiError {
         match value {
             all @ services::error::ServiceError::DatabaseError(_) => ApiError {
                 status: StatusCode::INTERNAL_SERVER_ERROR,
-                payload: ApiErrorPayload { code: "database_failuer", message: format!("{all}") }
+                payload: ApiErrorPayload { code: "database_failure", message: format!("{all}") }
             },
             all @ services::error::ServiceError::NotFound => ApiError {
-                status: StatusCode::INTERNAL_SERVER_ERROR,
-                payload: ApiErrorPayload { code: "database_failuer", message: format!("{all}") }
+                status: StatusCode::NOT_FOUND,
+                payload: ApiErrorPayload { code: "not_found", message: format!("{all}") }
             },
         }
     }
