@@ -3,6 +3,7 @@ use axum::{Router, routing::get, extract::FromRef};
 
 pub mod error;
 pub mod users;
+pub mod home;
 
 
 type UserService = Arc<dyn services::user::UserService + Send + Sync>;
@@ -16,6 +17,7 @@ pub struct RouterState {
 
 pub fn router(state: RouterState) -> Router {
     Router::new()
+        .route("/", get(home::home))
         .route("/users", get(users::index))
         .with_state(state)
 }

@@ -1493,6 +1493,7 @@ dependencies = [
  "axum",
  "models",
  "serde",
+ "serde_json",
  "services",
 ]
 
