@@ -2,6 +2,8 @@ use std::sync::Arc;
 use axum::{Router, routing::get, extract::FromRef, response::{IntoResponse, ErrorResponse}, Json, http::StatusCode};
 use error::{ApiError, ApiErrorPayload};
 use services::{error::ServiceError};
+use tower::ServiceBuilder;
+use tower_http::trace::TraceLayer;
 
 pub mod error;
 pub mod users;
@@ -26,6 +28,10 @@ pub struct ApiResponse<T> {
 pub async fn router(state: &RouterState) -> Router {
     Router::new()
         .with_state(state.clone())
+        .layer(
+            ServiceBuilder::new()
+                .layer(TraceLayer::new_for_http())
+        )
         .route("/", get(home::home))
         .nest("/api/v1", 
             Router::new()

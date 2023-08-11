@@ -51,3 +51,4 @@ tracing-subscriber.workspace = true
 sqlx.workspace = true
 axum.workspace = true
 figment = { workspace = true, features = ["toml"] }
+clap = { workspace = true, features = ["derive"] }

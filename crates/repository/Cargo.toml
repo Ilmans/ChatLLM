@@ -8,3 +8,4 @@ edition = "2021"
 [dependencies]
 models.workspace = true
 serde.workspace = true
+sqlx.workspace = true
