@@ -30,6 +30,7 @@ pub async fn router(state: &RouterState) -> Router {
         .with_state(state.clone())
         .layer(
             ServiceBuilder::new()
+                    // Enables logging. Use `RUST_LOG=tower_http=debug`
                 .layer(TraceLayer::new_for_http())
         )
         .route("/", get(home::home))

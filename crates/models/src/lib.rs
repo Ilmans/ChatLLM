@@ -1,5 +1,9 @@
 use serde::{Serialize, Deserialize};
 
+pub mod user;
+pub mod user_model_message;
+pub mod model;
+
 #[derive(Serialize, Deserialize)]
 pub enum UserRole {
     Admin,
