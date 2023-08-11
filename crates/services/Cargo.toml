@@ -9,3 +9,4 @@ edition = "2021"
 async-trait.workspace = true
 thiserror.workspace = true
 sqlx.workspace = true
+repository.workspace = true

@@ -1673,6 +1673,7 @@ dependencies = [
  "config",
  "eyre",
  "figment",
+ "repository",
  "router",
  "services",
  "sqlx",
@@ -1831,6 +1832,7 @@ name = "services"
 version = "0.1.0"
 dependencies = [
  "async-trait",
+ "repository",
  "sqlx",
  "thiserror",
 ]

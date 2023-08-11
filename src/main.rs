@@ -4,9 +4,10 @@ use clap::{ Command, Parser, Arg};
 use config::{ Config};
 use eyre;
 use color_eyre;
+use repository::user::UserRepository;
 use router::RouterState;
 use services::{user::UserServiceImpl, auth::AuthServiceImpl};
-use sqlx::{  postgres::PgPoolOptions};
+use sqlx::{  postgres::PgPoolOptions, Pool, Postgres};
 
 #[derive(Debug, Parser)]
 #[clap(about="Rust LLM Server")]
@@ -23,7 +24,6 @@ async fn main()  -> eyre::Result<()>{
         .arg(Arg::new("command").value_parser(["migrate", "start"]).default_value("start"))
         .get_matches();
     let command = args.get_one::<String>("command").unwrap();
-    println!("Arguments: {:?}", command);
 
     // Load the config
     let config = config::load()?;
@@ -40,18 +40,23 @@ async fn main()  -> eyre::Result<()>{
     }
 
     tracing_subscriber::fmt::init();
-    run(config).await?;
+    run(config, db).await?;
     Ok(())
 }
 
-async fn run(config: Config) -> eyre::Result<()> {
+async fn run(config: Config, db: Pool<Postgres>) -> eyre::Result<()> {
     tracing::info!("Connecting to database..");
-
     tracing::info!("Database connected.");
 
+    let user_repository = Arc::from(UserRepository { db });
+
     let state = RouterState {
-        user_service: Arc::from(UserServiceImpl {}),
-        auth_service: Arc::from(AuthServiceImpl {})
+        user_service: Arc::from(UserServiceImpl {
+            user_repo: user_repository.clone()
+        }),
+        auth_service: Arc::from(AuthServiceImpl {
+            user_repo: user_repository.clone()
+        })
     };
 
     let app = router::router(&state).await;
