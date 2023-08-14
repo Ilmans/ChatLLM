@@ -9,7 +9,7 @@ pub mod error;
 pub mod users;
 pub mod home;
 pub mod auth;
-
+pub mod response;
 
 type UserService = Arc<dyn services::user::UserService + Send + Sync>;
 type AuthService = Arc<dyn services::auth::AuthService + Send + Sync>;

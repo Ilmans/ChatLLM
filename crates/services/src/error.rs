@@ -5,6 +5,9 @@ pub enum ServiceError {
     #[error("Invalid Credentials")]
     InvalidCredentials,
 
+    #[error("{0}")]
+    AlreadyExist(String),
+
     #[error(transparent)]
     DatabaseError(#[from] sqlx::error::Error),
 
