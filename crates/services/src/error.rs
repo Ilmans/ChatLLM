@@ -2,6 +2,8 @@ use thiserror::Error;
 
 #[derive(Debug, Error)]
 pub enum ServiceError {
+    #[error("Invalid Credentials")]
+    InvalidCredentials,
 
     #[error(transparent)]
     DatabaseError(#[from] sqlx::error::Error),

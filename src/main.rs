@@ -20,6 +20,7 @@ struct Arguments {
 #[tokio::main]
 async fn main()  -> eyre::Result<()>{
     color_eyre::install()?;
+
     let args = Command::new("command")
         .arg(Arg::new("command").value_parser(["migrate", "start"]).default_value("start"))
         .get_matches();
@@ -27,6 +28,7 @@ async fn main()  -> eyre::Result<()>{
 
     // Load the config
     let config = config::load()?;
+    tracing::info!("Connecting to database..");
 
     // Connect to database
     let db = PgPoolOptions::new()
@@ -38,15 +40,14 @@ async fn main()  -> eyre::Result<()>{
         sqlx::migrate!().run(&db).await?;
         return Ok(());
     }
-
+    tracing::info!("Database connected.");
     tracing_subscriber::fmt::init();
     run(config, db).await?;
     Ok(())
 }
 
 async fn run(config: Config, db: Pool<Postgres>) -> eyre::Result<()> {
-    tracing::info!("Connecting to database..");
-    tracing::info!("Database connected.");
+    
 
     let user_repository = Arc::from(UserRepository { db });
 

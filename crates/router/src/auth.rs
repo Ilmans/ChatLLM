@@ -3,8 +3,9 @@ use axum::{extract::State, Json, Router, routing::{get, post}};
 use axum_extra::extract::WithRejection;
 use models::User;
 use serde::Deserialize;
+use services::auth::LoginResult;
 
-use crate::{RouterState, error::ApiError};
+use crate::{RouterState, error::{ApiError, ApiErrorPayload}};
 pub async fn router(state: RouterState) -> Router {
     Router::new()
         .route("/login", post(login))
@@ -24,12 +25,14 @@ pub struct LoginUserRequest {
     password: String
 }
 
-
 pub async fn login(
     State(state): State<RouterState>,
     WithRejection(Json(body), _): WithRejection<Json<LoginUserRequest>, ApiError>
-) -> Result<Json<Vec<User>>, ApiError> {
-    unimplemented!()
+) -> Result<Json<LoginResult>, ApiError> {
+    state.auth_service.login(body.username, body.password)
+        .await
+        .map(|data| Json(data))
+        .map_err(|e| e.into())
 }
 pub async fn register(State(state): State<RouterState>) -> Result<Json<Vec<User>>, ApiError> {
     unimplemented!()

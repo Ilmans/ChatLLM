@@ -10,3 +10,6 @@ async-trait.workspace = true
 thiserror.workspace = true
 sqlx.workspace = true
 repository.workspace = true
+tracing.workspace = true
+models.workspace = true
+serde.workspace = true

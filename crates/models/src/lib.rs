@@ -1,3 +1,4 @@
+use chrono::{DateTime, Utc, NaiveDateTime};
 use serde::{Serialize, Deserialize};
 
 pub mod user;
@@ -19,10 +20,12 @@ impl UserRole {
     }
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct User {
-    id: i32,
-    name: String,
-    role: UserRole,
-    created_at: String,
+    pub id: i32,
+    pub name: String,
+    pub username: String,
+    pub password: String,
+    pub role: Option<String>,
+    pub created_at: Option<NaiveDateTime>,
 }

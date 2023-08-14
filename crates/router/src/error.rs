@@ -18,6 +18,10 @@ pub struct ApiError {
 impl From<services::error::ServiceError> for ApiError {
     fn from(value: services::error::ServiceError) -> Self {
         match value {
+            all @ services::error::ServiceError::InvalidCredentials => ApiError {
+                status: StatusCode::UNAUTHORIZED,
+                payload: ApiErrorPayload { code: "invalid_credentials", message: format!("{all}") }
+            },
             all @ services::error::ServiceError::DatabaseError(_) => ApiError {
                 status: StatusCode::INTERNAL_SERVER_ERROR,
                 payload: ApiErrorPayload { code: "database_failure", message: format!("{all}") }
