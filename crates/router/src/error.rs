@@ -18,6 +18,10 @@ pub struct ApiError {
 impl From<services::error::ServiceError> for ApiError {
     fn from(value: services::error::ServiceError) -> Self {
         match value {
+            services::error::ServiceError::InternalServerError(message) => ApiError {
+                status: StatusCode::INTERNAL_SERVER_ERROR,
+                payload: ApiErrorPayload { code: "internal_server_error", message }
+            },
             services::error::ServiceError::AlreadyExist(message) => ApiError {
                 status: StatusCode::CONFLICT,
                 payload: ApiErrorPayload { code: "conflict", message }

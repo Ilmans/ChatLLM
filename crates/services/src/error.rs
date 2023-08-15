@@ -2,6 +2,9 @@ use thiserror::Error;
 
 #[derive(Debug, Error)]
 pub enum ServiceError {
+    #[error("Internal server error. Please contact system administrator. Code: {0}")]
+    InternalServerError(String),
+
     #[error("Invalid Credentials")]
     InvalidCredentials,
 

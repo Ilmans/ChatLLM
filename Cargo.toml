@@ -38,6 +38,7 @@ axum = { version = "0.6.20", features = ["macros"] }
 figment = { version = "0.10.10", features = ["toml"] }
 tower = "0.4.13"
 tower-http = { version = "0.4.3", features = ["cors", "trace"] }
+jsonwebtoken = "8.3.0"
 
 [dependencies] 
 config.workspace = true 

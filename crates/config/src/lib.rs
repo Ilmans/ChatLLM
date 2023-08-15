@@ -8,7 +8,7 @@ mod app;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Config {
-    pub hmac_key: String,
+    pub jwt_secret: String,
     pub app: app::AppConfig,
     pub database: database::DatabaseConfig,
 }

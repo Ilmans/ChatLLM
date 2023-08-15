@@ -1,5 +1,5 @@
 # HMAC key for JWT authentication
-hmac_key = "test"
+jwt_secret = "test"
 
 [app]
 host = "127.0.0.1:8080"

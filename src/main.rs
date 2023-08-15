@@ -56,7 +56,8 @@ async fn run(config: Config, db: Pool<Postgres>) -> eyre::Result<()> {
             user_repo: user_repository.clone()
         }),
         auth_service: Arc::from(AuthServiceImpl {
-            user_repo: user_repository.clone()
+            user_repo: user_repository.clone(),
+            jwt_secret: config.jwt_secret
         })
     };
 
