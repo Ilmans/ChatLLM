@@ -3,6 +3,9 @@ use std::fmt::format;
 use axum::{http::StatusCode, response::IntoResponse, Json};
 use serde::{Serialize, Deserialize};
 
+use crate::service::ServiceError;
+
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ApiErrorPayload {
     pub code: &'static str,
@@ -15,26 +18,26 @@ pub struct ApiError {
     pub payload: ApiErrorPayload
 }
 
-impl From<services::error::ServiceError> for ApiError {
-    fn from(value: services::error::ServiceError) -> Self {
+impl From<ServiceError> for ApiError {
+    fn from(value: ServiceError) -> Self {
         match value {
-            services::error::ServiceError::InternalServerError(message) => ApiError {
+            ServiceError::InternalServerError(message) => ApiError {
                 status: StatusCode::INTERNAL_SERVER_ERROR,
                 payload: ApiErrorPayload { code: "internal_server_error", message }
             },
-            services::error::ServiceError::AlreadyExist(message) => ApiError {
+            ServiceError::AlreadyExist(message) => ApiError {
                 status: StatusCode::CONFLICT,
                 payload: ApiErrorPayload { code: "conflict", message }
             },
-            all @ services::error::ServiceError::InvalidCredentials => ApiError {
+            all @ ServiceError::Unauthorized => ApiError {
                 status: StatusCode::UNAUTHORIZED,
-                payload: ApiErrorPayload { code: "invalid_credentials", message: format!("{all}") }
+                payload: ApiErrorPayload { code: "unauthorized", message: format!("{all}") }
             },
-            all @ services::error::ServiceError::DatabaseError(_) => ApiError {
+            all @ ServiceError::DatabaseError(_) => ApiError {
                 status: StatusCode::INTERNAL_SERVER_ERROR,
                 payload: ApiErrorPayload { code: "database_failure", message: format!("{all}") }
             },
-            all @ services::error::ServiceError::NotFound => ApiError {
+            all @ ServiceError::NotFound => ApiError {
                 status: StatusCode::NOT_FOUND,
                 payload: ApiErrorPayload { code: "not_found", message: format!("{all}") }
             },

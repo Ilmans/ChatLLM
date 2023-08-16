@@ -2,10 +2,11 @@ use std::os::fd::IntoRawFd;
 
 use axum::{extract::State, Json, Router, routing::get, http::StatusCode, response::IntoResponse};
 use axum_extra::extract::WithRejection;
+use errors::api::ApiError;
 use models::User;
 use serde::Deserialize;
 
-use crate::{UserService, error::ApiError, RouterState, response::{GeneralResponse, ResponseBody}};
+use crate::{UserService, RouterState, response::{GeneralResponse, ResponseBody}};
 
 pub async fn router(state: RouterState) -> Router {
     Router::new()

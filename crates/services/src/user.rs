@@ -1,9 +1,9 @@
 use std::sync::Arc;
 
 use async_trait::async_trait;
+use errors::service::ServiceError;
 use repository::user::UserRepository;
 
-use crate::error::ServiceError;
 
 #[async_trait]
 pub trait UserService {

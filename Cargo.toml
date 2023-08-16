@@ -13,6 +13,7 @@ router = { path = "crates/router" }
 repository = { path = "crates/repository" }
 models = { path = "crates/models" }
 middleware = { path = "crates/middleware" }
+errors = { path = "crates/errors" }
 services = { path = "crates/services" }
 
 axum-extra = "0.7.7"
@@ -44,6 +45,7 @@ jsonwebtoken = "8.3.0"
 config.workspace = true 
 services.workspace = true 
 router.workspace = true 
+errors.workspace = true 
 repository.workspace = true 
 color-eyre.workspace = true
 eyre.workspace = true

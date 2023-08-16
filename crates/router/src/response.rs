@@ -1,8 +1,6 @@
 use axum::{http::StatusCode, response::IntoResponse, Json};
 use serde::Serialize;
 
-use crate::error::ApiError;
-
 pub struct GeneralResponse<T: Serialize> {
     pub status: StatusCode,
     pub body: ResponseBody<T>

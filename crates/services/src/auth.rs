@@ -2,11 +2,12 @@ use std::{sync::Arc, ops::Deref};
 
 use async_trait::async_trait;
 use ::chrono::{Days, Duration};
+use errors::service::ServiceError;
 use jsonwebtoken::{encode, Header, EncodingKey};
+use middleware::jwt::JwtClaims;
 use repository::user::UserRepository;
 use serde::{Serialize, Deserialize};
 use sqlx::types::chrono;
-use crate::error::ServiceError;
 
 
 pub struct AuthServiceImpl {
@@ -28,12 +29,7 @@ pub struct LoginResult {
     pub token: String
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct JwtClaims {
-    pub exp: i64,
-    pub user_id: i32,
-    pub username: String
-}
+
 
 #[async_trait]
 impl AuthService for AuthServiceImpl {
@@ -42,7 +38,7 @@ impl AuthService for AuthServiceImpl {
 
         if find_user.is_err() {
             tracing::error!("Error Login user: {:?}", find_user);
-            return Err(ServiceError::InvalidCredentials);
+            return Err(ServiceError::Unauthorized);
         }
 
         let mut user = find_user.unwrap();
@@ -52,7 +48,6 @@ impl AuthService for AuthServiceImpl {
         // hide from response
         user.password = None;
 
-        let now = chrono::Utc::now();
         let expired_in = chrono::Local::now() + Duration::days(1);
         
         // Generate jwt token
