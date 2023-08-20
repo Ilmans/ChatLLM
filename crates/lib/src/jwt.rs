@@ -1,4 +1,6 @@
-use errors::service::ServiceError;
+use std::sync::Arc;
+
+use errors::{service::ServiceError, api::ApiError};
 use jsonwebtoken::{decode, DecodingKey, Validation};
 use serde::{Serialize, Deserialize};
 #[derive(Debug, Serialize, Deserialize)]

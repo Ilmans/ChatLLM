@@ -16,4 +16,4 @@ jsonwebtoken.workspace = true
 errors.workspace = true
 serde.workspace = true
 chrono.workspace = true
-middleware.workspace = true
+lib.workspace = true

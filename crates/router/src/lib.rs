@@ -5,8 +5,9 @@ use tower::ServiceBuilder;
 use tower_http::trace::TraceLayer;
 
 pub mod users;
-pub mod home;
 pub mod auth;
+pub mod home;
+pub mod middleware;
 pub mod response;
 
 type UserService = Arc<dyn services::user::UserService + Send + Sync>;

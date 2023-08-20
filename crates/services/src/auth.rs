@@ -4,7 +4,7 @@ use async_trait::async_trait;
 use ::chrono::{Days, Duration};
 use errors::service::ServiceError;
 use jsonwebtoken::{encode, Header, EncodingKey};
-use middleware::jwt::JwtClaims;
+use lib::jwt::JwtClaims;
 use repository::user::UserRepository;
 use serde::{Serialize, Deserialize};
 use sqlx::types::chrono;

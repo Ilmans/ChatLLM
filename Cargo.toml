@@ -12,8 +12,8 @@ config = { path = "crates/config" }
 router = { path = "crates/router" }
 repository = { path = "crates/repository" }
 models = { path = "crates/models" }
-middleware = { path = "crates/middleware" }
 errors = { path = "crates/errors" }
+lib = { path = "crates/lib" }
 services = { path = "crates/services" }
 
 axum-extra = "0.7.7"
@@ -42,6 +42,7 @@ tower-http = { version = "0.4.3", features = ["cors", "trace"] }
 jsonwebtoken = "8.3.0"
 
 [dependencies] 
+lib.workspace = true 
 config.workspace = true 
 services.workspace = true 
 router.workspace = true 

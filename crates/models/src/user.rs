@@ -8,6 +8,7 @@ pub struct User {
     pub name: String, 
     pub role: String,
     pub username: String,
+    #[serde(skip_serializing)]
     pub password: Option<String>,
     pub created_at: Option<DateTime<Utc>>
 }

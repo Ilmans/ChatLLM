@@ -1,18 +1,19 @@
 
-use axum::{extract::State, Json, Router, routing::{get, post}};
+use axum::{extract::State, Json, Router, routing::{get, post}, middleware};
 use axum_extra::extract::WithRejection;
 use errors::api::ApiError;
 use models::User;
 use serde::Deserialize;
 use services::auth::LoginResult;
 
-use crate::{RouterState};
+use crate::{RouterState, middleware::auth::auth_middleware};
+
 pub async fn router(state: RouterState) -> Router {
     Router::new()
         .route("/login", post(login))
-        .route("/user", post(user))
-        .route("/logout", post(logout))
         .route("/register", post(register))
+        .route("/user", post(user).route_layer(middleware::from_fn_with_state(state.clone(), auth_middleware)))
+        .route("/logout", post(logout)).route_layer(middleware::from_fn_with_state(state.clone(), auth_middleware))
         .with_state(state)
 }
 
