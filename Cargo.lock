@@ -1335,6 +1335,7 @@ dependencies = [
  "chrono",
  "figment",
  "serde",
+ "sqlx",
 ]
 
 [[package]]

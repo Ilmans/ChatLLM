@@ -5,6 +5,7 @@ use ::chrono::{Days, Duration};
 use errors::service::ServiceError;
 use jsonwebtoken::{encode, Header, EncodingKey};
 use lib::jwt::JwtClaims;
+use models::user::User;
 use repository::user::UserRepository;
 use serde::{Serialize, Deserialize};
 use sqlx::types::chrono;
@@ -20,12 +21,12 @@ pub trait AuthService {
     async fn login(&self, username: String, password: String) -> Result<LoginResult, ServiceError>;
     async fn logout(&self) -> Result<(), ServiceError>;
     async fn refresh_user(&self) -> Result<(), ServiceError>;
-    async fn user(&self) -> Result<(), ServiceError>;
+    async fn user(&self, user_id: i32) -> Result<User, ServiceError>;
 }
 
 #[derive(Serialize)]
 pub struct LoginResult {
-    pub user: models::User,
+    pub user: models::user::User,
     pub token: String
 }
 
@@ -67,12 +68,13 @@ impl AuthService for AuthServiceImpl {
         })
     }
     async fn logout(&self) -> Result<(), ServiceError> {
-        unimplemented!()
+        Ok(())
     }
     async fn refresh_user(&self) -> Result<(), ServiceError> {
         unimplemented!()
     }
-    async fn user(&self) -> Result<(), ServiceError> {
-        unimplemented!()
+    async fn user(&self, user_id: i32) -> Result<User, ServiceError> {
+        let user = self.user_repo.find_user_by_id(user_id).await?;
+        Ok(user)
     }
 }

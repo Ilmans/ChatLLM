@@ -3,7 +3,7 @@ use axum::{extract::State, Json, Router, routing::{get, post}, middleware, http:
 use axum_extra::extract::WithRejection;
 use errors::api::ApiError;
 use lib::jwt::JwtClaims;
-use models::User;
+use models::user::User;
 use serde::Deserialize;
 use services::auth::LoginResult;
 

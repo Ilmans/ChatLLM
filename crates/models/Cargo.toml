@@ -9,3 +9,4 @@ edition = "2021"
 figment.workspace = true
 serde.workspace = true
 chrono.workspace = true
+sqlx.workspace = true

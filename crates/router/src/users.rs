@@ -3,7 +3,7 @@ use std::os::fd::IntoRawFd;
 use axum::{extract::State, Json, Router, routing::get, http::StatusCode, response::IntoResponse};
 use axum_extra::extract::WithRejection;
 use errors::api::ApiError;
-use models::User;
+use models::user::User;
 use serde::Deserialize;
 
 use crate::{UserService, RouterState, response::{GeneralResponse, ResponseBody}};
@@ -13,7 +13,6 @@ pub async fn router(state: RouterState) -> Router {
         .route("/users", get(index).post(store))
         .route("/users/:user_id", get(show).post(update).delete(destroy))
         .with_state(state)
-
 }
 
 pub async fn index(State(state): State<RouterState>) -> Result<Json<Vec<User>>, ApiError> {
