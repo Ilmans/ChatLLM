@@ -2,6 +2,7 @@ use std::sync::Arc;
 
 use clap::{ Command, Parser, Arg};
 use config::{ Config};
+use dotenv::dotenv;
 use eyre;
 use color_eyre;
 use repository::user::UserRepository;
@@ -20,6 +21,7 @@ struct Arguments {
 #[tokio::main]
 async fn main()  -> eyre::Result<()>{
     color_eyre::install()?;
+    dotenv().ok();
 
     let args = Command::new("command")
         .arg(Arg::new("command").value_parser(["migrate", "start"]).default_value("start"))

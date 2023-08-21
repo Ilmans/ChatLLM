@@ -58,3 +58,4 @@ axum = { workspace = true, features = ["headers"] }
 figment = { workspace = true, features = ["toml"] }
 clap = { workspace = true, features = ["derive"] }
 chrono = { workspace = true, features = ["serde"] }
+dotenv = "0.15.0"

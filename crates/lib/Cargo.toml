@@ -10,3 +10,4 @@ serde.workspace = true
 jsonwebtoken.workspace = true
 errors.workspace = true
 axum.workspace = true
+once_cell = "1.18.0"
