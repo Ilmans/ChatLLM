@@ -9,3 +9,4 @@ edition = "2021"
 serde.workspace = true
 jsonwebtoken.workspace = true
 errors.workspace = true
+axum.workspace = true

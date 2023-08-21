@@ -12,5 +12,6 @@ pub async fn auth_middleware<B>(
 ) -> Response {
     let response = next.run(request).await;
 
+
     response
 }

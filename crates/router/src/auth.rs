@@ -2,6 +2,7 @@
 use axum::{extract::State, Json, Router, routing::{get, post}, middleware};
 use axum_extra::extract::WithRejection;
 use errors::api::ApiError;
+use lib::jwt::JwtClaims;
 use models::User;
 use serde::Deserialize;
 use services::auth::LoginResult;
@@ -39,6 +40,6 @@ pub async fn login(
 pub async fn register(State(state): State<RouterState>) -> Result<Json<Vec<User>>, ApiError> {
     unimplemented!()
 }
-pub async fn logout(State(state): State<RouterState>) -> Result<Json<Vec<User>>, ApiError> {
-    unimplemented!()
+pub async fn logout(State(state): State<RouterState>, claims: JwtClaims) -> Result<Json<JwtClaims>, ApiError> {
+    Ok(Json(claims))
 }
