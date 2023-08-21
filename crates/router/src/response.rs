@@ -6,6 +6,22 @@ pub struct GeneralResponse<T: Serialize> {
     pub body: ResponseBody<T>
 }   
 
+#[derive(Serialize)]
+pub struct ResponseBody<T: Serialize> {
+    pub message: &'static str,
+    #[serde(skip_serializing_if="Option::is_none")]
+    pub data: Option<T> 
+}
+
+impl<T: Serialize> GeneralResponse<T> {
+    pub fn new_success_without_data(message: &'static str) -> Self {
+        Self {
+            body: ResponseBody { message, data: None },
+            status: StatusCode::OK
+        }
+    }
+}
+
 impl<T: Serialize> GeneralResponse<T> {
     pub fn new_without_data(status: StatusCode, message: &'static str) -> Self {
         Self {
@@ -13,13 +29,6 @@ impl<T: Serialize> GeneralResponse<T> {
             status
         }
     }
-}
-
-#[derive(Serialize)]
-pub struct ResponseBody<T: Serialize> {
-    pub message: &'static str,
-    #[serde(skip_serializing_if="Option::is_none")]
-    pub data: Option<T> 
 }
 
 impl<T: Serialize> IntoResponse for GeneralResponse<T> {
