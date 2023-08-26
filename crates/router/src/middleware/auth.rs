@@ -1,6 +1,12 @@
 use std::sync::Arc;
 
-use axum::{extract::State, http::Request, middleware::Next, response::{IntoResponse, Response}, Json};
+use axum::{
+    extract::State,
+    http::Request,
+    middleware::Next,
+    response::{IntoResponse, Response},
+    Json,
+};
 use errors::api::ApiError;
 
 use crate::RouterState;
@@ -11,7 +17,6 @@ pub async fn auth_middleware<B>(
     next: Next<B>,
 ) -> Response {
     let response = next.run(request).await;
-
 
     response
 }

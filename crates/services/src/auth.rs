@@ -1,19 +1,18 @@
-use std::{sync::Arc, ops::Deref};
+use std::{ops::Deref, sync::Arc};
 
-use async_trait::async_trait;
 use ::chrono::{Days, Duration};
+use async_trait::async_trait;
 use errors::service::ServiceError;
-use jsonwebtoken::{encode, Header, EncodingKey};
+use jsonwebtoken::{encode, EncodingKey, Header};
 use lib::jwt::JwtClaims;
 use models::user::User;
 use repository::user::UserRepository;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 use sqlx::types::chrono;
-
 
 pub struct AuthServiceImpl {
     pub jwt_secret: String,
-    pub user_repo: Arc<UserRepository>
+    pub user_repo: Arc<UserRepository>,
 }
 
 #[async_trait]
@@ -27,10 +26,8 @@ pub trait AuthService {
 #[derive(Serialize)]
 pub struct LoginResult {
     pub user: models::user::User,
-    pub token: String
+    pub token: String,
 }
-
-
 
 #[async_trait]
 impl AuthService for AuthServiceImpl {
@@ -45,27 +42,25 @@ impl AuthService for AuthServiceImpl {
         let mut user = find_user.unwrap();
 
         tracing::debug!("Login user: {:?}", user);
-        
+
         // hide from response
         user.password = None;
 
         let expired_in = chrono::Local::now() + Duration::days(1);
-        
+
         // Generate jwt token
         let claims = JwtClaims {
             exp: expired_in.timestamp(),
             username: user.username.clone(),
-            user_id: user.id.clone()
+            user_id: user.id.clone(),
         };
         let token = encode(
-            &Header::default(), 
-            &claims, 
-            &EncodingKey::from_secret(self.jwt_secret.as_ref())
-        ).map_err(|err| ServiceError::InternalServerError("auth_jwt".into()))?;
-        Ok(LoginResult {
-            user,
-            token
-        })
+            &Header::default(),
+            &claims,
+            &EncodingKey::from_secret(self.jwt_secret.as_ref()),
+        )
+        .map_err(|err| ServiceError::InternalServerError("auth_jwt".into()))?;
+        Ok(LoginResult { user, token })
     }
     async fn logout(&self) -> Result<(), ServiceError> {
         Ok(())

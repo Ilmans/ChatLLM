@@ -1,12 +1,15 @@
 use std::os::fd::IntoRawFd;
 
-use axum::{extract::State, Json, Router, routing::get, http::StatusCode, response::IntoResponse};
+use axum::{extract::State, http::StatusCode, response::IntoResponse, routing::get, Json, Router};
 use axum_extra::extract::WithRejection;
 use errors::api::ApiError;
 use models::user::User;
 use serde::Deserialize;
 
-use crate::{UserService, RouterState, response::{GeneralResponse, ResponseBody}};
+use crate::{
+    response::{GeneralResponse, ResponseBody},
+    RouterState, UserService,
+};
 
 pub async fn router(state: RouterState) -> Router {
     Router::new()
@@ -29,13 +32,16 @@ pub struct StoreUserPayload {
 
 pub async fn store(
     State(service): State<RouterState>,
-    WithRejection(Json(body), _): WithRejection<Json<StoreUserPayload>, ApiError>
+    WithRejection(Json(body), _): WithRejection<Json<StoreUserPayload>, ApiError>,
 ) -> Result<impl IntoResponse, ApiError> {
-    service.user_service.store(body.name, body.role, body.username, body.password)
+    service
+        .user_service
+        .store(body.name, body.role, body.username, body.password)
         .await?;
-    Ok(
-        GeneralResponse::<()>::new_without_data(StatusCode::CREATED, "Success create user")
-    )
+    Ok(GeneralResponse::<()>::new_without_data(
+        StatusCode::CREATED,
+        "Success create user",
+    ))
 }
 pub async fn show(State(service): State<RouterState>) -> Result<Json<Vec<User>>, ApiError> {
     unimplemented!();

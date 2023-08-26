@@ -1,4 +1,4 @@
-use axum::{Json, response::IntoResponse};
+use axum::{response::IntoResponse, Json};
 use serde_json;
 
 pub async fn home() -> impl IntoResponse {

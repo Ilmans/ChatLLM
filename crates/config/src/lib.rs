@@ -1,10 +1,10 @@
-use std::net::SocketAddr;
+use figment::providers::{Format, Toml};
 use figment::Figment;
-use figment::providers::{Toml, Format};
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
+use std::net::SocketAddr;
 
-mod database;
 mod app;
+mod database;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Config {
@@ -14,8 +14,5 @@ pub struct Config {
 }
 
 pub fn load() -> Result<Config, figment::error::Error> {
-    Figment::new()
-        .merge(Toml::file("config.toml"))
-        .extract()
+    Figment::new().merge(Toml::file("config.toml")).extract()
 }
-

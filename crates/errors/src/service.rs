@@ -15,5 +15,5 @@ pub enum ServiceError {
     DatabaseError(#[from] sqlx::error::Error),
 
     #[error("Could not find the requested resource")]
-    NotFound
+    NotFound,
 }

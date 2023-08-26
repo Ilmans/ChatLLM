@@ -1,30 +1,33 @@
 use std::sync::Arc;
 
-use clap::{ Command, Parser, Arg};
-use config::{ Config};
+use clap::{Arg, Command, Parser};
+use color_eyre;
+use config::Config;
 use dotenv::dotenv;
 use eyre;
-use color_eyre;
 use repository::user::UserRepository;
 use router::RouterState;
-use services::{user::UserServiceImpl, auth::AuthServiceImpl};
-use sqlx::{  postgres::PgPoolOptions, Pool, Postgres};
+use services::{auth::AuthServiceImpl, user::UserServiceImpl};
+use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
 
 #[derive(Debug, Parser)]
-#[clap(about="Rust LLM Server")]
+#[clap(about = "Rust LLM Server")]
 struct Arguments {
     // The command to execute. Possible values: 'migrate' and 'start'
-    command: String
+    command: String,
 }
 
-
 #[tokio::main]
-async fn main()  -> eyre::Result<()>{
+async fn main() -> eyre::Result<()> {
     color_eyre::install()?;
     dotenv().ok();
 
     let args = Command::new("command")
-        .arg(Arg::new("command").value_parser(["migrate", "start"]).default_value("start"))
+        .arg(
+            Arg::new("command")
+                .value_parser(["migrate", "start"])
+                .default_value("start"),
+        )
         .get_matches();
     let command = args.get_one::<String>("command").unwrap();
 
@@ -49,22 +52,20 @@ async fn main()  -> eyre::Result<()>{
 }
 
 async fn run(config: Config, db: Pool<Postgres>) -> eyre::Result<()> {
-    
-
     let user_repository = Arc::from(UserRepository { db });
 
     let state = RouterState {
         user_service: Arc::from(UserServiceImpl {
-            user_repo: user_repository.clone()
+            user_repo: user_repository.clone(),
         }),
         auth_service: Arc::from(AuthServiceImpl {
             user_repo: user_repository.clone(),
-            jwt_secret: config.jwt_secret
-        })
+            jwt_secret: config.jwt_secret,
+        }),
     };
 
     let app = router::router(&state).await;
-    
+
     tracing::info!("Serving at {}", &config.app.host.to_string());
     axum::Server::bind(&config.app.host)
         .serve(app.into_make_service())

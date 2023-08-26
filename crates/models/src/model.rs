@@ -1,5 +1,5 @@
-use chrono::{Utc, DateTime};
-use serde::{Serialize, Deserialize};
+use chrono::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
 pub struct Model {
@@ -15,5 +15,5 @@ pub struct Model {
     pub num_threads: i32,
     pub status: String,
     pub created_at: Option<DateTime<Utc>>,
-    pub updated_at: Option<DateTime<Utc>>
+    pub updated_at: Option<DateTime<Utc>>,
 }
