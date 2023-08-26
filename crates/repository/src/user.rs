@@ -11,11 +11,7 @@ impl UserRepository {
     pub async fn find_user_by_id(&self, id: i32) -> Result<User, Error> {
         let user = sqlx::query_as!(
             User,
-            r#"SELECT id, name as "name!", 
-                    password, 
-                    created_at as "created_at!", 
-                    role as "role!", 
-                    username as "username!"  
+            r#"SELECT * 
                 FROM users 
                 WHERE id = $1 
                 LIMIT 1"#,

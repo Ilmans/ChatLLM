@@ -66,7 +66,7 @@ async fn run(config: Config, db: Pool<Postgres>) -> eyre::Result<()> {
 
     let app = router::router(&state).await;
 
-    tracing::info!("Serving at {}", &config.app.host.to_string());
+    tracing::info!("Serving at http://{}", &config.app.host.to_string());
     axum::Server::bind(&config.app.host)
         .serve(app.into_make_service())
         .await?;
