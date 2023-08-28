@@ -1,13 +1,14 @@
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 
 use clap::{Arg, Command, Parser};
 use color_eyre;
 use config::Config;
 use dotenv::dotenv;
 use eyre;
+use llm_backend::MyLLM;
 use repository::user::UserRepository;
 use router::RouterState;
-use services::{auth::AuthServiceImpl, user::UserServiceImpl};
+use services::{auth::AuthServiceImpl, user::UserServiceImpl, chat::{ChatService, ChatServiceImpl}};
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
 
 #[derive(Debug, Parser)]
@@ -22,6 +23,7 @@ async fn main() -> eyre::Result<()> {
     color_eyre::install()?;
     dotenv().ok();
 
+
     let args = Command::new("command")
         .arg(
             Arg::new("command")
@@ -29,8 +31,8 @@ async fn main() -> eyre::Result<()> {
                 .default_value("start"),
         )
         .get_matches();
+    
     let command = args.get_one::<String>("command").unwrap();
-
     // Load the config
     let config = config::load()?;
     tracing::info!("Connecting to database..");
@@ -54,6 +56,7 @@ async fn main() -> eyre::Result<()> {
 async fn run(config: Config, db: Pool<Postgres>) -> eyre::Result<()> {
     let user_repository = Arc::from(UserRepository { db });
 
+    let mut llm = MyLLM::new();
     let state = RouterState {
         user_service: Arc::from(UserServiceImpl {
             user_repo: user_repository.clone(),
@@ -62,6 +65,9 @@ async fn run(config: Config, db: Pool<Postgres>) -> eyre::Result<()> {
             user_repo: user_repository.clone(),
             jwt_secret: config.jwt_secret,
         }),
+        chat_service: Arc::from(ChatServiceImpl {
+            llm: Arc::new(Mutex::new(llm))
+        })
     };
 
     let app = router::router(&state).await;

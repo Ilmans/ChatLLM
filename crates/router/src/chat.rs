@@ -7,14 +7,13 @@ use models::user::User;
 use serde::Deserialize;
 
 use crate::{
-    response::{GeneralResponse, ResponseBody},
-    RouterState, UserService,
+    response::{GeneralResponse},
+    RouterState,
 };
 
 pub async fn router(state: RouterState) -> Router {
     Router::new()
-        .route("/users", get(index).post(store))
-        .route("/users/:user_id", get(show).post(update).delete(destroy))
+        .route("/chat", get(index).post(send_message))
         .with_state(state)
 }
 
@@ -23,26 +22,17 @@ pub async fn index(State(state): State<RouterState>) -> Result<Json<Vec<User>>, 
 }
 
 #[derive(Deserialize)]
-pub struct StoreUserPayload {
-    pub name: String,
-    pub role: String,
-    pub username: String,
-    pub password: String,
+pub struct SendMessagePayload {
+    message: String
 }
 
-pub async fn store(
+pub async fn send_message(
     State(service): State<RouterState>,
-    WithRejection(Json(body), _): WithRejection<Json<StoreUserPayload>, ApiError>,
-) -> Result<impl IntoResponse, ApiError> {
-    service
-        .user_service
-        .store(body.name, body.role, body.username, body.password)
-        .await?;
-
-    Ok(GeneralResponse::<()>::new_without_data(
-        StatusCode::CREATED,
-        "Success create user",
-    ))
+    WithRejection(Json(body), _): WithRejection<Json<SendMessagePayload>, ApiError>,
+) -> Result<GeneralResponse<String>, ApiError> {
+    let result = service.chat_service.send_message(body.message).await 
+        .map(|_| GeneralResponse::new_without_data(StatusCode::OK, "Send message success"))?;
+    Ok(result)
 }
 pub async fn show(State(service): State<RouterState>) -> Result<Json<Vec<User>>, ApiError> {
     unimplemented!();

@@ -53,9 +53,11 @@ pub async fn login(
         .map(|data| Json(data))
         .map_err(|e| e.into())
 }
+
 pub async fn register(State(state): State<RouterState>) -> Result<Json<Vec<User>>, ApiError> {
     unimplemented!()
 }
+
 pub async fn logout(
     State(state): State<RouterState>,
     claims: JwtClaims,

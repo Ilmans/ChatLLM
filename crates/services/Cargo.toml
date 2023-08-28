@@ -17,3 +17,5 @@ errors.workspace = true
 serde.workspace = true
 chrono.workspace = true
 lib.workspace = true
+llm-backend.workspace = true
+tokio.workspace = true

@@ -8,6 +8,7 @@ members = ["crates/*"]
 resolver = "2"
 
 [workspace.dependencies]
+llm-backend = { path = "crates/llm-backend" }
 config = { path = "crates/config" }
 router = { path = "crates/router" }
 repository = { path = "crates/repository" }
@@ -42,6 +43,7 @@ tower-http = { version = "0.4.3", features = ["cors", "trace"] }
 jsonwebtoken = "8.3.0"
 
 [dependencies] 
+llm-backend.workspace = true 
 lib.workspace = true 
 config.workspace = true 
 services.workspace = true 

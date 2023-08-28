@@ -8,7 +8,7 @@ use axum::{
     TypedHeader,
 };
 use errors::{api::ApiError, service::ServiceError};
-use jsonwebtoken::{decode, DecodingKey, Validation};
+use jsonwebtoken::{decode, DecodingKey, Validation, TokenData};
 use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
 

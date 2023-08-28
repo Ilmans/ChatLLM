@@ -10,6 +10,7 @@ use std::sync::Arc;
 use tower::ServiceBuilder;
 use tower_http::trace::TraceLayer;
 
+pub mod chat;
 pub mod auth;
 pub mod home;
 pub mod middleware;
@@ -18,11 +19,13 @@ pub mod users;
 
 type UserService = Arc<dyn services::user::UserService + Send + Sync>;
 type AuthService = Arc<dyn services::auth::AuthService + Send + Sync>;
+type ChatService = Arc<dyn services::chat::ChatService + Send + Sync>;
 
 #[derive(Clone, FromRef)]
 pub struct RouterState {
     pub user_service: UserService,
     pub auth_service: AuthService,
+    pub chat_service: ChatService
 }
 
 pub struct ApiResponse<T> {
@@ -43,7 +46,8 @@ pub async fn router(state: &RouterState) -> Router {
             "/api/v1",
             Router::new()
                 .merge(users::router(state.clone()).await)
-                .merge(auth::router(state.clone()).await),
+                .merge(auth::router(state.clone()).await)
+                .merge(chat::router(state.clone()).await),
         )
         .fallback(not_found_handler)
 }
