@@ -21,12 +21,13 @@ pub struct ChatServiceImpl {
 impl ChatService for ChatServiceImpl {
     async fn send_message(&self, message: String) -> Result<(), ServiceError> {
         let worker = self.llm.clone();
-        thread::spawn(move || {
+        let t = thread::spawn(move || {
             let ref mut model_manager = worker
                 .lock()
                 .expect("Error mutex");
             model_manager.send_message(message);
         });
+        t.join().unwrap();
         Ok(())
     }
 }

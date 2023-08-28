@@ -56,7 +56,7 @@ async fn main() -> eyre::Result<()> {
 async fn run(config: Config, db: Pool<Postgres>) -> eyre::Result<()> {
     let user_repository = Arc::from(UserRepository { db });
 
-    let mut llm = MyLLM::new();
+    let  llm = MyLLM::new();
     let state = RouterState {
         user_service: Arc::from(UserServiceImpl {
             user_repo: user_repository.clone(),

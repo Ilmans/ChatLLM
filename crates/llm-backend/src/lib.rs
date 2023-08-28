@@ -31,8 +31,8 @@ pub struct MyLLM {
 impl MyLLM {
     pub fn new() -> Self {
         let tokenizer_source = llm::TokenizerSource::Embedded;
-        let model_architecture = llm::ModelArchitecture::GptNeoX;
-        let model_path = Path::new("/Users/zuramai/Code/LLM/models/RedPajama-INCITE-Base-3B-v1/RedPajama-INCITE-Base-3B-v1-q4_0.bin");
+        let model_architecture = llm::ModelArchitecture::Llama;
+        let model_path = Path::new("/Users/zuramai/Code/LLM/models/Wizard-Vicuna-7B-Uncensored.ggmlv3.q4_0.bin");
         let model_parameters = ModelParameters {
             prefer_mmap: true,
             context_size: 2048,
@@ -98,7 +98,9 @@ impl MyLLM {
                     prompt: format!("{user_name}: {msg}\n{character_name}:").as_str().into()
                 }, 
                 &mut Default::default(), 
-                conversation_inference_callback(&format!("{character_name}:"), print_token)
+                conversation_inference_callback(&format!("{character_name}:"), |token| {
+                    print!("{}",token);
+                })
             ).unwrap();
     }
 }
