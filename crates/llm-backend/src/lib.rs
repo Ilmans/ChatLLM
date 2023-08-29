@@ -1,4 +1,4 @@
-use std::{convert::Infallible, path::{Path, PathBuf}};
+use std::{convert::Infallible, path::{Path, PathBuf}, io::{self, Write}};
 
 use llm::{conversation_inference_callback, Model, InferenceParameters, InferenceSession, ModelParameters};
 use rand::rngs::ThreadRng;
@@ -31,13 +31,13 @@ pub struct MyLLM {
 impl MyLLM {
     pub fn new() -> Self {
         let tokenizer_source = llm::TokenizerSource::Embedded;
-        let model_architecture = llm::ModelArchitecture::Llama;
-        let model_path = Path::new("/Users/zuramai/Code/LLM/models/Wizard-Vicuna-7B-Uncensored.ggmlv3.q4_0.bin");
+        let model_architecture = llm::ModelArchitecture::GptNeoX;
+        let model_path = Path::new("/Users/zuramai/Code/LLM/models/RedPajama-INCITE-Base-3B-v1/RedPajama-INCITE-Base-3B-v1-q4_0.bin");
         let model_parameters = ModelParameters {
             prefer_mmap: true,
             context_size: 2048,
             lora_adapters: None,
-            use_gpu: true,
+            use_gpu: false,
             gpu_layers: None,
             rope_overrides: None,
             n_gqa: None,
@@ -46,21 +46,20 @@ impl MyLLM {
         let model = llm::load_dynamic(
             Some(model_architecture), 
             &model_path, 
-            tokenizer_source, 
+            llm::TokenizerSource::HuggingFaceTokenizerFile(PathBuf::from("/Users/zuramai/Code/LLM/models/RedPajama-INCITE-Base-3B-v1/tokenizer.json")),
             model_parameters, 
             llm::load_progress_callback_stdout
         ).unwrap();
 
         let mut session = model.start_session(Default::default());
-        let persona = "A chat between a human and an assistant.";
-        let character_name = "### Assistant";
-        let user_name = "### Human";
-        let history = format!(
-            "{character_name}: Hello - How may I help you today?\n\
-            {user_name}: What is the capital of France?\n\
-            {character_name}: Paris is the capital of France"
-        );
-    
+        let persona = "A chat between a teacher and a student";
+        let character_name = "### Teacher";
+        let user_name = "### Student";
+        let history = format!("{user_name}: You are my english instructor. \
+            You are very expert in English language and have wide vocabularies. You are very good at explaining something. \
+            You will always give a alternatives to write a sentence in a different ways. \
+            You can always fix my grammar and give vocabularies alternatives.");
+
         session.feed_prompt(
                 model.as_ref(), 
                 format!("{persona}\n{history}").as_str(), 
@@ -83,16 +82,16 @@ impl MyLLM {
     }
 
 
-    pub fn send_message(&mut self, msg: String) {
-        let character_name = "### Assistant";
-        let user_name = "### Human";
+    pub fn send_message(&mut self, msg: String) -> String {
+        let character_name = "### Teacher";
+        let user_name = "### Student";
         println!("{user_name}: {msg}");
-
+        let mut response = String::from("");
         let stats = self.session
             .infer::<Infallible>(self.model.as_ref(),
                 &mut rand::thread_rng(),
                 &llm::InferenceRequest {
-                    maximum_token_count: Some(100),
+                    maximum_token_count: Some(20),
                     play_back_previous_tokens: false, 
                     parameters: &self.inference_parameters,
                     prompt: format!("{user_name}: {msg}\n{character_name}:").as_str().into()
@@ -100,12 +99,15 @@ impl MyLLM {
                 &mut Default::default(), 
                 conversation_inference_callback(&format!("{character_name}:"), |token| {
                     print!("{}",token);
+                    response.push_str(token.as_str());
                 })
             ).unwrap();
+        response
     }
 }
 
 
 fn print_token(t: String) {
     print!("{t}");
+    io::stdout().flush().unwrap();
 }

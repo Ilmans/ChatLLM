@@ -10,7 +10,7 @@ pub trait ChatService {
     async fn send_message(
         &self,
         message: String
-    ) -> Result<(), ServiceError>;
+    ) -> Result<String, ServiceError>;
 }
 
 pub struct ChatServiceImpl {
@@ -19,15 +19,17 @@ pub struct ChatServiceImpl {
 
 #[async_trait]
 impl ChatService for ChatServiceImpl {
-    async fn send_message(&self, message: String) -> Result<(), ServiceError> {
+    async fn send_message(&self, message: String) -> Result<String, ServiceError> {
         let worker = self.llm.clone();
         let t = thread::spawn(move || {
             let ref mut model_manager = worker
                 .lock()
                 .expect("Error mutex");
-            model_manager.send_message(message);
+            model_manager.send_message(message)
         });
-        t.join().unwrap();
-        Ok(())
+        let response = t.join().unwrap();
+        println!("{response}");
+
+        Ok(response)
     }
 }

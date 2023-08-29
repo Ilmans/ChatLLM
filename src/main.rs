@@ -23,7 +23,6 @@ async fn main() -> eyre::Result<()> {
     color_eyre::install()?;
     dotenv().ok();
 
-
     let args = Command::new("command")
         .arg(
             Arg::new("command")

@@ -4,7 +4,7 @@ use axum::{extract::State, http::StatusCode, response::IntoResponse, routing::ge
 use axum_extra::extract::WithRejection;
 use errors::api::ApiError;
 use models::user::User;
-use serde::Deserialize;
+use serde::{Deserialize,Serialize};
 
 use crate::{
     response::{GeneralResponse},
@@ -26,12 +26,27 @@ pub struct SendMessagePayload {
     message: String
 }
 
+#[derive(Serialize)]
+pub struct SendMessageResponse {
+    message: String, 
+    answer: String
+}
+
 pub async fn send_message(
     State(service): State<RouterState>,
     WithRejection(Json(body), _): WithRejection<Json<SendMessagePayload>, ApiError>,
-) -> Result<GeneralResponse<String>, ApiError> {
-    let result = service.chat_service.send_message(body.message).await 
-        .map(|_| GeneralResponse::new_without_data(StatusCode::OK, "Send message success"))?;
+) -> Result<GeneralResponse<SendMessageResponse>, ApiError> {
+    let result = service.chat_service.send_message(body.message.clone()).await 
+        .map(|response| {
+            GeneralResponse::new_with_data(
+                StatusCode::OK, 
+                "Send message success",
+                SendMessageResponse {
+                    message: body.message,
+                    answer: response
+                }
+            )
+        })?;
     Ok(result)
 }
 pub async fn show(State(service): State<RouterState>) -> Result<Json<Vec<User>>, ApiError> {
