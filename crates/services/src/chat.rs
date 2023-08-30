@@ -28,7 +28,6 @@ impl ChatService for ChatServiceImpl {
             model_manager.send_message(message)
         });
         let response = t.join().unwrap();
-        println!("{response}");
 
         Ok(response)
     }

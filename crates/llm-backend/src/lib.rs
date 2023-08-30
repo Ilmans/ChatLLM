@@ -30,14 +30,13 @@ pub struct MyLLM {
 
 impl MyLLM {
     pub fn new() -> Self {
-        let tokenizer_source = llm::TokenizerSource::Embedded;
-        let model_architecture = llm::ModelArchitecture::GptNeoX;
-        let model_path = Path::new("/Users/zuramai/Code/LLM/models/RedPajama-INCITE-Base-3B-v1/RedPajama-INCITE-Base-3B-v1-q4_0.bin");
+        let model_architecture = llm::ModelArchitecture::Llama;
+        let model_path = Path::new("/Users/zuramai/Code/LLM/llama.cpp/models/7B/7B.bin");
         let model_parameters = ModelParameters {
             prefer_mmap: true,
             context_size: 2048,
             lora_adapters: None,
-            use_gpu: false,
+            use_gpu: true,
             gpu_layers: None,
             rope_overrides: None,
             n_gqa: None,
@@ -46,28 +45,33 @@ impl MyLLM {
         let model = llm::load_dynamic(
             Some(model_architecture), 
             &model_path, 
-            llm::TokenizerSource::HuggingFaceTokenizerFile(PathBuf::from("/Users/zuramai/Code/LLM/models/RedPajama-INCITE-Base-3B-v1/tokenizer.json")),
+            llm::TokenizerSource::Embedded,
             model_parameters, 
             llm::load_progress_callback_stdout
-        ).unwrap();
+        ).unwrap_or_else(|err| {
+            panic!("Failed to load {model_architecture} model from {model_path:?}: {err}")
+        });
 
         let mut session = model.start_session(Default::default());
-        let persona = "A chat between a teacher and a student";
-        let character_name = "### Teacher";
-        let user_name = "### Student";
-        let history = format!("{user_name}: You are my english instructor. \
-            You are very expert in English language and have wide vocabularies. You are very good at explaining something. \
-            You will always give a alternatives to write a sentence in a different ways. \
-            You can always fix my grammar and give vocabularies alternatives.");
+        // let persona = "A chat between a teacher and a student";
+        // let character_name = "### Teacher";
+        // let user_name = "### Student";
+        // let history = format!("{user_name}: You are my english instructor. \
+        //     You are very expert in English language and have wide vocabularies. You are very good at explaining something. \
+        //     You will always give a alternatives to write a sentence in a different ways. \
+        //     You can always fix my grammar and give vocabularies alternatives.");
+        let prompt = "### User: You are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe.  Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content. Please ensure that your responses are socially unbiased and positive in nature.\n
+If a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you don't know the answer to a question, please don't share false information.
+### Assistant:
+";
 
         session.feed_prompt(
                 model.as_ref(), 
-                format!("{persona}\n{history}").as_str(), 
+                prompt, 
                 &mut Default::default(), 
             llm::feed_prompt_callback(|resp| match resp {
                 llm::InferenceResponse::PromptToken(t) | llm::InferenceResponse::InferredToken(t) => {
                     print_token(t);
-
                     Ok::<llm::InferenceFeedback, Infallible>(llm::InferenceFeedback::Continue)
                 }
                 _ => Ok(llm::InferenceFeedback::Continue)
@@ -83,18 +87,19 @@ impl MyLLM {
 
 
     pub fn send_message(&mut self, msg: String) -> String {
-        let character_name = "### Teacher";
-        let user_name = "### Student";
+        let character_name = "### Assistant";
+        let user_name = "### User";
         println!("{user_name}: {msg}");
         let mut response = String::from("");
+        print!("{character_name}: ");
         let stats = self.session
             .infer::<Infallible>(self.model.as_ref(),
                 &mut rand::thread_rng(),
                 &llm::InferenceRequest {
-                    maximum_token_count: Some(20),
+                    maximum_token_count: Some(100),
                     play_back_previous_tokens: false, 
                     parameters: &self.inference_parameters,
-                    prompt: format!("{user_name}: {msg}\n{character_name}:").as_str().into()
+                    prompt: format!("{user_name}: {msg}\n{character_name}: ").as_str().into()
                 }, 
                 &mut Default::default(), 
                 conversation_inference_callback(&format!("{character_name}:"), |token| {
