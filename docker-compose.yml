@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  pg:
+    container_name: pg
+    image: postgres
+    restart: always
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+    ports:
+      - 5432:5432
+  frontend: 
+    container_name: llm-frontend
+    build: ./rust-llm-frontend
+    volumes:
+      - ./rust-llm-frontend:/app
+    environment:
+      NUXT_HOST: 0.0.0.0
+    ports:
+      - 3000:3000
+
+volumes:
+  db-data:
