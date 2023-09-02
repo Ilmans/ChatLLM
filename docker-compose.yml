@@ -16,7 +16,8 @@ services:
     container_name: llm-frontend
     build: ./rust-llm-frontend
     volumes:
-      - ./rust-llm-frontend:/app
+      - ./rust-llm-frontend:/frontend
+      - /frontend/node_modules
     environment:
       NUXT_HOST: 0.0.0.0
     ports:
