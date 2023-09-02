@@ -1,0 +1,6 @@
+[submodule "rust-llm-frontend"]
+	path = rust-llm-frontend
+	url = ./rust-llm-frontend
+[submodule "rust-llm-test"]
+	path = rust-llm-test
+	url = ./rust-llm-test
