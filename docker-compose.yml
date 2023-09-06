@@ -12,17 +12,16 @@ services:
       POSTGRES_USER: postgres
     ports:
       - 5432:5432
-  frontend: 
+  app:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     container_name: llm-frontend
-    build: ./rust-llm-frontend
-    volumes:
-      - ./rust-llm-frontend:/frontend
-    command: /frontend/entrypoint.sh
-    environment:
-      NUXT_HOST: 0.0.0.0
     ports:
-      - 3000:3000
-      - 24678:24678
+      - '3000:3000'
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
 
 volumes:
   db-data:
