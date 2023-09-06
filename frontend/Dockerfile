@@ -4,8 +4,8 @@ WORKDIR /app
 
 COPY package.json ./
 
-RUN npm install -g npm@latest
-RUN npm install
+RUN npm install -g pnpm 
+RUN pnpm install
 
 COPY . .
 
