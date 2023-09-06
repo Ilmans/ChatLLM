@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.9'
 
 services:
   pg:
@@ -17,11 +17,12 @@ services:
     build: ./rust-llm-frontend
     volumes:
       - ./rust-llm-frontend:/frontend
-      - /frontend/node_modules
+    command: /frontend/entrypoint.sh
     environment:
       NUXT_HOST: 0.0.0.0
     ports:
       - 3000:3000
+      - 24678:24678
 
 volumes:
   db-data:
