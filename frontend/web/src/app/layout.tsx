@@ -1,8 +1,9 @@
+import LayoutMain from '@/components/layouts/LayoutMain'
 import './globals.css'
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Manrope } from 'next/font/google'
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Manrope({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -18,7 +19,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <div id="app">
-        {children}
+          <LayoutMain>
+            {children}
+          </LayoutMain>
         </div>
       </body>
     </html>

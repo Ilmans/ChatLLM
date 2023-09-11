@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.sidebar {
+    width: 300px;
+}
+.header-menu__link {
+    @apply text-gray-500;
+}
+.header-menu__link.active {
+    font-weight: 500;
+    color: black;
+}
