@@ -17,6 +17,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: llm-frontend
+    command: pnpm run dev & pnpm run llm:dev
     ports:
       - '3000:3000'
     volumes:
