@@ -1,11 +1,10 @@
 import { AppProps } from 'next/app';
 import Head from 'next/head';
 import { MantineProvider } from '@mantine/core';
-import LayoutMain from '@/components/layouts/LayoutMain';
+import LayoutMain from '@/layouts/LayoutMain';
 
 export default function App(props: AppProps) {
   const { Component, pageProps } = props;
-  console.log('test')
 
   return (
     <>
@@ -14,16 +13,6 @@ export default function App(props: AppProps) {
         <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
       </Head>
 
-      <MantineProvider
-        withGlobalStyles
-        withNormalizeCSS
-        theme={{
-          /** Put your mantine theme override here */
-          colorScheme: 'light',
-        }}
-      >
-          <Component {...pageProps} />
-      </MantineProvider>
     </>
   );
 }

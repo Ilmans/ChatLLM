@@ -1,7 +1,10 @@
-import LayoutMain from '@/components/layouts/LayoutMain'
+
 import './globals.css'
 import type { Metadata } from 'next'
 import { Manrope } from 'next/font/google'
+import { MantineProvider } from '@mantine/core'
+import LayoutMain from '@/layouts/LayoutMain'
+import LayoutHome from '@/layouts/LayoutHome'
 
 const inter = Manrope({ subsets: ['latin'] })
 
@@ -19,9 +22,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <div id="app">
-          <LayoutMain>
-            {children}
-          </LayoutMain>
+          <LayoutHome>
+          {children}
+          </LayoutHome>
         </div>
       </body>
     </html>

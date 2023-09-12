@@ -1,16 +1,14 @@
 "use client"
 
-import Image from 'next/image'
-import Link from 'next/link'
 import { useEffect } from 'react';
 import { ChatModule, InitProgressReport } from "@mlc-ai/web-llm";
-import { usePathname } from 'next/navigation'
-import Card from '@/components/Card';
-import { Box, NavLink, Navbar } from '@mantine/core';
-import Logo from '@/components/Logo';
-import LayoutMain from '@/components/layouts/LayoutMain';
+import Homepage from "@/app/(home)/page"
 
-export default function Home() {
+export default function Home({
+  children,
+}: {
+  children: React.ReactNode
+}) {
 
   function setLabel(id: string, text: string) {
     const label = document.getElementById(id);
@@ -64,19 +62,6 @@ export default function Home() {
 
 
   return (
-    <main className='py-5'>
-      <div className="container mx-auto">
-        {/* <Card title='Chat App'>
-          <label id="init-label"> </label>
-
-          <h3>Prompt</h3>
-          <label id="prompt-label"> </label>
-
-          <h3>Response</h3>
-          <label id="generate-label"> </label>
-          <label id="stats-label"> </label>
-        </Card> */}
-      </div>
-    </main>
+    <Homepage/>
   )
 }
