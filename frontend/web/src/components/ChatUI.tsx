@@ -25,6 +25,7 @@ export default function ChatUI() {
             message, role
         }
         setChatMessages([...chatMessages, newMessage])
+
     }
 
     

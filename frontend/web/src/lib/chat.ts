@@ -1,3 +1,5 @@
+import { ChatModule } from "@mlc-ai/web-llm";
+
 export default function chat() {
     const chat = new ChatModule();
 
