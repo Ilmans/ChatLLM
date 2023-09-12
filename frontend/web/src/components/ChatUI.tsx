@@ -1,6 +1,7 @@
 import { Button, Divider, Group, ScrollArea, Table, Textarea } from "@mantine/core"
 import { useState } from "react"
 import { useForm } from '@mantine/form'
+import { useChatContext } from "../../hooks/useChat"
 
 enum Role {
     USER,
@@ -14,18 +15,33 @@ interface ChatMessage {
 
 export default function ChatUI() {
     const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
+    const chat = useChatContext()
 
     const roleName = {
         [Role.BOT]: 'Bot',
         [Role.USER]: 'User',
     }
 
-    const addMessage = (role: Role, message: string) => {
+    const addMessage = async (role: Role, message: string) => {
         const newMessage = {
             message, role
         }
-        setChatMessages([...chatMessages, newMessage])
+        const newBotMessage = {
+            message: "",
+            role: Role.BOT
+        }
+        let newMessages = [...chatMessages, newMessage, newBotMessage]
+        setChatMessages(newMessages)
 
+        console.log(message)
+        const response = await chat.sendMessage(message, (step, msg) => {
+            newMessages[newMessages.length-1].message = msg
+            console.log(step, msg, newMessages)
+            setChatMessages(newMessages)
+        })
+        newMessages[newMessages.length-1].message = response
+        setChatMessages(newMessages)
+        console.log('response:', response)
     }
 
     
@@ -48,7 +64,7 @@ export default function ChatUI() {
                 <Table>
                     <thead>
                         {chatMessages.map((msg) => (
-                            <tr className="align-top py-3">
+                            <tr className="align-top py-3" key={msg.message}>
                                 <td className="w-1/6 py-3">{roleName[msg.role]}:</td>
                                 <td className="w-4/5 py-3">{msg.message}</td>
                             </tr>

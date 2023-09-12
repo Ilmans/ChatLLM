@@ -1,10 +1,12 @@
 import { createContext, useContext, useState } from "react"
 import { ChatModule, InitProgressCallback, InitProgressReport, ModelRecord } from "@mlc-ai/web-llm";
+import { GenerateProgressCallback } from "@mlc-ai/web-llm/lib/types";
 
 interface ChatContextType {
   chat: ChatModule | null 
   loadChat: (model_id: string, onModelLoadingCb?: InitProgressCallback) => Promise<void>
-  availableModels: ModelRecord[]
+  availableModels: ModelRecord[],
+  sendMessage: (message: string, cb: GenerateProgressCallback) => Promise<string>
 }
 
 const ChatContext = createContext<ChatContextType>({} as ChatContextType)
@@ -37,10 +39,15 @@ export function ChatProvider({children}: {children: any}) {
       const generateProgressCallback = (_step: number, message: string) => {
           console.log('generate label', message)
       };
+      setChat(newChat)
+    }
+
+    const sendMessage = async (message: string, cb: GenerateProgressCallback) => {
+      return await chat?.generate(message, cb)!
     }
 
     return (
-        <ChatContext.Provider value={{chat, loadChat, availableModels}}>
+        <ChatContext.Provider value={{chat, loadChat, availableModels, sendMessage}}>
             {children}
         </ChatContext.Provider>
     )
