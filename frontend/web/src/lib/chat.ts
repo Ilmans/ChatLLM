@@ -1,24 +1,4 @@
-"use client"
-
-import { useEffect } from 'react';
-import { ChatModule, InitProgressReport } from "@mlc-ai/web-llm";
-import Homepage from "@/app/(home)/page"
-
-export default function Home({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-
-  function setLabel(id: string, text: string) {
-    const label = document.getElementById(id);
-    if (label == null) {
-      throw Error("Cannot find label " + id);
-    }
-    label.innerText = text;
-  }
-
-  async function main() {
+export default function chat() {
     const chat = new ChatModule();
 
     chat.setInitProgressCallback((report: InitProgressReport) => {
@@ -57,11 +37,3 @@ export default function Home({
 
     // console.log(await chat.runtimeStatsText());
   }
-
-  useEffect(() => {main()}, []);
-
-
-  return (
-    <Homepage/>
-  )
-}

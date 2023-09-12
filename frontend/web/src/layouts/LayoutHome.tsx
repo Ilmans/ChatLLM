@@ -1,4 +1,5 @@
 "use client"
+import theme from "@/app/theme"
 import { MantineProvider } from "@mantine/core"
 
 export default function LayoutHome({
@@ -11,10 +12,7 @@ export default function LayoutHome({
       <MantineProvider
         withGlobalStyles
         withNormalizeCSS
-        theme={{
-          /** Put your mantine theme override here */
-          colorScheme: 'light',
-        }}
+        theme={theme}
       >
         {children}
       </MantineProvider>

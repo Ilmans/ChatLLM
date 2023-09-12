@@ -29,10 +29,7 @@ export default function LayoutMain({children}: Props) {
     <MantineProvider
       withGlobalStyles
       withNormalizeCSS
-      theme={{
-        /** Put your mantine theme override here */
-        colorScheme: 'light',
-      }}
+      theme={theme}
     >
       <AppShell
         styles={{
@@ -42,8 +39,8 @@ export default function LayoutMain({children}: Props) {
         }}
         navbarOffsetBreakpoint="sm"
         asideOffsetBreakpoint="sm"
+        
         navbar={<AppNavbar/>}
-        header={<AppHeader/>}
       >
         <NavigationProgress/>
         {children}

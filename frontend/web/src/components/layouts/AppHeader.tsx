@@ -21,7 +21,7 @@ export default function AppHeader() {
               />
             </MediaQuery>
 
-            <Text>RustLLM</Text>
+            <Link href={'/'}>RustLLM</Link>
           </div>
         </Header>
     )
