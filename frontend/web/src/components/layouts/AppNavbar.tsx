@@ -1,7 +1,7 @@
 import theme from "@/app/theme";
-import { Anchor, Box, Image, NavLink, Navbar, Text, rem } from "@mantine/core";
+import { Anchor, Box, Center, CloseButton, Image, MediaQuery, NavLink, Navbar, Text, rem } from "@mantine/core";
 import Link from "next/link";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { BsChat, BsHouse, BsHouseDoor, BsImage } from "react-icons/bs";
 
 
@@ -10,9 +10,10 @@ const data = [
     {icon: BsChat, label: 'Chatbot AI', link: '/chat'},
     {icon: BsImage, label: 'Image Generative AI', link: '/home'},
 ]
-
-export default function AppNavbar() {
-    const [opened, setOpened] = useState(false);
+interface Props {
+    navbarActive: [boolean, Dispatch<SetStateAction<boolean>>]
+  }
+export default function AppNavbar({ navbarActive }: Props) {
     const [activeMenu, setActiveMenu] = useState(0)
     
     const items = data.map((item, index) => (
@@ -33,10 +34,15 @@ export default function AppNavbar() {
 
     return (
         <>
-            <Navbar hiddenBreakpoint="sm" hidden={!opened} width={{ sm: 200, lg: 300 }} withBorder={false}> 
+            <Navbar hiddenBreakpoint="sm" hidden={!navbarActive[0]} width={{ sm: 200, lg: 300 }} withBorder={false}> 
                 <Navbar.Section my={15} px={5}>
-                    <Box p={16}>
+                    <Box p={16} className="flex justify-between items-center">
                         <Image src={'/logo.png'} height={25} width={'auto'}></Image>
+                        {navbarActive[0] && (
+                            <MediaQuery largerThan="sm" styles={{ display: 'none' }}>
+                                <CloseButton title="Close sidebar" size="md" iconSize={20} onClick={() => navbarActive[1](() => !navbarActive) }/>
+                            </MediaQuery>
+                        )}
                     </Box>
                 </Navbar.Section>
                 <Navbar.Section px={16}>

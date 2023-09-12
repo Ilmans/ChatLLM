@@ -24,6 +24,8 @@ interface Props {
 
 export default function LayoutMain({children}: Props) {
   const theme = useMantineTheme();
+  const navbarActive = useState(false)
+
   return (
 
     <MantineProvider
@@ -39,8 +41,9 @@ export default function LayoutMain({children}: Props) {
         }}
         navbarOffsetBreakpoint="sm"
         asideOffsetBreakpoint="sm"
-        
-        navbar={<AppNavbar/>}
+        header={<AppHeader navbarActive={navbarActive}/>}
+        navbar={<AppNavbar navbarActive={navbarActive}/>}
+        layout='alt'
       >
         <NavigationProgress/>
         {children}
