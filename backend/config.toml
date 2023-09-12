@@ -1,0 +1,8 @@
+# HMAC key for JWT authentication
+jwt_secret = "test"
+
+[app]
+host = "127.0.0.1:8080"
+
+[database]
+url = "postgres://zuramai:zuramai@127.0.0.1:5432/rust_llm_test"
