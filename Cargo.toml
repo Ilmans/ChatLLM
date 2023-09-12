@@ -1,0 +1,63 @@
+[package]
+name = "rust-llm-test"
+version = "0.1.0"
+edition = "2021"
+
+[workspace]
+members = ["crates/*"]
+resolver = "2"
+
+[workspace.dependencies]
+llm-backend = { path = "crates/llm-backend" }
+config = { path = "crates/config" }
+router = { path = "crates/router" }
+repository = { path = "crates/repository" }
+models = { path = "crates/models" }
+errors = { path = "crates/errors" }
+lib = { path = "crates/lib" }
+services = { path = "crates/services" }
+
+axum-extra = { version = "0.7.7" }
+bytesize = "1.2.0"
+chrono = { version = "0.4.26", features = ["serde"] }
+clap = { version = "4.3.19", features = ["derive"] }
+color-eyre = "0.6.2"
+eyre = "0.6.8"
+llm = { git = "https://github.com/rustformers/llm" , branch = "main", features = ["metal"] }
+log = "0.4.19"
+rand = "0.8.5"
+rustyline = "12.0.0"
+serde = { version = "1.0.183", features = ["derive"] }
+serde_json = "1.0.104"
+spinoff = "0.8.0"
+thiserror = "1.0.44"
+tokio = { version = "1.29.1", features = ["full"] }
+tracing = "0.1.37"
+tracing-subscriber = "0.3.17"
+sqlx = { version = "0.7.1", features = ["runtime-async-std-native-tls", "postgres", "chrono", "uuid"] }
+async-trait = "0.1.72"
+axum = { version = "0.6.20", features = ["macros", "headers"] }
+figment = { version = "0.10.10", features = ["toml"] }
+tower = "0.4.13"
+tower-http = { version = "0.4.3", features = ["cors", "trace"] }
+jsonwebtoken = "8.3.0"
+
+[dependencies] 
+llm-backend.workspace = true 
+lib.workspace = true 
+config.workspace = true 
+services.workspace = true 
+router.workspace = true 
+errors.workspace = true 
+repository.workspace = true 
+color-eyre.workspace = true
+eyre.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+sqlx.workspace = true
+axum = { workspace = true, features = ["headers"] }
+figment = { workspace = true, features = ["toml"] }
+clap = { workspace = true, features = ["derive"] }
+chrono = { workspace = true, features = ["serde"] }
+dotenv = "0.15.0"
