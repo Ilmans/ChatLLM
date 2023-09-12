@@ -34,7 +34,7 @@ export default function AppNavbar({ navbarActive }: Props) {
 
     return (
         <>
-            <Navbar hiddenBreakpoint="sm" hidden={!navbarActive[0]} width={{ sm: 200, lg: 300 }} withBorder={false}> 
+            <Navbar hiddenBreakpoint="sm" hidden={!navbarActive[0]} width={{ sm: 200, lg: 300 }} > 
                 <Navbar.Section my={15} px={5}>
                     <Box p={16} className="flex justify-between items-center">
                         <Link href={'/'}>

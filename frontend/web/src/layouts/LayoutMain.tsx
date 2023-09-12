@@ -12,6 +12,7 @@ import {
   useMantineTheme,
   NavLink,
   MantineProvider,
+  Box,
 } from '@mantine/core';
 import { BsHouse, BsHouseDoor } from 'react-icons/bs'
 import { NavigationProgress, nprogress } from '@mantine/nprogress';
@@ -53,7 +54,9 @@ export default function LayoutMain({children}: Props) {
         navbar={<AppNavbar navbarActive={navbarActive}/>}
         layout='alt'
       >
-        {children}
+        <Box p={5}>
+          {children}
+        </Box>
       </AppShell>
     </MantineProvider>
   );

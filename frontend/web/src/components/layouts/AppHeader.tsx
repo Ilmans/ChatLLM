@@ -1,4 +1,4 @@
-import { Burger, Header, MediaQuery, Text, useMantineTheme } from "@mantine/core"
+import { Burger, Flex, Header, MediaQuery, Text, useMantineTheme } from "@mantine/core"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Dispatch, SetStateAction, useState } from "react";
@@ -12,8 +12,8 @@ export default function AppHeader(props: Props) {
     const theme = useMantineTheme();
   
     return (
-        <Header height={{ base: 50, md: 70 }} p="md">
-          <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+        <Header height={{ base: 50, md: 60 }} p="sm">
+          <Flex align={'center'} h={'100%'}>
             <MediaQuery largerThan="sm" styles={{ display: 'none' }}>
               <Burger
                 opened={props.navbarActive[0]}
@@ -24,7 +24,7 @@ export default function AppHeader(props: Props) {
               />
             </MediaQuery>
 
-          </div>
+          </Flex>
         </Header>
     )
 }
