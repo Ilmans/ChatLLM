@@ -5,6 +5,7 @@ import { Manrope } from 'next/font/google'
 import { MantineProvider } from '@mantine/core'
 import LayoutMain from '@/layouts/LayoutMain'
 import LayoutHome from '@/layouts/LayoutHome'
+import { RouterTransition } from '@/components/RouterTransition'
 
 const inter = Manrope({ subsets: ['latin'] })
 

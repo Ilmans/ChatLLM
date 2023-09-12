@@ -14,9 +14,11 @@ import {
   MantineProvider,
 } from '@mantine/core';
 import { BsHouse, BsHouseDoor } from 'react-icons/bs'
-import { NavigationProgress } from '@mantine/nprogress';
+import { NavigationProgress, nprogress } from '@mantine/nprogress';
 import AppNavbar from '@/components/layouts/AppNavbar';
 import AppHeader from '@/components/layouts/AppHeader';
+import { AppProgressBar as ProgressBar } from 'next-nprogress-bar';
+import { RouterTransition } from '@/components/RouterTransition';
 
 interface Props {
   children: ReactNode
@@ -25,7 +27,6 @@ interface Props {
 export default function LayoutMain({children}: Props) {
   const theme = useMantineTheme();
   const navbarActive = useState(false)
-
   return (
 
     <MantineProvider
@@ -33,6 +34,13 @@ export default function LayoutMain({children}: Props) {
       withNormalizeCSS
       theme={theme}
     >
+
+      <ProgressBar
+        height="2px"
+        color="#228be6"
+        options={{ showSpinner: false }}
+        shallowRouting
+      />
       <AppShell
         styles={{
           main: {
@@ -45,7 +53,6 @@ export default function LayoutMain({children}: Props) {
         navbar={<AppNavbar navbarActive={navbarActive}/>}
         layout='alt'
       >
-        <NavigationProgress/>
         {children}
       </AppShell>
     </MantineProvider>

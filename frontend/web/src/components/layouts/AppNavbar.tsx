@@ -37,7 +37,9 @@ export default function AppNavbar({ navbarActive }: Props) {
             <Navbar hiddenBreakpoint="sm" hidden={!navbarActive[0]} width={{ sm: 200, lg: 300 }} withBorder={false}> 
                 <Navbar.Section my={15} px={5}>
                     <Box p={16} className="flex justify-between items-center">
-                        <Image src={'/logo.png'} height={25} width={'auto'}></Image>
+                        <Link href={'/'}>
+                            <Image src={'/logo.png'} height={25} width={'auto'}></Image>
+                        </Link>
                         {navbarActive[0] && (
                             <MediaQuery largerThan="sm" styles={{ display: 'none' }}>
                                 <CloseButton title="Close sidebar" size="md" iconSize={20} onClick={() => navbarActive[1](() => !navbarActive) }/>

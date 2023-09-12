@@ -24,7 +24,6 @@ export default function AppHeader(props: Props) {
               />
             </MediaQuery>
 
-            <Link href={'/'}>RustLLM</Link>
           </div>
         </Header>
     )
