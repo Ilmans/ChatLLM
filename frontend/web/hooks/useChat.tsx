@@ -12,45 +12,47 @@ interface ChatContextType {
 const ChatContext = createContext<ChatContextType>({} as ChatContextType)
 
 export function ChatProvider({children}: {children: any}) {
-    const [chat, setChat] = useState<ChatModule|null>(null)
-    const availableModels = [
-      {
-        local_id: "Nous-Hermes-Llama2-13b",
-        model_url: "http://localhost:3001/models/Nous-Hermes-Llama2-13b-q4f16_1/params/",
-        required_features: ['shader-f16']
-      }
-    ]
+  const baseUrl = window.location.protocol + '//' + window.location.host
 
-    const loadChat = async (model_id: string, onModelLoadingCb?: (report: InitProgressReport) => void) => {
-      const newChat = new ChatModule()
-      
-      if(onModelLoadingCb)
-        newChat.setInitProgressCallback(onModelLoadingCb);
+  const [chat, setChat] = useState<ChatModule|null>(null)
+  const availableModels = [
+    {
+      local_id: "Nous-Hermes-Llama2-13b",
+      model_url: baseUrl + "/models/Nous-Hermes-Llama2-13b-q4f16_1/params/",
+      required_features: ['shader-f16']
+    }
+  ]
+
+  const loadChat = async (model_id: string, onModelLoadingCb?: (report: InitProgressReport) => void) => {
+    const newChat = new ChatModule()
     
-      console.log('load chat', onModelLoadingCb)
-      await newChat.reload(model_id, { conv_template: 'llama-2' }, {
-        model_list: availableModels,
-        model_lib_map: {
-          'Nous-Hermes-Llama2-13b-q4f16_1': 'http://localhost:3001/models/Nous-Hermes-Llama2-13b-q4f16_1/Nous-Hermes-Llama2-13b-q4f16_1-webgpu.wasm',
-        }
-      })
-      console.log('loaded')
+    if(onModelLoadingCb)
+      newChat.setInitProgressCallback(onModelLoadingCb);
   
-      const generateProgressCallback = (_step: number, message: string) => {
-          console.log('generate label', message)
-      };
-      setChat(newChat)
-    }
+    console.log('load chat', onModelLoadingCb)
+    await newChat.reload(model_id, { conv_template: 'llama-2' }, {
+      model_list: availableModels,
+      model_lib_map: {
+        'Nous-Hermes-Llama2-13b-q4f16_1': baseUrl + '/models/Nous-Hermes-Llama2-13b-q4f16_1/Nous-Hermes-Llama2-13b-q4f16_1-webgpu.wasm',
+      }
+    })
+    console.log('loaded')
 
-    const sendMessage = async (message: string, cb: GenerateProgressCallback) => {
-      return await chat?.generate(message, cb)!
-    }
+    const generateProgressCallback = (_step: number, message: string) => {
+        console.log('generate label', message)
+    };
+    setChat(newChat)
+  }
 
-    return (
-        <ChatContext.Provider value={{chat, loadChat, availableModels, sendMessage}}>
-            {children}
-        </ChatContext.Provider>
-    )
+  const sendMessage = async (message: string, cb: GenerateProgressCallback) => {
+    return await chat?.generate(message, cb)!
+  }
+
+  return (
+      <ChatContext.Provider value={{chat, loadChat, availableModels, sendMessage}}>
+          {children}
+      </ChatContext.Provider>
+  )
 }
 
 export const useChatContext = () => useContext(ChatContext)

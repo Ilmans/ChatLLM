@@ -32,12 +32,9 @@ export default function ChatUI() {
         }
         let newMessages = [...chatMessages, newMessage, newBotMessage]
         setChatMessages(newMessages)
-
         console.log(message)
         const response = await chat.sendMessage(message, (step, msg) => {
-            newMessages[newMessages.length-1].message = msg
             console.log(step, msg, newMessages)
-            setChatMessages(newMessages)
         })
         newMessages[newMessages.length-1].message = response
         setChatMessages(newMessages)
