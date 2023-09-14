@@ -3,16 +3,15 @@
 layout: home
 
 hero:
-  name: "TolongAI Docs"
-  text: "TolongAI is a software that can run AI models locally"
-  tagline: My great project tagline
+  name: "TolongAI"
+  tagline: A software that can run AI models locally
   actions:
     - theme: brand
       text: Chat App Demo
       link: /demo
     - theme: alt
       text: Documentation
-      link: /introduction
+      link: /what-is-tolong-ai
 
 features:
   - title: Use local resources

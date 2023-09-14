@@ -23,14 +23,14 @@ export default defineConfig({
       {
         text: 'Usage',
         items: [
-          { text: 'Client-server Method', link: '/adding-new-modelss' },
+          { text: 'Client-server Method', link: '/client-server-method' },
           { text: 'Client-only Method (WebAssembly)', link: '/client-only-method' },
         ]
       },
       {
         text: 'Models',
         items: [
-          { text: 'Adding New Models', link: '/adding-new-modelss' },
+          { text: 'Adding New Models', link: '/adding-new-models' },
           { text: 'Compiling Models', link: '/compiling-models' },
           { text: 'Compile to WebAssembly', link: '/compile-to-webassembly' },
         ]
