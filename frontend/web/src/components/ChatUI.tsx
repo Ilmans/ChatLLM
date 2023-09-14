@@ -1,4 +1,4 @@
-import { Button, Divider, Group, ScrollArea, Table, Textarea } from "@mantine/core"
+import { Button, Divider, Group, Loader, ScrollArea, Table, Textarea } from "@mantine/core"
 import { useState } from "react"
 import { useForm } from '@mantine/form'
 import { useChatContext } from "../../hooks/useChat"
@@ -33,12 +33,23 @@ export default function ChatUI() {
         let newMessages = [...chatMessages, newMessage, newBotMessage]
         setChatMessages(newMessages)
         console.log(message)
-        const response = await chat.sendMessage(message, (step, msg) => {
+
+        const messageFormatted = `### Instruction:
+        ${message}
+        
+        ### Response:
+        
+        `
+
+        const response = await chat.sendMessage(messageFormatted, (step, msg) => {
             console.log(step, msg, newMessages)
+            newMessages[newMessages.length-1].message = msg
+            setChatMessages([...newMessages])
         })
-        newMessages[newMessages.length-1].message = response
-        setChatMessages(newMessages)
+        setChatMessages([...newMessages])
         console.log('response:', response)
+
+        console.log(await chat.runtimeStatsText());
     }
 
     
@@ -60,10 +71,14 @@ export default function ChatUI() {
             <ScrollArea h={300}>
                 <Table>
                     <thead>
-                        {chatMessages.map((msg) => (
-                            <tr className="align-top py-3" key={msg.message}>
+                        {chatMessages.map((msg,i) => (
+                            <tr className="align-top py-3" key={i}>
                                 <td className="w-1/6 py-3">{roleName[msg.role]}:</td>
-                                <td className="w-4/5 py-3">{msg.message}</td>
+                                <td className="w-4/5 py-3">
+                                    {(msg.role == Role.BOT && msg.message == "") ? (
+                                        <Loader size="sm" variant="dots" />
+                                    ) : msg.message }
+                                </td>
                             </tr>
                         ))}
                     </thead>

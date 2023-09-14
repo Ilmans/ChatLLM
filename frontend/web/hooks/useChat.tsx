@@ -7,6 +7,7 @@ interface ChatContextType {
   loadChat: (model_id: string, onModelLoadingCb?: InitProgressCallback) => Promise<void>
   availableModels: ModelRecord[],
   sendMessage: (message: string, cb: GenerateProgressCallback) => Promise<string>
+  runtimeStatsText: () => Promise<string|undefined>
 }
 
 const ChatContext = createContext<ChatContextType>({} as ChatContextType)
@@ -38,9 +39,6 @@ export function ChatProvider({children}: {children: any}) {
     })
     console.log('loaded')
 
-    const generateProgressCallback = (_step: number, message: string) => {
-        console.log('generate label', message)
-    };
     setChat(newChat)
   }
 
@@ -48,8 +46,12 @@ export function ChatProvider({children}: {children: any}) {
     return await chat?.generate(message, cb)!
   }
 
+  const runtimeStatsText = async () => {
+    return await chat?.runtimeStatsText()
+  }
+
   return (
-      <ChatContext.Provider value={{chat, loadChat, availableModels, sendMessage}}>
+      <ChatContext.Provider value={{chat, loadChat, availableModels, sendMessage, runtimeStatsText}}>
           {children}
       </ChatContext.Provider>
   )
