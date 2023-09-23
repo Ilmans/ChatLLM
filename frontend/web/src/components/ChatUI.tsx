@@ -22,6 +22,12 @@ export default function ChatUI() {
         [Role.USER]: 'User',
     }
 
+    const form = useForm({
+        initialValues: {
+            message: ''
+        }
+    })
+
     const addMessage = async (role: Role, message: string) => {
         const newMessage = {
             message, role
@@ -32,32 +38,23 @@ export default function ChatUI() {
         }
         let newMessages = [...chatMessages, newMessage, newBotMessage]
         setChatMessages(newMessages)
-        console.log(message)
 
-        const messageFormatted = `### Instruction:
-        ${message}
-        
-        ### Response:
-        
-        `
-
-        const response = await chat.sendMessage(messageFormatted, (step, msg) => {
+        const response = await chat.sendMessage(message, (step, msg) => {
             console.log(step, msg, newMessages)
             newMessages[newMessages.length-1].message = msg
             setChatMessages([...newMessages])
         })
+
+
         setChatMessages([...newMessages])
         console.log('response:', response)
 
         console.log(await chat.runtimeStatsText());
+
+        form.reset()
     }
 
     
-    const form = useForm({
-        initialValues: {
-            message: ''
-        }
-    })
     
     const submitMessage = () => {
         return form.onSubmit((values) => {

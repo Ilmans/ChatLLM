@@ -2,7 +2,7 @@
 
 import ChatUI from "@/components/ChatUI";
 import Page from "@/components/layouts/Page";
-import { Card, Group, LoadingOverlay, Select, Text, Title } from "@mantine/core";
+import { Button, Card, Group, LoadingOverlay, Select, Text, Title } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { useChatContext } from "../../../../hooks/useChat";
 import LoadingOverlayText from "@/components/LoadingOverlayText";
@@ -13,17 +13,19 @@ export default function Dashboard() {
     const [chatLoaded, setChatLoaded] = useState(false)
     const [loadingText, setLoadingText] = useState('')
 
-    useEffect(() => {
-        const modelLoadingCallback = (report: InitProgressReport) => {
-            console.log('model loading..')
-            setLoadingText(`Loading model.. (${Math.floor(report.progress * 100)}%)`)
-        }
-
-        chat.loadChat('Nous-Hermes-Llama2-13b', modelLoadingCallback)
+    const [model, setModel] = useState('')
+    const modelLoadingCallback = (report: InitProgressReport) => {
+        console.log('model loading..')
+        setLoadingText(`Loading model.. (${Math.floor(report.progress * 100)}%)`)
+    }
+    
+    const load = () => {
+        chat.loadChat(model, modelLoadingCallback)
             .then(() => {
                 setChatLoaded(true)
             })
-    }, [])
+    }
+
     return (
         <div className="page">
             <Page
@@ -34,10 +36,14 @@ export default function Dashboard() {
                     <Card.Section withBorder inheritPadding py={"xs"}>
                         <Group position="apart">
                             <Title order={4} weight={600}>Chat</Title>
-                            <Select defaultValue={'Nous-Hermes-Llama2-13b'} data={chat.availableModels.map(m => ({
-                                value: m.local_id,
-                                label: m.local_id
-                            }))}></Select>
+                            <Group>
+                                <Select zIndex={402} 
+                                    value={model}
+                                    onChange={(v) => setModel(v!)}
+                                    placeholder="Choose model"
+                                    data={chat.availableModels.map(m => m.local_id)}/>
+                                <Button onClick={load}>Load</Button>
+                            </Group>
                         </Group>
                     </Card.Section>
                     <Card.Section inheritPadding py={"xs"} pos={"relative"}>

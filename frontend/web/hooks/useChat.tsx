@@ -2,6 +2,7 @@ import { createContext, useContext, useState } from "react"
 import { ChatModule, InitProgressCallback, InitProgressReport, ModelRecord } from "@mlc-ai/web-llm";
 import { GenerateProgressCallback } from "@mlc-ai/web-llm/lib/types";
 
+
 interface ChatContextType {
   chat: ChatModule | null 
   loadChat: (model_id: string, onModelLoadingCb?: InitProgressCallback) => Promise<void>
@@ -15,32 +16,62 @@ const ChatContext = createContext<ChatContextType>({} as ChatContextType)
 export function ChatProvider({children}: {children: any}) {
   const baseUrl = window.location.protocol + '//' + window.location.host
 
-  const [chat, setChat] = useState<ChatModule|null>(null)
+  const [chat, setChat] = useState<ChatModule>(new ChatModule())
   const availableModels = [
     {
-      local_id: "Nous-Hermes-Llama2-13b",
+      local_id: "Nous-Hermes-Llama2-13b-q4f16_1",
       model_url: baseUrl + "/models/Nous-Hermes-Llama2-13b-q4f16_1/params/",
-      required_features: ['shader-f16']
-    }
+      required_features: ['shader-f16'],
+      conv_template: 'llama-2'
+    },
+    {
+      local_id: "RedPajama-INCITE-7B-Chat-q4f16_1",
+      model_url: baseUrl + "/models/RedPajama-INCITE-7B-Chat-q4f16_1/params/",
+      required_features: ['shader-f16'],
+      conv_template: 'redpajama_chat'
+    },
+    {
+      local_id: "RedPajama-INCITE-Chat-3B-v1-q4f16_1",
+      model_url: baseUrl + "/models/RedPajama-INCITE-Chat-3B-v1-q4f16_1/params/",
+      required_features: ['shader-f16'],
+      conv_template: 'redpajama_chat'
+    },
+    {
+      local_id: "Llama-2-7b-chat-hf-q4f16_1",
+      model_url: baseUrl + "/models/Llama-2-7b-chat-hf-q4f16_1/params/",
+      required_features: ['shader-f16'],
+      conv_template: 'llama-2'
+    },
   ]
 
-  const loadChat = async (model_id: string, onModelLoadingCb?: (report: InitProgressReport) => void) => {
-    const newChat = new ChatModule()
-    
-    if(onModelLoadingCb)
-      newChat.setInitProgressCallback(onModelLoadingCb);
-  
-    console.log('load chat', onModelLoadingCb)
-    await newChat.reload(model_id, { conv_template: 'llama-2' }, {
-      model_list: availableModels,
-      model_lib_map: {
-        'Nous-Hermes-Llama2-13b-q4f16_1': baseUrl + '/models/Nous-Hermes-Llama2-13b-q4f16_1/Nous-Hermes-Llama2-13b-q4f16_1-webgpu.wasm',
-      }
-    })
-    console.log('loaded')
+  let modelWasmMap: Record<string, string> = {}
+  availableModels.forEach(model => {
+    modelWasmMap[model.local_id] = baseUrl + `/models/${model.local_id}/${model.local_id}-webgpu.wasm`
+  })
+  console.log(modelWasmMap)
+  // const modelWasmMap = {
+  //   'Nous-Hermes-Llama2-13b-q4f16_1': baseUrl + '/models/Nous-Hermes-Llama2-13b-q4f16_1/Nous-Hermes-Llama2-13b-q4f16_1-webgpu.wasm',
+  //   "RedPajama-INCITE-7B-Chat-q4f16_1": baseUrl + '/models/RedPajama-INCITE-7B-Chat-q4f16_1/RedPajama-INCITE-7B-Chat-q4f16_1-webgpu.wasm'
+  // }
 
-    setChat(newChat)
+  // Load a model 
+  const loadChat = async (model_id: string, onModelLoadingCb?: (report: InitProgressReport) => void) => {
+    chat.unload().then(async () => {
+      if(onModelLoadingCb)
+        chat.setInitProgressCallback(onModelLoadingCb);
+  
+      const currentModel = availableModels.find(m => m.local_id == model_id)
+    
+      console.log('load chat', onModelLoadingCb)
+      await chat.reload(model_id, { conv_template: currentModel?.conv_template }, {
+        model_list: availableModels,
+        model_lib_map: modelWasmMap
+      })
+    })
+
+    // Set currently active model 
   }
+
 
   const sendMessage = async (message: string, cb: GenerateProgressCallback) => {
     return await chat?.generate(message, cb)!
