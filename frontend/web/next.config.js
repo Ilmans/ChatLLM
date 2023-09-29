@@ -5,7 +5,7 @@ const withPWA = require("@ducanh2912/next-pwa").default({
   
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    output: 'export',
+    output: 'standalone',
     distDir: 'dist',
     experimental: {
         appDir: true

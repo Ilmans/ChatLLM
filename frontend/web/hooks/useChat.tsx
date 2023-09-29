@@ -32,6 +32,11 @@ export function ChatProvider({children}: {children: any}) {
       conv_template: 'redpajama_chat'
     },
     {
+      local_id: "RedPajama-INCITE-Chat-3B-v1-q4f32_0",
+      model_url: baseUrl + "/models/RedPajama-INCITE-Chat-3B-v1-q4f32_0/params/",
+      conv_template: 'redpajama_chat'
+    },
+    {
       local_id: "Llama-2-7b-chat-hf-q4f16_1",
       model_url: baseUrl + "/models/Llama-2-7b-chat-hf-q4f16_1/params/",
       required_features: ['shader-f16'],
