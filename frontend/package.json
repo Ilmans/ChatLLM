@@ -2,11 +2,16 @@
   "name": "frontend",
   "version": "1.0.0",
   "description": "",
+  "workspaces": [
+    "packages/*",
+    "web"
+  ],
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "web:dev": "pnpm -C web run dev",
     "web:build": "pnpm -C web run build",
+    "start": "pnpm -C web run start",
     "dev": "pnpm run web:dev",
     "build": "pnpm run web:build",
     "llm:dev": "pnpm run --filter ./packages/web-llm dev",
