@@ -23,6 +23,7 @@ export default function Dashboard() {
         chat.loadChat(model, modelLoadingCallback)
             .then(() => {
                 setChatLoaded(true)
+                console.log("CHAT LOADED")
             })
     }
 
@@ -48,7 +49,7 @@ export default function Dashboard() {
                     </Card.Section>
                     <Card.Section inheritPadding py={"xs"} pos={"relative"}>
                         <LoadingOverlay 
-                            visible={!chatLoaded} 
+                            visible={!chatLoaded && loadingText !== ''} 
                             loader={
                                 <LoadingOverlayText text={loadingText} visible={!chatLoaded}/>
                             }

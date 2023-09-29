@@ -2,11 +2,12 @@ import theme from "@/app/theme";
 import { Anchor, Box, Center, CloseButton, Image, MediaQuery, NavLink, Navbar, Text, rem } from "@mantine/core";
 import Link from "next/link";
 import { Dispatch, SetStateAction, useState } from "react";
-import { BsChat, BsHouse, BsHouseDoor, BsImage } from "react-icons/bs";
+import { BsChat, BsHouse, BsHouseDoor, BsImage, BsPen } from "react-icons/bs";
 
 
 const data = [
     {icon: BsHouseDoor, label: 'Dashboard', link: '/dashboard'},
+    {icon: BsPen, label: 'Customize Models', link: '/customize-models'},
     {icon: BsChat, label: 'Chatbot AI', link: '/chat'},
     {icon: BsImage, label: 'Image Generative AI', link: '/home'},
 ]

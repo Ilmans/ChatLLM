@@ -14,12 +14,9 @@ import {
   MantineProvider,
   Box,
 } from '@mantine/core';
-import { BsHouse, BsHouseDoor } from 'react-icons/bs'
-import { NavigationProgress, nprogress } from '@mantine/nprogress';
 import AppNavbar from '@/components/layouts/AppNavbar';
 import AppHeader from '@/components/layouts/AppHeader';
 import { AppProgressBar as ProgressBar } from 'next-nprogress-bar';
-import { RouterTransition } from '@/components/RouterTransition';
 
 interface Props {
   children: ReactNode

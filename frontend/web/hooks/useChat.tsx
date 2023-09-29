@@ -6,7 +6,8 @@ import { GenerateProgressCallback } from "@mlc-ai/web-llm/lib/types";
 interface ChatContextType {
   chat: ChatModule | null 
   loadChat: (model_id: string, onModelLoadingCb?: InitProgressCallback) => Promise<void>
-  availableModels: ModelRecord[],
+  unloadModel: () => Promise<void>
+  availableModels: ModelRecord[]
   sendMessage: (message: string, cb: GenerateProgressCallback) => Promise<string>
   runtimeStatsText: () => Promise<string|undefined>
 }
@@ -23,12 +24,6 @@ export function ChatProvider({children}: {children: any}) {
       model_url: baseUrl + "/models/Nous-Hermes-Llama2-13b-q4f16_1/params/",
       required_features: ['shader-f16'],
       conv_template: 'llama-2'
-    },
-    {
-      local_id: "RedPajama-INCITE-7B-Chat-q4f16_1",
-      model_url: baseUrl + "/models/RedPajama-INCITE-7B-Chat-q4f16_1/params/",
-      required_features: ['shader-f16'],
-      conv_template: 'redpajama_chat'
     },
     {
       local_id: "RedPajama-INCITE-Chat-3B-v1-q4f16_1",
@@ -48,28 +43,19 @@ export function ChatProvider({children}: {children: any}) {
   availableModels.forEach(model => {
     modelWasmMap[model.local_id] = baseUrl + `/models/${model.local_id}/${model.local_id}-webgpu.wasm`
   })
-  console.log(modelWasmMap)
-  // const modelWasmMap = {
-  //   'Nous-Hermes-Llama2-13b-q4f16_1': baseUrl + '/models/Nous-Hermes-Llama2-13b-q4f16_1/Nous-Hermes-Llama2-13b-q4f16_1-webgpu.wasm',
-  //   "RedPajama-INCITE-7B-Chat-q4f16_1": baseUrl + '/models/RedPajama-INCITE-7B-Chat-q4f16_1/RedPajama-INCITE-7B-Chat-q4f16_1-webgpu.wasm'
-  // }
 
   // Load a model 
   const loadChat = async (model_id: string, onModelLoadingCb?: (report: InitProgressReport) => void) => {
-    chat.unload().then(async () => {
-      if(onModelLoadingCb)
-        chat.setInitProgressCallback(onModelLoadingCb);
-  
-      const currentModel = availableModels.find(m => m.local_id == model_id)
-    
-      console.log('load chat', onModelLoadingCb)
-      await chat.reload(model_id, { conv_template: currentModel?.conv_template }, {
-        model_list: availableModels,
-        model_lib_map: modelWasmMap
-      })
-    })
+    await chat.unload()
+    if(onModelLoadingCb)
+      chat.setInitProgressCallback(onModelLoadingCb);
 
-    // Set currently active model 
+    const currentModel = availableModels.find(m => m.local_id == model_id)
+    console.log('load chat', onModelLoadingCb)
+    await chat.reload(model_id, { conv_template: currentModel?.conv_template, }, {
+      model_list: availableModels,
+      model_lib_map: modelWasmMap,
+    })
   }
 
 
@@ -81,8 +67,12 @@ export function ChatProvider({children}: {children: any}) {
     return await chat?.runtimeStatsText()
   }
 
+  const unloadModel = async () => {
+    return await chat?.unload()
+  }
+
   return (
-      <ChatContext.Provider value={{chat, loadChat, availableModels, sendMessage, runtimeStatsText}}>
+      <ChatContext.Provider value={{chat, unloadModel, loadChat, availableModels, sendMessage, runtimeStatsText}}>
           {children}
       </ChatContext.Provider>
   )
