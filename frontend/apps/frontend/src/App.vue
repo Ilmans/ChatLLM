@@ -1,8 +1,17 @@
 <script setup lang="ts">
 import { Button } from "@/components/ui/button"
 import { Text } from "./components/ui/text"
+import { Slider } from "./components/ui/slider"
 import MenuItem from "./components/ui/menu-item/MenuItem.vue"
 import { MessageCircle, BookA, ChefHat, Plus, AlignLeft, FileOutput } from 'lucide-vue-next'
+import { reactive } from "vue"
+
+const params = reactive({
+  top_p: [0.8],
+  top_k: [0.2],
+  temperature: [0.4],
+  max_length: [400],
+})
 
 </script>
 
@@ -21,7 +30,7 @@ import { MessageCircle, BookA, ChefHat, Plus, AlignLeft, FileOutput } from 'luci
         </Button>
       </div>
     </header>
-    <div class="body-content">
+    <div class="body-content flex">
       <aside class="p-3  h-screen w-60">
         <div class="menu">
           <ul>
@@ -59,12 +68,44 @@ import { MessageCircle, BookA, ChefHat, Plus, AlignLeft, FileOutput } from 'luci
           </ul>
         </div>
       </aside>
-      <main class="p-10">
+      <main class="p-10 flex-grow">
         <router-view></router-view>
       </main>
-      <footer class="text-center">
-        Copyright &copy; 2023 - All rights reserved
-      </footer>
+
+      <aside class="py-3 px-10  h-screen w-80">
+        <div class="menu">
+          <ul>
+            <li class="mb-8">
+              <div class="flex justify-between">
+                <Text type="p" class="mb-3">Top P</Text>
+                <Text type="p" class="mb-3">{{ params.top_p[0] }}</Text>
+              </div>
+              <Slider v-model="params.top_p" :min="0" :max="1" :step="0.1"></Slider>
+            </li>
+            <li class="mb-8">
+              <div class="flex justify-between">
+                <Text type="p" class="mb-3">Top K</Text>
+                <Text type="p" class="mb-3">{{ params.top_k[0]}}</Text>
+              </div>
+              <Slider v-model="params.top_k" :min="0" :max="1" :step="0.1"></Slider>
+            </li>
+            <li class="mb-8">
+              <div class="flex justify-between">
+                <Text type="p" class="mb-3">Temperature</Text>
+                <Text type="p" class="mb-3">{{ params.temperature[0] }}</Text>
+              </div>
+              <Slider v-model="params.temperature" :min="0" :max="1" :step="0.1"></Slider>
+            </li>
+            <li class="mb-8">
+              <div class="flex justify-between">
+                <Text type="p" class="mb-3">Maximum Length</Text>
+                <Text type="p" class="mb-3">{{ params.max_length[0] }}</Text>
+              </div>
+              <Slider v-model="params.max_length" :step="5" :max="4000"></Slider>
+            </li>
+          </ul>
+        </div>
+      </aside>
     </div>
   </div>
 </template>
