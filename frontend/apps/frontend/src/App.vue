@@ -16,8 +16,8 @@ const params = reactive({
 </script>
 
 <template>
-  <div class="main">
-    <header class="p-3 flex justify-between">
+  <div class="main h-screen flex flex-col">
+    <header class="py-5 px-8 flex justify-between mb-5 ">
       <div class="header-left">
         <Text type="h2">ChatLLM</Text>
       </div>
@@ -30,8 +30,8 @@ const params = reactive({
         </Button>
       </div>
     </header>
-    <div class="body-content flex">
-      <aside class="p-3  h-screen w-60">
+    <div class="body-content flex flex-grow">
+      <aside class="p-3 px-8  w-72 flex-shrink-0">
         <div class="menu">
           <ul>
             <MenuItem to="/">
@@ -68,11 +68,30 @@ const params = reactive({
           </ul>
         </div>
       </aside>
-      <main class="p-10 flex-grow">
-        <router-view></router-view>
+      <main class="py-10 px-24 flex-grow flex flex-col">
+        <div class="messages flex-grow">
+          <div class="time mb-8">
+            <p class="text-gray-500 text-center">Today 10:36 AM</p>
+          </div>
+          <div class="message mb-10">
+            <div class="avatar flex gap-5">
+              <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full"></div>
+              <Text type="h3" class="flex-1">Write a literature review about React!</Text>
+            </div>
+          </div>
+          <div class="message mb-10">
+            <div class="avatar flex gap-5">
+              <div class="w-10 h-10 bg-gradient-to-r from-red-500 to-orange-500 rounded-full"></div>
+              <Text type="p" class="flex-1 text-gray-400">This literature review provides an overview of React, a popular JavaScript library for building user interfaces. The review examines the evolution of React, its key features, and various applications across different domains. It also explores the advantages and limitations of using React in web development, highlighting its impact on the industry and future trends.</Text>
+            </div>
+          </div>
+        </div>
+        <div class="message-box bg-slate-900 rounded-lg py-3 px-5 flex items-center gap-3">
+          <div class="w-10 h-10 bg-gradient-to-r from-red-500 to-orange-500 rounded-full"></div>
+          Ask me anything..
+        </div>
       </main>
-
-      <aside class="py-3 px-10  h-screen w-80">
+      <aside class="py-3 px-10  w-80 flex-shrink-0">
         <div class="menu">
           <ul>
             <li class="mb-8">
