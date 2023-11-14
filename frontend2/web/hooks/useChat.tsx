@@ -42,6 +42,12 @@ export function ChatProvider({children}: {children: any}) {
       required_features: ['shader-f16'],
       conv_template: 'llama-2'
     },
+    {
+      local_id: "vicuna-7b-v1.5-16k-q4f16_1",
+      model_url: baseUrl + "/models/vicuna-7b-v1.5-16k-q4f16_1/params/",
+      required_features: ['shader-f16'],
+      conv_template: 'vicuna_v1.1'
+    },
   ]
 
   let modelWasmMap: Record<string, string> = {}
@@ -57,7 +63,9 @@ export function ChatProvider({children}: {children: any}) {
 
     const currentModel = availableModels.find(m => m.local_id == model_id)
     console.log('load chat', onModelLoadingCb)
-    await chat.reload(model_id, { conv_template: currentModel?.conv_template, }, {
+    await chat.reload(model_id, { conv_template: currentModel?.conv_template, conv_config: {
+      
+    } }, {
       model_list: availableModels,
       model_lib_map: modelWasmMap,
     })
