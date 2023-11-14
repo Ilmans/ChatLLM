@@ -5,6 +5,5 @@ import {Counter} from '@acme/counter'
 </script>
 
 <template>
-  <NxWelcome title="frontend" />
   <Counter></Counter>
 </template>
