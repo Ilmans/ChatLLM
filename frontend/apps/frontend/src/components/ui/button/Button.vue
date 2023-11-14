@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { buttonVariants } from '.'
-import { cn } from 'apps/frontend/src/lib/utils'
+import { cn } from '@/lib/utils'
 
 interface Props {
   variant?: NonNullable<Parameters<typeof buttonVariants>[0]>['variant']

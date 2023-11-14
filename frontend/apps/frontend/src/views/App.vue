@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import type { onMounted } from 'vue';
-import NxWelcome from './NxWelcome.vue';
-import {Counter} from '@acme/counter'
+import { Button } from "../components/ui/button"
 </script>
 
 <template>
-  <Counter></Counter>
+  <Button>arst</Button>
 </template>
