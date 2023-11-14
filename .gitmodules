@@ -1,0 +1,3 @@
+[submodule "frontend/libs/web-llm"]
+	path = frontend/libs/web-llm
+	url = https://github.com/zuramai/web-llm
