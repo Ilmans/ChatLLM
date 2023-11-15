@@ -2,6 +2,8 @@
 import { Button } from "@/components/ui/button"
 import { Text } from "./components/ui/text"
 import { Slider } from "./components/ui/slider"
+import ChatMessage from "./components/ui/chat/ChatMessage.vue"
+import { Textarea } from "./components/ui/textarea"
 import MenuItem from "./components/ui/menu-item/MenuItem.vue"
 import { MessageCircle, BookA, ChefHat, Plus, AlignLeft, FileOutput } from 'lucide-vue-next'
 import { reactive } from "vue"
@@ -73,12 +75,12 @@ const params = reactive({
           <div class="time mb-8">
             <p class="text-gray-500 text-center">Today 10:36 AM</p>
           </div>
-          <div class="message mb-10">
-            <div class="avatar flex gap-5">
-              <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full"></div>
-              <Text type="h3" class="flex-1">Write a literature review about React!</Text>
-            </div>
-          </div>
+          <ChatMessage :user="false">
+            Write a literature review about React!
+          </ChatMessage>
+          <ChatMessage :loading="true" :user="false">
+            Write a literature review about React!
+          </ChatMessage>
           <div class="message mb-10">
             <div class="avatar flex gap-5">
               <div class="w-10 h-10 bg-gradient-to-r from-red-500 to-orange-500 rounded-full"></div>
@@ -88,7 +90,7 @@ const params = reactive({
         </div>
         <div class="message-box bg-slate-900 rounded-lg py-3 px-5 flex items-center gap-3">
           <div class="w-10 h-10 bg-gradient-to-r from-red-500 to-orange-500 rounded-full"></div>
-          Ask me anything..
+          <Textarea placeholder="Ask me anything" />
         </div>
       </main>
       <aside class="py-3 px-10  w-80 flex-shrink-0">
