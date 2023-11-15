@@ -44,7 +44,7 @@
  
 .dark {
   --background: 180 30% 5%;
-  --foreground: 210 40% 98%;
+  --foreground: 218 11% 65%;
 
   --muted: 217.2 32.6% 17.5%;
   --muted-foreground: 215 20.2% 65.1%;
@@ -53,8 +53,7 @@
   --popover-foreground: 210 40% 98%;
 
   --card: 222.2 84% 4.9%;
-  --card-foreground: 210 40% 98%;
-
+  --card-foreground: 218 11% 65%;
   --border: 217.2 32.6% 17.5%;
   --input: 217.2 32.6% 17.5%;
 
@@ -72,11 +71,15 @@
 
   --ring: 212.7 26.8% 83.9%;
 }
+
 @layer base {
   * {
     @apply border-border;
   }
   body {
     @apply bg-background text-foreground;
+  }
+  h1,h2,h3,h4,h5,h6 {
+    color: hsl(210 40% 98%);
   }
 }

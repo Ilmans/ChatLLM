@@ -2,10 +2,11 @@
 import { Button } from "@/components/ui/button"
 import { Text } from "./components/ui/text"
 import { Slider } from "./components/ui/slider"
+import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card"
 import ChatMessage from "./components/ui/chat/ChatMessage.vue"
 import { Textarea } from "./components/ui/textarea"
 import MenuItem from "./components/ui/menu-item/MenuItem.vue"
-import { MessageCircle, BookA, ChefHat, Plus, AlignLeft, FileOutput } from 'lucide-vue-next'
+import { MessageCircle, BookA, ChefHat, Plus, AlignLeft, FileOutput, Settings } from 'lucide-vue-next'
 import { reactive } from "vue"
 
 const params = reactive({
@@ -93,7 +94,7 @@ const params = reactive({
           <Textarea placeholder="Ask me anything" />
         </div>
       </main>
-      <aside class="py-3 px-10  w-80 flex-shrink-0">
+      <aside class="py-3 px-10 w-96 flex-shrink-0">
         <div class="menu">
           <ul>
             <li class="mb-8">
@@ -125,6 +126,22 @@ const params = reactive({
               <Slider v-model="params.max_length" :step="5" :max="4000"></Slider>
             </li>
           </ul>
+        </div>
+        <div class="about-bot">
+          <Card>
+            <CardHeader>
+              <div class="flex justify-between items-center mb-3">
+                <div class="flex items-center gap-3 ">
+                  <div class="w-10 h-10 bg-gradient-to-r from-red-500 to-orange-500 rounded-full"></div>
+                  <Text type="h4">English Helper Bot</Text>
+                </div>
+                <a href="#">
+                  <Settings></Settings>
+                </a>
+              </div>
+                <Text type="p">Lorem ipsum dolor sit amet consectetur adipisicing elit.</Text>
+            </CardHeader>
+          </Card>
         </div>
       </aside>
     </div>
