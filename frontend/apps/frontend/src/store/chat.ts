@@ -6,6 +6,7 @@ import { useDb } from "../composables/useDb";
 export const useChatStore = defineStore('chat', () => {
     const bots = ref<Bot[]>([
         {
+            id: 1,
             name: 'EnglishHelper',
             description: 'A bot to help me learn english',
             prompt: "You are my english instructor. You are very expert in English language and have wide vocabularies. You are very good at explaining something. You will always give a alternatives to write a sentence in a different ways. You can always fix my grammar and give vocabularies alternatives.",
@@ -16,6 +17,7 @@ export const useChatStore = defineStore('chat', () => {
             }
         },
         {
+            id: 1,
             name: 'MrProgrammer',
             description: "I'll help you with any Programming Languages",
             prompt: "Bot that can help, solve, and make any codes of Programming Languages",
@@ -34,7 +36,11 @@ export const useChatStore = defineStore('chat', () => {
     }
 
     onMounted(() => {
-        fetchBots()
+        const db = useDb()
+        bots.value.forEach(b => {
+            db.insertBot(JSON.parse(JSON.stringify(b)))
+        })
+        // db.drop()
     })
 
     const activeBotId = ref(0)

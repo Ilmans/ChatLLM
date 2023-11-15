@@ -27,8 +27,8 @@ export const useDb = () => {
             }
             request.onupgradeneeded = function(e) {
                 console.log('Upgrade needed')
-                this.result.createObjectStore("bots", { autoIncrement: true, keyPath:'id' });
-                this.result.createObjectStore("messages", { autoIncrement: true, keyPath:'id' });
+                this.result.createObjectStore("bots", {autoIncrement: true, keyPath: 'id'});
+                this.result.createObjectStore("messages", {autoIncrement: true, keyPath: 'id'});
                 db = this.result
                 res(this.result)
             }
@@ -82,8 +82,8 @@ export const useDb = () => {
                 let cursor = this.result
                 if (cursor) {
                     result.push(cursor.value)
+                    cursor.continue()
                 }
-                cursor.continue()
             }
 
         })
@@ -92,11 +92,12 @@ export const useDb = () => {
     const insertBot = (bot: Bot) => {
         return new Promise(async (resolve, reject) => {
             const conn = await getConnection()
-            const read = conn.transaction('messages', 'readwrite')
+            const read = conn.transaction('bots', 'readwrite')
             read.oncomplete = () => {
+                console.log("Insert success")
                 resolve(true)
             }
-            const store = read.objectStore('messages')
+            const store = read.objectStore('bots')
             store.put(bot)
         })
     }
