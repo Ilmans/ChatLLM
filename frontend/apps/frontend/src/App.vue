@@ -8,7 +8,11 @@ import { Textarea } from "./components/ui/textarea"
 import MenuItem from "./components/ui/menu-item/MenuItem.vue"
 import { MessageCircle, BookA, ChefHat, Plus, AlignLeft, FileOutput, Settings } from 'lucide-vue-next'
 import { reactive } from "vue"
+import { useChatStore } from '@/store/chat'
 
+const chatStore = useChatStore()
+const bots = chatStore.bots
+console.log(chatStore.bots)
 </script>
 
 <template>
@@ -46,22 +50,10 @@ import { reactive } from "vue"
           <template v-if="$route.name == 'home'">
             <Text type="p" class="my-3">Your Bots</Text>
             <ul>
-              <li class="menu-item mb-1">
+              <li class="menu-item mb-1" v-for="bot in bots">
                   <button class="menu-link px-3 py-2 bg-transparent text-gray-500 hover:text-gray-200 transition duration-200 rounded-md flex gap-2">
                     <AlignLeft width="20" />
-                    English Helper Bot
-                  </button>
-              </li>
-              <li class="menu-item mb-1">
-                  <button class="menu-link px-3 py-2 bg-transparent text-gray-500 hover:text-gray-200 transition duration-200 rounded-md flex gap-2">
-                    <AlignLeft width="20" />
-                    Travel Expert
-                  </button>
-              </li>
-              <li class="menu-item mb-1">
-                  <button class="menu-link px-3 py-2 bg-transparent text-gray-500 hover:text-gray-200 transition duration-200 rounded-md flex gap-2">
-                    <AlignLeft width="20" />
-                   Gaming Advisor
+                    {{bot.name}}
                   </button>
               </li>
               <li class="border mt-10 rounded-md border-dashed border-gray-500 hover:border-gray-200 transition duration-200">
