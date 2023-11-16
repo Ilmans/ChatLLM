@@ -1,18 +1,31 @@
 <script setup lang="ts">
 import { Button } from "@/components/ui/button"
 import { Text } from "./components/ui/text"
+import { Input } from "./components/ui/input"
 import { Slider } from "./components/ui/slider"
 import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card"
 import ChatMessage from "./components/ui/chat/ChatMessage.vue"
 import { Textarea } from "./components/ui/textarea"
 import MenuItem from "./components/ui/menu-item/MenuItem.vue"
 import { MessageCircle, BookA, ChefHat, Plus, AlignLeft, FileOutput, Settings } from 'lucide-vue-next'
-import { reactive } from "vue"
+import { onMounted, reactive, ref } from "vue"
 import { useChatStore } from '@/store/chat'
+import CreateBotForm from "@/components/domain/bot/CreateBotForm.vue"
+import { useDb } from "./composables/useDb"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "./components/ui/dialog"
+import Toaster from '@/components/ui/toast/Toaster.vue'
 
 const chatStore = useChatStore()
-const bots = chatStore.bots
+const bots = ref([])
+const db = useDb()
+onMounted(async () => {
+  bots.value = await db.getBots()
+
+  console.log(bots.value)
+})
+
 console.log(chatStore.bots)
+
 </script>
 
 <template>
@@ -57,10 +70,23 @@ console.log(chatStore.bots)
                   </button>
               </li>
               <li class="border mt-10 rounded-md border-dashed border-gray-500 hover:border-gray-200 transition duration-200">
-                  <button class="menu-link px-3 py-2 bg-transparent text-gray-500 hover:text-gray-200 transition duration-200 rounded-md flex gap-2">
-                      <Plus width="20" />
-                      Create new bot 
-                  </button>
+                <!-- Create new bot modal -->
+                <Dialog>
+                  <DialogTrigger class="menu-link w-full px-3 py-2 bg-transparent text-gray-500 hover:text-gray-200 transition duration-200 rounded-md flex gap-2">
+                    <Plus width="20" />
+                    Create new bot 
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Create new bot</DialogTitle>
+                      <DialogDescription>
+                        Create your own bot profile
+                      </DialogDescription>
+                    </DialogHeader>
+                    <CreateBotForm/>
+                    
+                  </DialogContent>
+                </Dialog>
               </li>
             </ul>
           </template>
@@ -69,4 +95,6 @@ console.log(chatStore.bots)
       <router-view/>
     </div>
   </div>
+  <Toaster />
+
 </template>

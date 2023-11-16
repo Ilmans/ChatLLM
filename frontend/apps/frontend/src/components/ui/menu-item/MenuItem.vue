@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import { FaBeer } from 'react-icons/fa';
-
 const props = defineProps<{
     to: string
 }>()

@@ -68,7 +68,7 @@ export const useDb = () => {
         })
     }
 
-    const getBots = () => {
+    const getBots = (): Promise<Bot[]> => {
         return new Promise(async (resolve, reject) => {
             const conn = await getConnection()
             const read = conn.transaction(['bots'], 'readonly')

@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@vee-validate/zod':
+    specifier: ^4.11.8
+    version: 4.11.8(vue@3.3.4)
   '@vueuse/core':
     specifier: ^10.6.1
     version: 10.6.1(vue@3.3.4)
@@ -32,12 +35,18 @@ dependencies:
   tailwindcss-animate:
     specifier: ^1.0.7
     version: 1.0.7(tailwindcss@3.3.5)
+  vee-validate:
+    specifier: ^4.11.8
+    version: 4.11.8(vue@3.3.4)
   vue:
     specifier: ^3.3.4
     version: 3.3.4
   vue-router:
     specifier: '4'
     version: 4.2.5(vue@3.3.4)
+  zod:
+    specifier: ^3.22.4
+    version: 3.22.4
 
 devDependencies:
   '@nx/eslint':
@@ -2874,6 +2883,16 @@ packages:
       '@typescript-eslint/types': 6.9.1
       eslint-visitor-keys: 3.4.3
     dev: true
+
+  /@vee-validate/zod@4.11.8(vue@3.3.4):
+    resolution: {integrity: sha512-qAyqDEigklMf669ZqIw9t95g0Ipzu9rMYUqcZpANlCvyaIAeBlJGcsv+2CewlqgwuC6BL9EAURLJ8Ux5WlBgXg==}
+    dependencies:
+      type-fest: 4.7.1
+      vee-validate: 4.11.8(vue@3.3.4)
+      zod: 3.22.4
+    transitivePeerDependencies:
+      - vue
+    dev: false
 
   /@vitejs/plugin-vue@4.3.1(vite@4.3.9)(vue@3.3.4):
     resolution: {integrity: sha512-tUBEtWcF7wFtII7ayNiLNDTCE1X1afySEo+XNVMNkFXaThENyCowIEX095QqbJZGTgoOcSVDJGlnde2NG4jtbQ==}
@@ -6215,6 +6234,11 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
+  /type-fest@4.7.1:
+    resolution: {integrity: sha512-iWr8RUmzAJRfhZugX9O7nZE6pCxDU8CZ3QxsLuTnGcBLJpCaP2ll3s4eMTBoFnU/CeXY/5rfQSuAEsTGJO4y8A==}
+    engines: {node: '>=16'}
+    dev: false
+
   /typescript@5.0.4:
     resolution: {integrity: sha512-cW9T5W9xY37cc+jfEnaUvX91foxtHkza3Nw3wkoF4sSlKn0MONdkdEndig/qPBWXNkmplh3NzayQzCiHM4/hqw==}
     engines: {node: '>=12.20'}
@@ -6334,6 +6358,16 @@ packages:
     resolution: {integrity: sha512-Ii+sehpSfZy+At5nPdnyMhx78fEoPDkR2XW/zimHEL3MyGJQOCQ7WeP20jPYRz7ZCpcKLB21NxuXHF3bxjStBQ==}
     engines: {node: '>= 0.10'}
     dev: true
+
+  /vee-validate@4.11.8(vue@3.3.4):
+    resolution: {integrity: sha512-ZuVpw0axWYBM3aVTD/bm94hcWHumqeUgNjptOqfBT0gyqyHaGYCrm0tSD/0bygEbWUDwEPJOQaEKaUGM82j8TQ==}
+    peerDependencies:
+      vue: ^3.3.4
+    dependencies:
+      '@vue/devtools-api': 6.5.1
+      type-fest: 4.7.1
+      vue: 3.3.4
+    dev: false
 
   /vite-node@0.32.0(@types/node@18.7.1):
     resolution: {integrity: sha512-220P/y8YacYAU+daOAqiGEFXx2A8AwjadDzQqos6wSukjvvTWNqleJSwoUn0ckyNdjHIKoxn93Nh1vWBqEKr3Q==}
@@ -6713,3 +6747,7 @@ packages:
     optionalDependencies:
       commander: 9.5.0
     dev: true
+
+  /zod@3.22.4:
+    resolution: {integrity: sha512-iC+8Io04lddc+mVqQ9AZ7OQ2MrUKGN+oIQyq1vemgt46jwCwLfhq7/pwnBnNXXXZb8VTVLKwp9EDkx+ryxIWmg==}
+    dev: false

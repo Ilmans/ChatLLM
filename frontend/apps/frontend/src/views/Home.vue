@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { reactive } from 'vue';
+import { reactive, ref } from 'vue';
 
 import { Button } from "@/components/ui/button"
 import { Text } from "@/components/ui/text"
@@ -9,6 +9,8 @@ import ChatMessage from "@/components/ui/chat/ChatMessage.vue"
 import { Textarea } from "@/components/ui/textarea"
 import MenuItem from "@/components/ui/menu-item/MenuItem.vue"
 import { MessageCircle, BookA, ChefHat, Plus, AlignLeft, FileOutput, Settings } from 'lucide-vue-next'
+import { useChatStore } from '../store/chat';
+import { useDb } from '../composables/useDb';
 
 const params = reactive({
   top_p: [0.8],
@@ -16,6 +18,11 @@ const params = reactive({
   temperature: [0.4],
   max_length: [400],
 })
+const chatStore = useChatStore()
+const db = useDb()
+const messages = ref([])
+const fetchMessages = () => {
+}
 
 </script>
 <template>
@@ -54,13 +61,6 @@ const params = reactive({
             <Text type="p" class="mb-3">{{ params.top_p[0] }}</Text>
           </div>
           <Slider v-model="params.top_p" :min="0" :max="1" :step="0.1"></Slider>
-        </li>
-        <li class="mb-8">
-          <div class="flex justify-between">
-            <Text type="p" class="mb-3">Top K</Text>
-            <Text type="p" class="mb-3">{{ params.top_k[0] }}</Text>
-          </div>
-          <Slider v-model="params.top_k" :min="0" :max="1" :step="0.1"></Slider>
         </li>
         <li class="mb-8">
           <div class="flex justify-between">
