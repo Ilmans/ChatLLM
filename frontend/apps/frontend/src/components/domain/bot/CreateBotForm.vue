@@ -31,13 +31,14 @@ const { handleSubmit, values } = useForm({
         temperature: [0.4],
     }
 })
-const onSubmit = handleSubmit((v) => {
-    console.log(v)
+const onSubmit = handleSubmit(async (v) => {
+    const botCount = (await db.getBots()).length
     const {toast} = useToast()
     toast({
         title: "Bot created successfully"
     })
     db.insertBot({
+        id: botCount+1,
         name: v.name,
         description: v.description,
         prompt: v.prompt,

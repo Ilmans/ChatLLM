@@ -43,10 +43,6 @@ export const useChatStore = defineStore('chat', () => {
         // db.drop()
     })
 
-    const activeBotId = ref(0)
-
-    
-
     return {
         bots
     }

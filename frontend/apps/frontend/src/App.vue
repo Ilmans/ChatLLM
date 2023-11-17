@@ -14,10 +14,12 @@ import CreateBotForm from "@/components/domain/bot/CreateBotForm.vue"
 import { useDb } from "./composables/useDb"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "./components/ui/dialog"
 import Toaster from '@/components/ui/toast/Toaster.vue'
+import { cn } from "./lib/utils"
 
 const chatStore = useChatStore()
 const bots = ref([])
 const db = useDb()
+const activeBot = db.getActiveBot()
 onMounted(async () => {
   bots.value = await db.getBots()
 
@@ -64,7 +66,7 @@ console.log(chatStore.bots)
             <Text type="p" class="my-3">Your Bots</Text>
             <ul>
               <li class="menu-item mb-1" v-for="bot in bots">
-                  <button class="menu-link px-3 py-2 bg-transparent text-gray-500 hover:text-gray-200 transition duration-200 rounded-md flex gap-2">
+                  <button @click="db.setActiveBot(bot.id)" :class="cn(activeBot == bot.id ? 'text-white' : 'text-gray-500','menu-link px-3 py-2 bg-transparent  hover:text-gray-200 transition duration-200 rounded-md flex gap-2')">
                     <AlignLeft width="20" />
                     {{bot.name}}
                   </button>

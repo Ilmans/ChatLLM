@@ -1,4 +1,6 @@
+import { useStorage } from "@vueuse/core";
 import type { Bot } from "../types";
+import type { Ref } from "vue";
 
 const DB_VERSION = 1
 const DB_NAME = "llm"
@@ -101,6 +103,15 @@ export const useDb = () => {
             store.put(bot)
         })
     }
+    const activeBot = useStorage("activeBotId", 1);
+
+    const setActiveBot = (id: number) => {
+        activeBot.value = id
+    }
+
+    const getActiveBot = (): Ref<number> => {
+        return activeBot
+    }
 
     return {
         drop,
@@ -109,6 +120,8 @@ export const useDb = () => {
         getMessages,
         insertMessage,
         getBots,
-        insertBot
+        insertBot,
+        getActiveBot, 
+        setActiveBot
     }
 }
