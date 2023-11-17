@@ -25,6 +25,7 @@ const chatStore = useChatStore()
 const db = useDb()
 const activeBot = db.getActiveBot()
 const messages = ref<IChatMessage[]>([])
+const newMessageText = ref('')
 const loading = ref(true)
 onMounted(async () => {
   const dbMessages = await db.getMessages(activeBot.value)
@@ -35,11 +36,23 @@ onMounted(async () => {
   },200)
 
   // db.insertMessage(1, "user", "Write a literature review about React!")
-  // db.insertMessage(1, "bot", "This literature review provides an overview of React, a popular JavaScript library for building user interfaces. The review examines the evolution of React, its key features, and various applications across different domains. It also explores the advantages and limitations of using React in web development, highlighting its impact on the industry and future trends.")
+  // db.insertMessage(1, "bot", "You are welcome. Please let me know if you need any more help!")
 })
+const sendMessage = () => {
+  db.insertMessage(activeBot.value, "user", newMessageText.value)
+  messages.value.push({
+    botId: activeBot.value,
+    date: Date.now(),
+    message:newMessageText.value,
+    role: "user"
+  })
+}
+const textareaKeydown = (e: KeyboardEvent) => {
+  if((e.ctrlKey || e.metaKey) && e.key == 'Enter') sendMessage()
+}
 </script>
 <template>
-  <main class="py-10 px-24 flex-grow flex flex-col">
+  <main class="py-10 px-8 lg:px-16 xl:px-24 flex-grow flex flex-col">
     <div class="messages flex-grow">
       <div class="time mb-8">
         <p class="text-gray-500 text-center">Today 10:36 AM</p>
@@ -52,9 +65,16 @@ onMounted(async () => {
       </ChatMessage>
       
     </div>
-    <div class="message-box bg-slate-900 rounded-lg py-3 px-5 flex items-center gap-3">
-      <div class="w-10 h-10 bg-gradient-to-r from-red-500 to-orange-500 rounded-full"></div>
-      <Textarea placeholder="Ask me anything" />
+    <div class="message-box bg-slate-900 rounded-lg py-3 px-5 flex items-start gap-3">
+      <div class="w-10 h-10 bg-gradient-to-r flex-shrink-0 from-red-500 to-orange-500 mt-2 rounded-full"></div>
+      <div class="w-full">
+        <form @submit.prevent="sendMessage">
+          <Textarea placeholder="Ask me anything" rows="3" @keydown="textareaKeydown" v-model="newMessageText"/>
+          <div class="flex justify-end mt-3">
+            <Button size="sm" variant="ghost">Send</Button>
+          </div>
+        </form>
+      </div>
     </div>
   </main>
 
