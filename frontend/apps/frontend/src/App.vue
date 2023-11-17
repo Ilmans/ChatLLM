@@ -32,7 +32,7 @@ console.log(chatStore.bots)
 
 <template>
   <div class="main h-screen flex flex-col">
-    <header class="py-5 px-8 flex justify-between mb-5 ">
+    <header class="py-5 px-8 flex justify-between">
       <div class="header-left">
         <Text type="h2">ChatLLM</Text>
       </div>

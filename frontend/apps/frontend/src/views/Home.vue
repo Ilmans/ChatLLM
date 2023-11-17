@@ -27,6 +27,11 @@ const activeBot = db.getActiveBot()
 const messages = ref<IChatMessage[]>([])
 const newMessageText = ref('')
 const loading = ref(true)
+
+// The loading state when user sent a message / inferencing
+const isBotThinking = ref(false)
+
+
 onMounted(async () => {
   const dbMessages = await db.getMessages(activeBot.value)
   setTimeout(() => {
@@ -40,7 +45,9 @@ onMounted(async () => {
 })
 const sendMessage = () => {
   db.insertMessage(activeBot.value, "user", newMessageText.value)
-  messages.value.push({
+
+  // Insert message to the very first index
+  messages.value.unshift({
     botId: activeBot.value,
     date: Date.now(),
     message:newMessageText.value,
@@ -52,17 +59,20 @@ const textareaKeydown = (e: KeyboardEvent) => {
 }
 </script>
 <template>
-  <main class="py-10 px-8 lg:px-16 xl:px-24 flex-grow flex flex-col">
-    <div class="messages flex-grow">
-      <div class="time mb-8">
-        <p class="text-gray-500 text-center">Today 10:36 AM</p>
+  <main class="py-10 px-8 lg:px-8 xl:px-24 flex-grow flex flex-col">
+    <div class="messages flex-grow relative">
+      <div class="overflow-y-scroll flex flex-col-reverse absolute inset-0">
+        <ChatMessage v-if="isBotThinking" role="bot" :loading="isBotThinking"></ChatMessage>
+        <ChatMessage v-if="loading" role="user" :loading="loading"></ChatMessage>
+  
+        <ChatMessage v-else v-for="message in messages" :role="message.role" :loading="false">
+          {{ message.message }}
+        </ChatMessage>
+        <div class="time mb-8">
+          <p class="text-gray-500 text-center">Today 10:36 AM</p>
+        </div>
+        
       </div>
-      
-      <ChatMessage v-if="loading" role="user" :loading="loading"></ChatMessage>
-
-      <ChatMessage v-else v-for="message in messages" :role="message.role" :loading="false">
-        {{ message.message }}
-      </ChatMessage>
       
     </div>
     <div class="message-box bg-slate-900 rounded-lg py-3 px-5 flex items-start gap-3">

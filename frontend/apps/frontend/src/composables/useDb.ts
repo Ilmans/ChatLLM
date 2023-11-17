@@ -47,7 +47,7 @@ export const useDb = () => {
             const store = read.objectStore('messages')
             let result = []
             read.oncomplete = () => {
-                resolve(result)
+                resolve(result.reverse())
             }
             store.openCursor().onsuccess = function(e) {
                 let cursor = this.result
