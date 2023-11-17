@@ -3,8 +3,11 @@
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
     "types": ["vite/client"],
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@acme/counter": ["libs/counter/src/index.ts"],
+      "@mlc-ai/web-llm": ["libs/web-llm/src/index.ts"],
+      "@/*": ["src/*"]
     },
   },
   "exclude": [

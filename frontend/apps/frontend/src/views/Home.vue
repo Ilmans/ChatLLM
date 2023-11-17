@@ -11,6 +11,8 @@ import MenuItem from "@/components/ui/menu-item/MenuItem.vue"
 import { MessageCircle, BookA, ChefHat, Plus, AlignLeft, FileOutput, Settings } from 'lucide-vue-next'
 import { useChatStore } from '../store/chat';
 import { useDb } from '../composables/useDb';
+import {} from '@/components/ui/text'
+
 
 const params = reactive({
   top_p: [0.8],

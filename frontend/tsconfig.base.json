@@ -14,8 +14,8 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
-    
     "paths": {
+      "@frontend/*": ["./apps/frontend/src/*"],
       "@acme/counter": ["libs/counter/src/index.ts"],
       "@mlc-ai/web-llm": ["libs/web-llm/src/index.ts"]
     }
