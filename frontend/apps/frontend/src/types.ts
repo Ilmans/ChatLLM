@@ -9,3 +9,13 @@ export interface Bot {
         repetition_penalty: number
     }
 }
+
+export type ChatRole = "bot" | "user"
+export interface IChatMessage {
+    botId: number
+    role: ChatRole
+    message: string 
+    date: number 
+}
+
+export type IChat = IChatMessage[]

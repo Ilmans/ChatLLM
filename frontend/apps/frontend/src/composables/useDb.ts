@@ -1,5 +1,5 @@
 import { useStorage } from "@vueuse/core";
-import type { Bot } from "../types";
+import type { Bot, ChatMessage, ChatRole } from "../types";
 import type { Ref } from "vue";
 
 const DB_VERSION = 1
@@ -30,14 +30,16 @@ export const useDb = () => {
             request.onupgradeneeded = function(e) {
                 console.log('Upgrade needed')
                 this.result.createObjectStore("bots", {autoIncrement: true, keyPath: 'id'});
-                this.result.createObjectStore("messages", {autoIncrement: true, keyPath: 'id'});
+                const messageStore = this.result.createObjectStore("messages", {autoIncrement: true, keyPath: 'id'});
+                messageStore.createIndex('botIdIndex', "bot_id")
+                messageStore.createIndex('dateIndex', "date")
                 db = this.result
                 res(this.result)
             }
         })
     }
 
-    const getMessages = async (bot_id: number) => {
+    const getMessages = (bot_id: number): Promise<ChatMessage[]> => {
         return new Promise(async (resolve, reject) => {
             const conn = await getConnection()
             const read = conn.transaction('messages', 'readonly')
@@ -51,22 +53,28 @@ export const useDb = () => {
                 let cursor = this.result
                 if (cursor) {
                     result.push(cursor.value)
+                    cursor.continue()
                 }
-                cursor.continue()
             }
 
         })
     }
 
-    const insertMessage = (bot_id: number, role: string, message: string) => {
+    const insertMessage = (botId: number, role: ChatRole, message: string) => {
         return new Promise(async (resolve, reject) => {
             const conn = await getConnection()
             const read = conn.transaction('messages', 'readwrite')
             read.oncomplete = () => {
                 resolve(true)
             }
+            const chatMessage: ChatMessage = {
+                botId: botId,
+                date: Date.now(),
+                message,
+                role: role
+            } 
             const store = read.objectStore('messages')
-            store.put({role, message})
+            store.put(chatMessage)
         })
     }
 
