@@ -4,8 +4,11 @@ import {fileURLToPath} from 'url'
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
-
+console.log(fileURLToPath(
+  new URL('./../../libs/web-llm/src/index.ts', import.meta.url)
+))
 export default defineConfig({
+  publicDir: 'static',
   cacheDir: '../../node_modules/.vite/frontend',
   resolve: {
     alias: {

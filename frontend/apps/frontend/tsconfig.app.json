@@ -6,7 +6,7 @@
     "baseUrl": ".",
     "paths": {
       "@acme/counter": ["libs/counter/src/index.ts"],
-      "@mlc-ai/web-llm": ["libs/web-llm/src/index.ts"],
+      "@mlc-ai/web-llm": ["../../libs/web-llm/src/index.ts"],
       "@/*": ["src/*"]
     },
   },

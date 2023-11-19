@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, onUnmounted, reactive, ref } from 'vue';
 
 import { Button } from "@/components/ui/button"
 import { Text } from "@/components/ui/text"
@@ -10,8 +10,9 @@ import MenuItem from "@/components/ui/menu-item/MenuItem.vue"
 import { MessageCircle, BookA, ChefHat, Plus, AlignLeft, FileOutput, Settings } from 'lucide-vue-next'
 import { useChatStore } from '../store/chat';
 import { useDb } from '../composables/useDb';
+import { useLLM } from '../composables/useLLM';
 import {} from '@/components/ui/text'
-import type { IChatMessage } from '@/types';
+import type { ChatRole, IChatMessage } from '@/types';
 import ChatMessage from '@/components/ui/chat/ChatMessage.vue';
 
 
@@ -27,10 +28,11 @@ const activeBot = db.getActiveBot()
 const messages = ref<IChatMessage[]>([])
 const newMessageText = ref('')
 const loading = ref(true)
-
 // The loading state when user sent a message / inferencing
 const isBotThinking = ref(false)
 
+const model = useLLM()
+const loadingProgress = ref(0)
 
 onMounted(async () => {
   const dbMessages = await db.getMessages(activeBot.value)
@@ -39,19 +41,48 @@ onMounted(async () => {
     messages.value = dbMessages
     console.log(messages.value)
   },200)
+  // const chat = ref(new ChatModule())
+  await model.loadModel("RedPajama-INCITE-Chat-3B-v1-q4f16_1", (progress) => {
+    console.log(progress.progress)
+    loadingProgress.value = Math.round(progress.progress * 100) 
+  })
 
   // db.insertMessage(1, "user", "Write a literature review about React!")
   // db.insertMessage(1, "bot", "You are welcome. Please let me know if you need any more help!")
 })
-const sendMessage = () => {
-  db.insertMessage(activeBot.value, "user", newMessageText.value)
+onUnmounted(() => {
+  model.unloadModel()
+})
 
-  // Insert message to the very first index
+const insertMessage = (role: ChatRole, message: string) => {
+  db.insertMessage(activeBot.value, role,  message)
+
+  // Insert the message to the very first index
   messages.value.unshift({
     botId: activeBot.value,
     date: Date.now(),
-    message:newMessageText.value,
-    role: "user"
+    message: message,
+    role: role
+  })
+
+}
+const currentResponse = ref('')
+const sendMessage = () => {
+  // Insert user message
+  insertMessage("user", newMessageText.value)
+  
+  // Get response from LLM
+  model.infer(newMessageText.value, (step, currentMessage) => {
+    console.log('step', step, currentResponse.value)
+    if (step == 2 && currentResponse.value == '') {
+      // Create new message
+      insertMessage("bot", currentResponse.value)
+    }
+    currentResponse.value = currentMessage
+    messages.value[0].message = currentMessage
+  }).then(()=> {
+    db.insertMessage(activeBot.value, "bot",  currentResponse.value)
+    currentResponse.value = ""
   })
 }
 const textareaKeydown = (e: KeyboardEvent) => {
@@ -60,8 +91,13 @@ const textareaKeydown = (e: KeyboardEvent) => {
 </script>
 <template>
   <main class="py-10 px-8 lg:px-8 xl:px-24 flex-grow flex flex-col">
+    <!-- Chat messages area -->
     <div class="messages flex-grow relative">
-      <div class="overflow-y-scroll flex flex-col-reverse absolute inset-0">
+      <div class="loading-screen text-center items-center" v-if="loadingProgress < 100">
+        <Text type="h4">Loading model:</Text>
+        <p>{{ loadingProgress }}%</p>
+      </div>
+      <div class="overflow-y-scroll flex flex-col-reverse absolute inset-0" >
         <ChatMessage v-if="isBotThinking" role="bot" :loading="isBotThinking"></ChatMessage>
         <ChatMessage v-if="loading" role="user" :loading="loading"></ChatMessage>
   
@@ -71,9 +107,7 @@ const textareaKeydown = (e: KeyboardEvent) => {
         <div class="time mb-8">
           <p class="text-gray-500 text-center">Today 10:36 AM</p>
         </div>
-        
       </div>
-      
     </div>
     <div class="message-box bg-slate-900 rounded-lg py-3 px-5 flex items-start gap-3">
       <div class="w-10 h-10 bg-gradient-to-r flex-shrink-0 from-red-500 to-orange-500 mt-2 rounded-full"></div>
