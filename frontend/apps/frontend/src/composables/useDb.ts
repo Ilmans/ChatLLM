@@ -31,7 +31,7 @@ export const useDb = () => {
                 console.log('Upgrade needed')
                 this.result.createObjectStore("bots", {autoIncrement: true, keyPath: 'id'});
                 const messageStore = this.result.createObjectStore("messages", {autoIncrement: true, keyPath: 'id'});
-                messageStore.createIndex('botIdIndex', "bot_id")
+                messageStore.createIndex('botIdIndex', "botId")
                 messageStore.createIndex('dateIndex', "date")
                 db = this.result
                 res(this.result)
@@ -39,7 +39,7 @@ export const useDb = () => {
         })
     }
 
-    const getMessages = (bot_id: number): Promise<ChatMessage[]> => {
+    const getMessages = (botId: number): Promise<ChatMessage[]> => {
         return new Promise(async (resolve, reject) => {
             const conn = await getConnection()
             const read = conn.transaction('messages', 'readonly')
@@ -51,7 +51,7 @@ export const useDb = () => {
             }
             store.openCursor().onsuccess = function(e) {
                 let cursor = this.result
-                if (cursor) {
+                if (cursor  && cursor.value.botId == botId) {
                     result.push(cursor.value)
                     cursor.continue()
                 }
@@ -129,6 +129,27 @@ export const useDb = () => {
         return find
     }
 
+    const clearCurrentBotChat = (): Promise<void> => {
+        return new Promise(async (resolve, reject) => {
+            const conn = await getConnection()
+            const read = conn.transaction('messages', 'readwrite')
+            
+            const store = read.objectStore('messages')
+            let result = []
+            read.oncomplete = () => {
+                resolve()
+            }
+            store.openCursor().onsuccess = function(e) {
+                let cursor = this.result
+                if (cursor && cursor.value.botId == activeBot.value) {
+                    cursor.delete()
+                    cursor.continue()
+                }
+            }
+
+        })
+    }
+
     return {
         drop,
         closeConnection,
@@ -139,6 +160,7 @@ export const useDb = () => {
         insertBot,
         getActiveBot, 
         getActiveBotId,
-        setActiveBot
+        setActiveBot,
+        clearCurrentBotChat
     }
 }

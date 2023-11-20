@@ -7,13 +7,14 @@ import { Slider } from "@/components/ui/slider"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
 import MenuItem from "@/components/ui/menu-item/MenuItem.vue"
-import { MessageCircle, BookA, ChefHat, Plus, AlignLeft, FileOutput, Settings } from 'lucide-vue-next'
+import { Settings, Trash } from 'lucide-vue-next'
 import { useChatStore } from '../store/chat';
 import { useDb } from '../composables/useDb';
 import { useLLM } from '../composables/useLLM';
-import {} from '@/components/ui/text'
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog/index'
 import { type Bot, type ChatRole, type IChatMessage } from '@/types';
 import ChatMessage from '@/components/ui/chat/ChatMessage.vue';
+import { useToast } from '@/components/ui/toast';
 
 
 const params = reactive({
@@ -42,18 +43,16 @@ onMounted(async () => {
     messages.value = dbMessages
     console.log(messages.value)
   },200)
-  // const chat = ref(new ChatModule())
   const dbMessages = await db.getMessages(activeBotId.value)
 
   await model.loadModel("RedPajama-INCITE-Chat-3B-v1-q4f16_1", (progress) => {
     console.log(progress.progress)
     loadingProgress.value = Math.round(progress.progress * 100) 
   })
-
-  // db.insertMessage(1, "user", "Write a literature review about React!")
-  // db.insertMessage(1, "bot", "You are welcome. Please let me know if you need any more help!")
 })
+
 onUnmounted(() => {
+  // Unload the model on leave
   model.unloadModel()
 })
 
@@ -69,6 +68,8 @@ const insertMessage = (role: ChatRole, message: string) => {
   })
 
 }
+
+
 const currentResponse = ref('')
 const sendMessage = () => {
   // Insert user message
@@ -93,9 +94,24 @@ const sendMessage = () => {
     currentResponse.value = ""
   })
 }
+
+const { toast } = useToast()
+const emptyChat = () => {
+  messages.value = []
+  db.clearCurrentBotChat()
+    .then(() => {
+      toast({
+        title: "Messages deleted successfully"
+    })
+    })
+}
+
+// Send message on win/ctrl + enter
 const textareaKeydown = (e: KeyboardEvent) => {
   if((e.ctrlKey || e.metaKey) && e.key == 'Enter') sendMessage()
 }
+
+
 </script>
 <template>
   <main class="py-10 px-8 lg:px-8 xl:px-12 flex-grow flex flex-col">
@@ -163,15 +179,36 @@ const textareaKeydown = (e: KeyboardEvent) => {
           <div class="flex justify-between items-center mb-3">
             <div class="flex items-center gap-3 ">
               <div class="w-10 h-10 bg-gradient-to-r from-red-500 to-orange-500 rounded-full"></div>
-              <Text type="h4">{{ activeBot.name }}</Text>
+              <Text type="h4">{{ activeBot?.name }}</Text>
             </div>
             <a href="#">
               <Settings></Settings>
             </a>
           </div>
-          <Text type="p">{{ activeBot.description }}</Text>
+          <Text type="p">{{ activeBot?.description }}</Text>
         </CardHeader>
       </Card>
+
+      <AlertDialog>
+        <AlertDialogTrigger as-child>
+          <Button variant="outline-danger" class="w-full mt-5">
+            <Trash width="16" class="mr-2"/>
+            Empty Chat
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete your chat from your device
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction @click="emptyChat">Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   </aside>
 </template>
