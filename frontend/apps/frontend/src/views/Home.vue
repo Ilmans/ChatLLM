@@ -76,7 +76,12 @@ const sendMessage = () => {
     console.log('step', step, currentResponse.value)
     if (step == 2 && currentResponse.value == '') {
       // Create new message
-      insertMessage("bot", currentResponse.value)
+      messages.value.unshift({
+        botId: activeBot.value,
+        date: Date.now(),
+        message: currentResponse.value,
+        role: "bot"
+      })
     }
     currentResponse.value = currentMessage
     messages.value[0].message = currentMessage
@@ -90,14 +95,14 @@ const textareaKeydown = (e: KeyboardEvent) => {
 }
 </script>
 <template>
-  <main class="py-10 px-8 lg:px-8 xl:px-24 flex-grow flex flex-col">
+  <main class="py-10 px-8 lg:px-8 xl:px-12 flex-grow flex flex-col">
     <!-- Chat messages area -->
     <div class="messages flex-grow relative">
       <div class="loading-screen text-center items-center" v-if="loadingProgress < 100">
         <Text type="h4">Loading model:</Text>
         <p>{{ loadingProgress }}%</p>
       </div>
-      <div class="overflow-y-scroll flex flex-col-reverse absolute inset-0" >
+      <div class="chat-messages px-5 overflow-y-scroll flex flex-col-reverse absolute inset-0" >
         <ChatMessage v-if="isBotThinking" role="bot" :loading="isBotThinking"></ChatMessage>
         <ChatMessage v-if="loading" role="user" :loading="loading"></ChatMessage>
   

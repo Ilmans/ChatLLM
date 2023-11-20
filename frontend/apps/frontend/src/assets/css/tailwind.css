@@ -67,6 +67,29 @@
 
   --ring: 212.7 26.8% 83.9%;
 }
+.chat-messages {
+  scrollbar-width: thin;
+}
+html {
+  --scrollbarBG: #1b1e2f;
+  --thumbBG: #90A4AE;
+}
+.chat-messages::-webkit-scrollbar {
+  width: 11px;
+}
+.chat-messages {
+  scrollbar-width: thin;
+  scrollbar-color: var(--thumbBG) var(--scrollbarBG);
+}
+.chat-messages::-webkit-scrollbar-track {
+  background: var(--scrollbarBG);
+}
+.chat-messages::-webkit-scrollbar-thumb {
+  background-color: var(--thumbBG) ;
+  border-radius: 6px;
+  border: 3px solid var(--scrollbarBG);
+}
+
 
 @layer base {
   * {
