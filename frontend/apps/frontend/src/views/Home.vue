@@ -12,7 +12,7 @@ import { useChatStore } from '../store/chat';
 import { useDb } from '../composables/useDb';
 import { useLLM } from '../composables/useLLM';
 import {} from '@/components/ui/text'
-import type { ChatRole, IChatMessage } from '@/types';
+import { type Bot, type ChatRole, type IChatMessage } from '@/types';
 import ChatMessage from '@/components/ui/chat/ChatMessage.vue';
 
 
@@ -24,7 +24,8 @@ const params = reactive({
 })
 const chatStore = useChatStore()
 const db = useDb()
-const activeBot = db.getActiveBot()
+const activeBotId = db.getActiveBotId()
+const activeBot = ref<Bot>()
 const messages = ref<IChatMessage[]>([])
 const newMessageText = ref('')
 const loading = ref(true)
@@ -35,13 +36,15 @@ const model = useLLM()
 const loadingProgress = ref(0)
 
 onMounted(async () => {
-  const dbMessages = await db.getMessages(activeBot.value)
+  activeBot.value = await db.getActiveBot()
   setTimeout(() => {
     loading.value = false 
     messages.value = dbMessages
     console.log(messages.value)
   },200)
   // const chat = ref(new ChatModule())
+  const dbMessages = await db.getMessages(activeBotId.value)
+
   await model.loadModel("RedPajama-INCITE-Chat-3B-v1-q4f16_1", (progress) => {
     console.log(progress.progress)
     loadingProgress.value = Math.round(progress.progress * 100) 
@@ -55,11 +58,11 @@ onUnmounted(() => {
 })
 
 const insertMessage = (role: ChatRole, message: string) => {
-  db.insertMessage(activeBot.value, role,  message)
+  db.insertMessage(activeBotId.value, role,  message)
 
   // Insert the message to the very first index
   messages.value.unshift({
-    botId: activeBot.value,
+    botId: activeBotId.value,
     date: Date.now(),
     message: message,
     role: role
@@ -77,7 +80,7 @@ const sendMessage = () => {
     if (step == 2 && currentResponse.value == '') {
       // Create new message
       messages.value.unshift({
-        botId: activeBot.value,
+        botId: activeBotId.value,
         date: Date.now(),
         message: currentResponse.value,
         role: "bot"
@@ -86,7 +89,7 @@ const sendMessage = () => {
     currentResponse.value = currentMessage
     messages.value[0].message = currentMessage
   }).then(()=> {
-    db.insertMessage(activeBot.value, "bot",  currentResponse.value)
+    db.insertMessage(activeBotId.value, "bot",  currentResponse.value)
     currentResponse.value = ""
   })
 }
@@ -160,13 +163,13 @@ const textareaKeydown = (e: KeyboardEvent) => {
           <div class="flex justify-between items-center mb-3">
             <div class="flex items-center gap-3 ">
               <div class="w-10 h-10 bg-gradient-to-r from-red-500 to-orange-500 rounded-full"></div>
-              <Text type="h4">English Helper Bot</Text>
+              <Text type="h4">{{ activeBot.name }}</Text>
             </div>
             <a href="#">
               <Settings></Settings>
             </a>
           </div>
-          <Text type="p">Lorem ipsum dolor sit amet consectetur adipisicing elit.</Text>
+          <Text type="p">{{ activeBot.description }}</Text>
         </CardHeader>
       </Card>
     </div>

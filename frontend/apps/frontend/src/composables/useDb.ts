@@ -117,8 +117,16 @@ export const useDb = () => {
         activeBot.value = id
     }
 
-    const getActiveBot = (): Ref<number> => {
+    const getActiveBotId = (): Ref<number> => {
         return activeBot
+    }
+
+    const getActiveBot = async (): Promise<Bot> => {
+        const allBots = await getBots()
+        const find = allBots.find(bot => bot.id == activeBot.value)
+
+        if (!find) throw new Error("Bot not found"); 
+        return find
     }
 
     return {
@@ -130,6 +138,7 @@ export const useDb = () => {
         getBots,
         insertBot,
         getActiveBot, 
+        getActiveBotId,
         setActiveBot
     }
 }
