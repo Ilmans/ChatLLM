@@ -10,6 +10,12 @@ import {
     TableRow,
 } from '@/components/ui/table'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { useModel } from '@/composables/useModel';
+import { Button } from '@/components/ui/button';
+import { Download } from 'lucide-vue-next';
+
+const { availableModels } = useModel()
+
 </script>
 <template>
     <main class="px-8 w-full">
@@ -28,24 +34,26 @@ import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
                             <TableHeader>
                                 <TableRow>
                                     <TableHead class="w-[100px]">
-                                        Invoice
+                                        #
                                     </TableHead>
-                                    <TableHead>Status</TableHead>
-                                    <TableHead>Method</TableHead>
-                                    <TableHead class="text-right">
-                                        Amount
-                                    </TableHead>
+                                    <TableHead>Name</TableHead>
+                                    <TableHead>Download</TableHead>
+                                    <TableHead>Size</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                <TableRow>
+                                <TableRow v-for="(model, i) in availableModels">
                                     <TableCell class="font-medium">
-                                        INV001
+                                        {{ i + 1 }}
                                     </TableCell>
-                                    <TableCell>Paid</TableCell>
-                                    <TableCell>Credit Card</TableCell>
-                                    <TableCell class="text-right">
-                                        $250.00
+                                    <TableCell>{{ model.name }}</TableCell>
+                                    <TableCell>
+                                        <Button variant="ghost">
+                                            <Download/>
+                                        </Button>
+                                    </TableCell>
+                                    <TableCell>
+                                        10GB
                                     </TableCell>
                                 </TableRow>
                             </TableBody>
