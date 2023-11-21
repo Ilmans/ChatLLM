@@ -27,13 +27,13 @@ const chatStore = useChatStore()
 const db = useDb()
 const activeBotId = db.getActiveBotId()
 const activeBot = ref<Bot>()
-const messages = ref<IChatMessage[]>([])
 const newMessageText = ref('')
 const loading = ref(true)
 // The loading state when user sent a message / inferencing
 const isBotThinking = ref(false)
-
 const model = useLLM()
+const messages = model.messages
+const messagesPrompt = model.messagesPrompt
 const loadingProgress = ref(0)
 
 onMounted(async () => {
@@ -76,9 +76,11 @@ const sendMessage = () => {
   insertMessage("user", newMessageText.value)
   
   // Get response from LLM
-  model.infer(newMessageText.value, (step, currentMessage) => {
+  model.infer(model.messagesPrompt.effect.run(), (step, currentMessage) => {
     console.log('step', step, currentResponse.value)
+  
     if (step == 2 && currentResponse.value == '') {
+  
       // Create new message
       messages.value.unshift({
         botId: activeBotId.value,
@@ -86,12 +88,18 @@ const sendMessage = () => {
         message: currentResponse.value,
         role: "bot"
       })
+
     }
+
     currentResponse.value = currentMessage
     messages.value[0].message = currentMessage
+  
   }).then(()=> {
+
+    // Only insert to database, not the state
     db.insertMessage(activeBotId.value, "bot",  currentResponse.value)
     currentResponse.value = ""
+
   })
 }
 
@@ -121,12 +129,12 @@ const textareaKeydown = (e: KeyboardEvent) => {
         <Text type="h4">Loading model:</Text>
         <p>{{ loadingProgress }}%</p>
       </div>
-      <div class="chat-messages px-5 overflow-y-scroll flex flex-col-reverse absolute inset-0" >
+      <div class="chat-messages px-5 overflow-y-auto flex flex-col-reverse absolute inset-0" >
         <ChatMessage v-if="isBotThinking" role="bot" :loading="isBotThinking"></ChatMessage>
         <ChatMessage v-if="loading" role="user" :loading="loading"></ChatMessage>
   
-        <ChatMessage v-else v-for="message in messages" :role="message.role" :loading="false">
-          {{ message.message }}
+        <ChatMessage v-else v-for="message in messages" :role="message.role" :loading="false" >
+          <div v-html="message.message"></div>
         </ChatMessage>
         <div class="time mb-8">
           <p class="text-gray-500 text-center">Today 10:36 AM</p>

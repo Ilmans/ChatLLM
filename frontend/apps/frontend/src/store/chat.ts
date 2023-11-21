@@ -37,9 +37,11 @@ export const useChatStore = defineStore('chat', () => {
 
     onMounted(() => {
         const db = useDb()
-        bots.value.forEach(b => {
-            db.insertBot(JSON.parse(JSON.stringify(b)))
-        })
+
+        // Insert experimental bot
+        // bots.value.forEach(b => {
+        //     db.insertBot(JSON.parse(JSON.stringify(b)))
+        // })
         // db.drop()
     })
 

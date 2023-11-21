@@ -15,7 +15,7 @@ const imageClass = computed(() => {
 })
 </script>
 <template>
-    <div class="message mb-10">
+    <div class="message mb-10 whitespace-pre-wrap">
         <div class="avatar flex gap-5">
             <div :class="cn('w-10 h-10 bg-gradient-to-r rounded-full', imageClass)"></div>
             <Text  v-if="!loading" :type="props.role == 'user' ? 'h3' : 'p'" class="flex-1"><slot></slot></Text>
