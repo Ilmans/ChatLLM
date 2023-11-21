@@ -19,9 +19,10 @@ import { cn } from "./lib/utils"
 const chatStore = useChatStore()
 const bots = ref([])
 const db = useDb()
-const activeBot = db.getActiveBot()
+const activeBot = ref()
 onMounted(async () => {
   bots.value = await db.getBots()
+  db.getActiveBot().then((v) => activeBot.value = v).catch(err => console.log('arst'))
 
   console.log(bots.value)
 })

@@ -1,5 +1,5 @@
 import { useStorage } from "@vueuse/core";
-import type { Bot, ChatMessage, ChatRole } from "../types";
+import type { Bot, IChatMessage, ChatRole } from "../types";
 import type { Ref } from "vue";
 
 const DB_VERSION = 1
@@ -39,7 +39,7 @@ export const useDb = () => {
         })
     }
 
-    const getMessages = (botId: number): Promise<ChatMessage[]> => {
+    const getMessages = (botId: number): Promise<IChatMessage[]> => {
         return new Promise(async (resolve, reject) => {
             const conn = await getConnection()
             const read = conn.transaction('messages', 'readonly')
@@ -67,7 +67,7 @@ export const useDb = () => {
             read.oncomplete = () => {
                 resolve(true)
             }
-            const chatMessage: ChatMessage = {
+            const chatMessage: IChatMessage = {
                 botId: botId,
                 date: Date.now(),
                 message,

@@ -2,7 +2,6 @@ import { computed, ref } from "vue"
 import { useDb } from "./useDb"
 import { ChatModule } from "@mlc-ai/web-llm"
 import { useRoute, useRouter } from "vue-router"
-import type { GenerateProgressCallback } from "../../../../libs/web-llm/src/types"
 import type { IChatMessage } from "@/types"
 
 export const useLLM = () => {
@@ -40,7 +39,7 @@ export const useLLM = () => {
         local_id: "vicuna-7b-v1.5-16k-q4f16_1",
         model_url: baseUrl + "/models/vicuna-7b-v1.5-16k-q4f16_1/params/",
         required_features: ['shader-f16'],
-        conv_template: 'vicuna_v1.1'
+        conv_template: 'vicuna_v1.1',
       },
     ]
   
@@ -75,14 +74,19 @@ export const useLLM = () => {
       
       const currentModel = availableModels.find(m => m.local_id == model_id)
       console.log('load chat', onModelLoadingCb)
-      await chat.reload(model_id, { conv_template: currentModel?.conv_template, conv_config: {
-      } }, {
+      
+      const chatOptions = { 
+        conv_template: currentModel?.conv_template, 
+        conv_config: {},
+      }
+
+      await chat.reload(model_id,  chatOptions, {
         model_list: availableModels,
         model_lib_map: modelWasmMap,
       })
     }
     
-    const infer = async (text: string, cb: GenerateProgressCallback) => {
+    const infer = async (text: string, cb) => {
       await chat.generate(text, cb)
     }
 
