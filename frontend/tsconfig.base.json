@@ -17,7 +17,8 @@
     "paths": {
       "@acme/counter": ["libs/counter/src/index.ts"],
       "@frontend/*": ["./apps/frontend/src/*"],
-      "@mlc-ai/web-llm": ["libs/web-llm/src/index.ts"]
+      "tvmjs": ["./libs/tvmjs/src/index.ts"],
+      "@mlc-ai/web-llm": ["./libs/web-llm/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

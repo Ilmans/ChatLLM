@@ -1,6 +1,6 @@
 import { computed, ref } from "vue"
 import { useDb } from "./useDb"
-import { ChatModule } from "@mlc-ai/web-llm"
+import { ChatModule } from "../../../../libs/web-llm"
 import { useRoute, useRouter } from "vue-router"
 import type { IChatMessage } from "@/types"
 import { useModel } from "./useModel"
@@ -14,7 +14,7 @@ export const useLLM = () => {
       await chat.unload()
     }
 
-    const { availableModels, modelWasmMap } = useModel()
+    const models = useModel()
 
     // Load a model 
     const loadModel = async (model_id: string, onModelLoadingCb?: (report) => void) => {
@@ -22,18 +22,15 @@ export const useLLM = () => {
       if(onModelLoadingCb)
         chat.setInitProgressCallback(onModelLoadingCb);
       
-      const currentModel = availableModels.find(m => m.local_id == model_id)
+      const currentModel = models.model_list.find(m => m.local_id == model_id)
       console.log('load chat', onModelLoadingCb)
       
       const chatOptions = { 
-        conv_template: currentModel?.conv_template, 
+        conv_template: "redpajama_chat", 
         conv_config: {},
       }
 
-      await chat.reload(model_id,  chatOptions, {
-        model_list: availableModels,
-        model_lib_map: modelWasmMap,
-      })
+      await chat.reload(model_id,  chatOptions, models)
     }
     
     const infer = async (text: string, cb) => {

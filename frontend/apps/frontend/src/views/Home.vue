@@ -49,7 +49,7 @@ onMounted(async () => {
   },200)
   const dbMessages = await db.getMessages(activeBotId.value)
 
-  await model.loadModel("RedPajama-INCITE-Chat-3B-v1-q4f16_1", (progress) => {
+  await model.loadModel("RedPajama-INCITE-Chat-3B-v1-q4f32_1", (progress) => {
     console.log(progress.progress)
     loadingProgress.value = Math.round(progress.progress * 100) 
   })
