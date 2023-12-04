@@ -22,12 +22,15 @@ const db = useDb()
 const activeBot = ref()
 onMounted(async () => {
   bots.value = await db.getBots()
-  db.getActiveBot().then((v) => activeBot.value = v).catch(err => console.log('arst'))
+  db.getActiveBot()
+    .then((v) => {
+      activeBot.value = v
+      console.log()
+    })
+    .catch(err => console.log('arst'))
 
-  console.log(bots.value)
 })
 
-console.log(chatStore.bots)
 
 </script>
 
@@ -67,7 +70,7 @@ console.log(chatStore.bots)
             <Text type="p" class="my-3">Your Bots</Text>
             <ul>
               <li class="menu-item mb-1" v-for="bot in bots">
-                  <button @click="db.setActiveBot(bot.id)" :class="cn(activeBot == bot.id ? 'text-white' : 'text-gray-500','menu-link px-3 py-2 bg-transparent  hover:text-gray-200 transition duration-200 rounded-md flex gap-2')">
+                  <button @click="db.setActiveBot(bot.id)" :class="cn(activeBot.id == bot.id ? 'text-white' : 'text-gray-500','menu-link px-3 py-2 bg-transparent  hover:text-gray-200 transition duration-200 rounded-md flex gap-2')">
                     <AlignLeft width="20" />
                     {{bot.name}}
                   </button>
