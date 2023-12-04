@@ -14,7 +14,7 @@ import { useModel } from '@/composables/useModel';
 import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-vue-next';
 
-const { availableModels } = useModel()
+const { model_list } = useModel()
 
 </script>
 <template>
@@ -42,11 +42,11 @@ const { availableModels } = useModel()
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                <TableRow v-for="(model, i) in availableModels">
+                                <TableRow v-for="(model, i) in model_list">
                                     <TableCell class="font-medium">
                                         {{ i + 1 }}
                                     </TableCell>
-                                    <TableCell>{{ model.name }}</TableCell>
+                                    <TableCell>{{ model.local_id }}</TableCell>
                                     <TableCell>
                                         <Button variant="ghost">
                                             <Download/>
