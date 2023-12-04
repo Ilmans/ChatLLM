@@ -87,7 +87,6 @@ console.log(chatStore.bots)
                       </DialogDescription>
                     </DialogHeader>
                     <CreateBotForm/>
-                    
                   </DialogContent>
                 </Dialog>
               </li>

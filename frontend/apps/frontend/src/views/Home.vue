@@ -14,8 +14,9 @@ import { useLLM } from '../composables/useLLM';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog/index'
 import { type Bot, type ChatRole, type IChatMessage } from '@/types';
 import ChatMessage from '@/components/ui/chat/ChatMessage.vue';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { useToast } from '@/components/ui/toast';
-
+import UpdateBotForm from '@/components/domain/bot/UpdateBotForm.vue'
 
 const params = reactive({
   top_p: [0.8],
@@ -49,10 +50,10 @@ onMounted(async () => {
   },200)
   const dbMessages = await db.getMessages(activeBotId.value)
 
-  await model.loadModel("RedPajama-INCITE-Chat-3B-v1-q4f32_1", (progress) => {
-    console.log(progress.progress)
-    loadingProgress.value = Math.round(progress.progress * 100) 
-  })
+  // await model.loadModel("RedPajama-INCITE-Chat-3B-v1-q4f32_1", (progress) => {
+  //   console.log(progress.progress)
+  //   loadingProgress.value = Math.round(progress.progress * 100) 
+  // })
 })
 
 onUnmounted(() => {
@@ -199,9 +200,20 @@ const textareaKeydown = (e: KeyboardEvent) => {
                 <div class="w-10 h-10 bg-gradient-to-r from-red-500 to-orange-500 rounded-full"></div>
                 <Text type="h4">{{ activeBot?.name }}</Text>
               </div>
-              <a href="#">
-                <Settings></Settings>
-              </a>
+              <Dialog>
+                <DialogTrigger class="menu-link w-full px-3 py-2 bg-transparent text-gray-500 hover:text-gray-200 transition duration-200 rounded-md flex gap-2">
+                  <Settings></Settings>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Update Bot Profile</DialogTitle>
+                    <DialogDescription>
+                      Change the bot data or feed with documents
+                    </DialogDescription>
+                  </DialogHeader>
+                  <UpdateBotForm/>
+                </DialogContent>
+              </Dialog>
             </div>
             <Text type="p">{{ activeBot?.description }}</Text>
           </CardHeader>

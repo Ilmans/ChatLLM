@@ -4,6 +4,9 @@ import {fileURLToPath} from 'url'
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
+import topLevelAwait from "vite-plugin-top-level-await";
+
+
 console.log(fileURLToPath(
   new URL('./../../libs/web-llm/src/index.ts', import.meta.url)
 ))
@@ -21,6 +24,9 @@ export default defineConfig({
       ),
     },
   },
+  build: {
+    target: 'esnext'
+  },  
   server: {
     port: 4200,
     host: 'localhost',
@@ -31,7 +37,16 @@ export default defineConfig({
     host: 'localhost',
   },
 
-  plugins: [vue(), nxViteTsPaths()],
+  plugins: [
+    vue(), 
+    nxViteTsPaths(),
+    topLevelAwait({
+      // The export name of top-level await promise for each chunk module
+      promiseExportName: "__tla",
+      // The function to generate import names of top-level await promise in each chunk module
+      promiseImportName: i => `__tla_${i}`
+    })
+  ],
 
   // Uncomment this if you are using workers.
   // worker: {
