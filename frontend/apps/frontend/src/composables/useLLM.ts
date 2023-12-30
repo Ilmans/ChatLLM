@@ -2,7 +2,7 @@ import { computed, ref } from "vue"
 import { useDb } from "./useDb"
 import { ChatModule } from "../../../../libs/web-llm"
 import { useRoute, useRouter } from "vue-router"
-import type { IChatMessage } from "@/types"
+import type { ChatRole, IChatMessage } from "@/types"
 import { useModel } from "./useModel"
 
 export const useLLM = () => {
@@ -48,12 +48,24 @@ export const useLLM = () => {
       console.log("msgs",msgs)
       return msgs 
     })
+
+
+    const insertMessage = (botId: number, role: ChatRole, message: string) => {
+      // Insert the message to the very first index
+      messages.value.unshift({
+        botId: botId,
+        date: Date.now(),
+        message: message,
+        role: role
+      })
+    }
     
     return {
         loadModel,
         unloadModel,
         messages,
         infer,
-        messagesPrompt
+        messagesPrompt,
+        insertMessage
     }
 }

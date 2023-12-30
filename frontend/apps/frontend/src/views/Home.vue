@@ -29,12 +29,13 @@ const db = useDb()
 const activeBotId = db.getActiveBotId()
 const activeBot = ref<Bot|null>()
 const newMessageText = ref('')
+const newMessageTextarea = ref<HTMLTextAreaElement>()
 const loading = ref(true)
 // The loading state when user sent a message / inferencing
 const isBotThinking = ref(false)
-const model = useLLM()
-const messages = model.messages
-const messagesPrompt = model.messagesPrompt
+const llm = useLLM()
+const messages = llm.messages
+const messagesPrompt = llm.messagesPrompt
 const loadingProgress = ref(0)
 
 onMounted(async () => {
@@ -50,7 +51,7 @@ onMounted(async () => {
   },200)
   const dbMessages = await db.getMessages(activeBotId.value)
 
-  await model.loadModel("RedPajama-INCITE-Chat-3B-v1-q4f32_1", (progress) => {
+  await llm.loadModel("RedPajama-INCITE-Chat-3B-v1-q4f32_1", (progress) => {
     console.log(progress.progress)
     loadingProgress.value = Math.round(progress.progress * 100) 
   })
@@ -58,30 +59,28 @@ onMounted(async () => {
 
 onUnmounted(() => {
   // Unload the model on leave
-  model.unloadModel()
+  llm.unloadModel()
 })
 
+/**
+ * 
+ * @param role The role who send the message
+ * @param message The content
+ */
 const insertMessage = (role: ChatRole, message: string) => {
   db.insertMessage(activeBotId.value, role,  message)
-
-  // Insert the message to the very first index
-  messages.value.unshift({
-    botId: activeBotId.value,
-    date: Date.now(),
-    message: message,
-    role: role
-  })
-
+  llm.insertMessage(activeBotId.value, role, message)
 }
 
 
 const currentResponse = ref('')
 const sendMessage = () => {
+  
   // Insert user message
   insertMessage("user", newMessageText.value)
   
   // Get response from LLM
-  model.infer(model.messagesPrompt.effect.run(), (step, currentMessage) => {
+  llm.infer(llm.messagesPrompt.effect.run(), (step, currentMessage) => {
     console.log('step', step, currentResponse.value)
   
     if (step == 2 && currentResponse.value == '') {
@@ -98,6 +97,9 @@ const sendMessage = () => {
 
     currentResponse.value = currentMessage
     messages.value[0].message = currentMessage
+    newMessageText.value = ""
+    newMessageTextarea.value.focus()
+
   
   }).then(()=> {
 
@@ -115,7 +117,7 @@ const emptyChat = () => {
     .then(() => {
       toast({
         title: "Messages deleted successfully"
-    })
+      })
     })
 }
 
@@ -154,7 +156,7 @@ const textareaKeydown = (e: KeyboardEvent) => {
         <div class="w-10 h-10 bg-gradient-to-r flex-shrink-0 from-red-500 to-orange-500 mt-2 rounded-full"></div>
         <div class="w-full">
           <form @submit.prevent="sendMessage">
-            <Textarea placeholder="Ask me anything" rows="3" @keydown="textareaKeydown" v-model="newMessageText"/>
+            <Textarea placeholder="Ask me anything" rows="3" @keydown="textareaKeydown" v-model="newMessageText" ref="newMessageTextarea"/>
             <div class="flex justify-end mt-3">
               <Button size="sm" variant="ghost">Send</Button>
             </div>
