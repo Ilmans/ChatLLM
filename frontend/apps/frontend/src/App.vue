@@ -15,12 +15,26 @@ import { useDb } from "./composables/useDb"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "./components/ui/dialog"
 import Toaster from '@/components/ui/toast/Toaster.vue'
 import { cn } from "./lib/utils"
+import {useWebGPU} from '@/composables/useWebGPU'
 
 const chatStore = useChatStore()
 const bots = ref([])
 const db = useDb()
 const activeBot = ref()
+
+const webGPU = useWebGPU()
+
 onMounted(async () => {
+
+  // Check whether WebGPU is supported
+
+  if(!await webGPU.isWebGPUSupported()) {
+    const message = `This project runs models in the browser with WebGPU and only works in Google Chrome v113 and above on Desktop with supported GPUs.\n\nExperimental support may be available for desktop Firefox and Safari Tech Preview.`
+    alert(message)
+    throw Error(message)
+  }
+
+
   bots.value = await db.getBots()
   db.getActiveBot()
     .then((v) => {

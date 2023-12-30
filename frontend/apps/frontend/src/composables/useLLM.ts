@@ -13,7 +13,7 @@ export const useLLM = () => {
     const unloadModel = async () => {
       await chat.unload()
     }
-
+    
     const models = useModel()
 
     // Load a model 
@@ -23,7 +23,6 @@ export const useLLM = () => {
         chat.setInitProgressCallback(onModelLoadingCb);
       
       const currentModel = models.model_list.find(m => m.local_id == model_id)
-      console.log('load chat', onModelLoadingCb)
       
       const chatOptions = { 
         conv_template: "redpajama_chat", 
