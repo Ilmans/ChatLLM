@@ -12,21 +12,28 @@ import { Button } from "@/components/ui/button"
 import { useToast } from "@/components/ui/toast"
 import { useDb } from "@/composables/useDb"
 import type { Bot } from "@/types";
-import { onMounted, ref } from 'vue'
-import * as pdfJs from "pdfjs-dist";
-import * as pdfJsWorker from 'pdfjs-dist/build/pdf.worker.min.mjs'
+import { onMounted, reactive, ref } from 'vue'
 import type { TextItem } from 'pdfjs-dist/types/src/display/api'
-console.log(pdfJs)
+import { getFileContent } from '@/composables/useDocument'
 
-pdfJs.GlobalWorkerOptions.workerSrc = pdfJsWorker
 const emit = defineEmits(['success'])
 const db = useDb()
-const activeBot = ref<Bot>()
-const inputPdf = ref()
-onMounted(async () => {
-    activeBot.value = await db.getActiveBot()
+const activeBot = reactive<Bot>({
+    name: '',
+    description: '',
+    prompt: '',
+    id: 0,
+    document: {
+        filename: '',
+        text: ''
+    },
+    params: {
+        top_p: 0.2,
+        temperature: 0.2,
+        repetition_penalty: 0.2 
+    }
 })
-
+const inputPdf = ref()
 const formSchema = toTypedSchema(z.object({
     name: z.string(),
     description: z.string(),
@@ -36,7 +43,7 @@ const formSchema = toTypedSchema(z.object({
     repetition_penalty: z.array(z.number().min(0).max(1)).nullable(),
 }))
 
-const { handleSubmit, values } = useForm({
+const { handleSubmit, values, setValues } = useForm({
     validationSchema: formSchema,
     initialValues: {
         repetition_penalty: [0.5],
@@ -45,51 +52,22 @@ const { handleSubmit, values } = useForm({
     }
 })
 
-const readPdfs = (files: FileList) => {
-    
-    return new Promise(res => {
-        const reader = new FileReader()
-        reader.onload = async e => {
-            const arrayBuffer = reader.result
-            const doc = await pdfJs.getDocument(arrayBuffer).promise
-
-            const readPage = async (pageNumber: number) => {
-                const page = await doc.getPage(pageNumber)
-
-                const textContent = await page.getTextContent()
-                
-                const contentToString = () => {
-                    const result = []
-                    textContent.items.forEach(item => {
-                        item = (item as TextItem)
-                        if (item.height == 0 && item.width == 0) {
-                            // Break line
-                            result.push("\n")
-                            return
-                        } 
-                        result.push(item.str)
-                    })
-                    return result.join('')
-                }
-                return contentToString()
-            }
-
-            const result = []
-            for(let i = 1; i <= doc.numPages; i++) {
-                const pageContent = await readPage(i)
-                result.push(pageContent)
-            }
-            console.log(result.join('\n\n'))
-
-            return res(result.join('\n\n'))
-        }
-        reader.readAsArrayBuffer(files[0])
+onMounted(async () => {
+    Object.assign(activeBot, await db.getActiveBot())
+    setValues({
+        name: activeBot.name,
+        prompt: activeBot.prompt,
+        description: activeBot.description,
     })
-}
+})
+
+
+
 const onFileChange = async (e: InputEvent) => {
     const files = (e.target as HTMLInputElement).files
-    readPdfs(files)
+    getFileContent(files[0])
 }
+
 const onSubmit = handleSubmit(async (v) => {
     const botCount = (await db.getBots()).length
     const {toast} = useToast()
@@ -101,6 +79,10 @@ const onSubmit = handleSubmit(async (v) => {
         name: v.name,
         description: v.description,
         prompt: v.prompt,
+        document: {
+            filename: '',
+            text: ''
+        },
         params: {
             top_p: v.top_p,
             temperature: v.temperature,
@@ -116,7 +98,7 @@ const onSubmit = handleSubmit(async (v) => {
             <FormItem>
                 <FormLabel>Bot Name</FormLabel>
                     <FormControl>
-                        <Input type="text" placeholder="EnglishHelperBot" v-bind="componentField" :value="activeBot?.name"/>
+                        <Input type="text" placeholder="EnglishHelperBot"  :value="activeBot?.name" v-bind="componentField"/>
                     </FormControl>
                 <FormMessage />
             </FormItem>
@@ -125,7 +107,7 @@ const onSubmit = handleSubmit(async (v) => {
             <FormItem>
                 <FormLabel>Description</FormLabel>
                     <FormControl>
-                        <Input type="text" placeholder="EnglishHelperBot" v-bind="componentField" :value="activeBot?.name"/>
+                        <Input type="text" placeholder="EnglishHelperBot" v-bind="componentField" :value="activeBot?.description"/>
                     </FormControl>
                 <FormMessage />
             </FormItem>
@@ -134,7 +116,7 @@ const onSubmit = handleSubmit(async (v) => {
             <FormItem>
                 <FormLabel>Prompt</FormLabel>
                     <FormControl>
-                        <Textarea  v-bind="componentField" :value="activeBot?.description"></Textarea>
+                        <Textarea  v-bind="componentField" :value="activeBot?.prompt"></Textarea>
                     </FormControl>
                 <FormMessage />
             </FormItem>

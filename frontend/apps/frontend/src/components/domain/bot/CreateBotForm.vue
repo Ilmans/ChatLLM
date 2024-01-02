@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
@@ -11,9 +11,17 @@ import { Text } from "@/components/ui/text"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/components/ui/toast"
 import { useDb } from "@/composables/useDb"
+import { onMounted, ref } from 'vue'
+import { getFileContent } from '@/composables/useDocument'
 
 const emit = defineEmits(['success'])
 const db = useDb()
+const file = ref()
+
+onMounted(() => {
+    console.log('test', )
+})
+
 const formSchema = toTypedSchema(z.object({
     name: z.string(),
     description: z.string(),
@@ -31,22 +39,45 @@ const { handleSubmit, values } = useForm({
         temperature: [0.4],
     }
 })
+
+const onFileChange = async (e: InputEvent) => {
+    const files = (e.target as HTMLInputElement).files
+    const read = await getFileContent(files[0])
+    return read
+}
+
 const onSubmit = handleSubmit(async (v) => {
     const botCount = (await db.getBots()).length
     const {toast} = useToast()
-    toast({
-        title: "Bot created successfully"
-    })
-    db.insertBot({
+
+    let document = {
+        filename: '',
+        text: ''
+    }
+    const inputFiles = (file.value.inputElement as HTMLInputElement).files
+    if(inputFiles.length > 0) {
+        // read file if exists
+        document = {
+            filename: inputFiles[0].name,
+            text: await getFileContent(inputFiles[0])
+        }
+
+        console.log(document)
+    }
+    await db.insertBot({
         id: botCount+1,
         name: v.name,
         description: v.description,
         prompt: v.prompt,
+        document,
         params: {
             top_p: v.top_p,
             temperature: v.temperature,
             repetition_penalty: v.repetition_penalty,
         }
+    })
+    toast({
+        title: "Bot created successfully"
     })
     emit("success", v)
 })
@@ -125,6 +156,10 @@ const onSubmit = handleSubmit(async (v) => {
                 <FormMessage />
             </FormItem>
         </FormField>
+        <FormItem>
+            <Text type="small">Feed bot </Text>
+            <Input type="file" placeholder="EnglishHelperBot" ref="file" @change="onFileChange" accept="application/pdf, text/plain"/>
+        </FormItem>
         <div class="flex justify-end">
         <Button type="submit">
             Create

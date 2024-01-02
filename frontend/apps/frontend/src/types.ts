@@ -3,6 +3,10 @@ export interface Bot {
     name: string
     description: string
     prompt: string
+    document: {
+        filename: string 
+        text: string
+    }
     params: {
         top_p: number | number[],
         temperature: number | number[],
