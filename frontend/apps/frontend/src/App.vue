@@ -16,11 +16,15 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import Toaster from '@/components/ui/toast/Toaster.vue'
 import { cn } from "./lib/utils"
 import {useWebGPU} from '@/composables/useWebGPU'
+import { useLLM } from "./composables/useLLM"
+import type { Bot } from "./types"
 
 const chatStore = useChatStore()
 const bots = ref([])
 const db = useDb()
 const activeBot = ref()
+
+chatStore.fetchBots()
 
 const webGPU = useWebGPU()
 
@@ -44,6 +48,12 @@ onMounted(async () => {
     .catch(err => console.log('arst'))
 
 })
+
+const setActiveBot = (bot: Bot) => {
+  db.setActiveBot(bot.id)
+  activeBot.value = bot
+  console.log('active bot', activeBot.value)
+}
 
 
 </script>
@@ -84,7 +94,7 @@ onMounted(async () => {
             <Text type="p" class="my-3">Your Bots</Text>
             <ul>
               <li class="menu-item mb-1" v-for="bot in bots">
-                  <button @click="db.setActiveBot(bot.id)" :class="cn(activeBot.id == bot.id ? 'text-white' : 'text-gray-500','menu-link px-3 py-2 bg-transparent  hover:text-gray-200 transition duration-200 rounded-md flex gap-2')">
+                  <button @click="setActiveBot(bot)" :class="cn(activeBot.id == bot.id ? 'text-white' : 'text-gray-500','menu-link px-3 py-2 bg-transparent  hover:text-gray-200 transition duration-200 rounded-md flex gap-2')">
                     <AlignLeft width="20" />
                     {{bot.name}}
                   </button>

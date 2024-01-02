@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted, onUnmounted, reactive, ref } from 'vue';
+import { computed, onMounted, onUnmounted, reactive, ref } from 'vue';
 
 import { Button } from "@/components/ui/button"
 import { Text } from "@/components/ui/text"
@@ -17,6 +17,7 @@ import ChatMessage from '@/components/ui/chat/ChatMessage.vue';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { useToast } from '@/components/ui/toast';
 import UpdateBotForm from '@/components/domain/bot/UpdateBotForm.vue'
+import Loading from '@/components/ui/loading/Loading.vue';
 
 const params = reactive({
   top_p: [0.8],
@@ -51,10 +52,10 @@ onMounted(async () => {
   },200)
   const dbMessages = await db.getMessages(activeBotId.value)
 
-  await llm.loadModel("RedPajama-INCITE-Chat-3B-v1-q4f32_1", (progress) => {
-    console.log(progress.progress)
-    loadingProgress.value = Math.round(progress.progress * 100) 
-  })
+  // await llm.loadModel("RedPajama-INCITE-Chat-3B-v1-q4f32_1", (progress) => {
+  //   console.log(progress.progress)
+  //   loadingProgress.value = Math.round(progress.progress * 100) 
+  // })
 })
 
 onUnmounted(() => {
@@ -126,6 +127,7 @@ const textareaKeydown = (e: KeyboardEvent) => {
   if((e.ctrlKey || e.metaKey) && e.key == 'Enter') sendMessage()
 }
 
+const isModelLoading = computed(() => loadingProgress.value < 100)
 
 </script>
 <template>
@@ -135,12 +137,13 @@ const textareaKeydown = (e: KeyboardEvent) => {
     </div>
     <template v-else>
       <!-- Chat messages area -->
-      <div class="messages flex-grow relative">
-        <div class="loading-screen text-center items-center" v-if="loadingProgress < 100">
+      <div class="messages flex-grow relative ">
+        <div class="loading-screen text-center items-center mt-10" v-if="isModelLoading">
+          <Loading name="spinner"></Loading>
           <Text type="h4">Loading model:</Text>
           <p>{{ loadingProgress }}%</p>
         </div>
-        <div class="chat-messages px-5 overflow-y-auto flex flex-col-reverse absolute inset-0" >
+        <div class="chat-messages px-5 overflow-y-auto flex flex-col-reverse absolute inset-0" v-else >
           <ChatMessage v-if="isBotThinking" role="bot" :loading="isBotThinking"></ChatMessage>
           <ChatMessage v-if="loading" role="user" :loading="loading"></ChatMessage>
     
@@ -152,7 +155,7 @@ const textareaKeydown = (e: KeyboardEvent) => {
           </div>
         </div>
       </div>
-      <div class="message-box bg-slate-900 rounded-lg py-3 px-5 flex items-start gap-3">
+      <div class="message-box bg-slate-900 rounded-lg py-3 px-5 flex items-start gap-3"  v-if="!isModelLoading">
         <div class="w-10 h-10 bg-gradient-to-r flex-shrink-0 from-red-500 to-orange-500 mt-2 rounded-full"></div>
         <div class="w-full">
           <form @submit.prevent="sendMessage">
