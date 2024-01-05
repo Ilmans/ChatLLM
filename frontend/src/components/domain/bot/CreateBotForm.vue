@@ -62,7 +62,6 @@ const onSubmit = handleSubmit(async (v) => {
             text: await getFileContent(inputFiles[0])
         }
 
-        console.log(document)
     }
     await db.insertBot({
         id: botCount+1,

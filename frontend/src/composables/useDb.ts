@@ -129,6 +129,23 @@ export const useDb = () => {
         return find
     }
 
+    const updateBot = async (data: Bot) => {
+        const conn = await getConnection()
+        const tx = conn.transaction('bots', 'readwrite')
+        const store = tx.objectStore("bots")
+        store.put(data)
+    }
+
+    const removeBotDocument = async () => {
+        const conn = await getConnection()
+        const currentActiveBot = await getActiveBot()
+        const tx = conn.transaction('bots', 'readwrite')
+        const store = tx.objectStore("bots")
+        currentActiveBot.document.filename = currentActiveBot.document.text = ""
+        console.log('updated bot', currentActiveBot)
+        store.put(currentActiveBot)
+    }
+
     const clearCurrentBotChat = (): Promise<void> => {
         return new Promise(async (resolve, reject) => {
             const conn = await getConnection()
@@ -161,6 +178,8 @@ export const useDb = () => {
         getActiveBot, 
         getActiveBotId,
         setActiveBot,
-        clearCurrentBotChat
+        clearCurrentBotChat,
+        updateBot,
+        removeBotDocument,
     }
 }

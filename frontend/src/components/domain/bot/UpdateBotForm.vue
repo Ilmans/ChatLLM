@@ -15,6 +15,8 @@ import type { Bot } from "@/types";
 import { onMounted, reactive, ref } from 'vue'
 import type { TextItem } from 'pdfjs-dist/types/src/display/api'
 import { getFileContent } from '@/composables/useDocument'
+import { X } from 'lucide-vue-next'
+import { File } from 'lucide-vue-next'
 
 const emit = defineEmits(['success'])
 const db = useDb()
@@ -65,30 +67,25 @@ onMounted(async () => {
 
 const onFileChange = async (e: InputEvent) => {
     const files = (e.target as HTMLInputElement).files
-    getFileContent(files[0])
+    activeBot.document = {
+        filename: files[0].name,
+        text: await getFileContent(files[0])
+    }
 }
 
 const onSubmit = handleSubmit(async (v) => {
     const botCount = (await db.getBots()).length
     const {toast} = useToast()
+    activeBot.description = v.description
+    activeBot.name = v.name
+    activeBot.params.repetition_penalty = v.repetition_penalty
+    activeBot.params.temperature = v.temperature
+    activeBot.params.top_p = v.top_p
+    activeBot.prompt = v.prompt
     toast({
-        title: "Bot created successfully"
+        title: "Bot updated successfully"
     })
-    db.insertBot({
-        id: botCount+1,
-        name: v.name,
-        description: v.description,
-        prompt: v.prompt,
-        document: {
-            filename: '',
-            text: ''
-        },
-        params: {
-            top_p: v.top_p,
-            temperature: v.temperature,
-            repetition_penalty: v.repetition_penalty,
-        }
-    })
+    db.updateBot(JSON.parse(JSON.stringify(activeBot)))
     emit("success", v)
 })
 </script>
@@ -98,7 +95,7 @@ const onSubmit = handleSubmit(async (v) => {
             <FormItem>
                 <FormLabel>Bot Name</FormLabel>
                     <FormControl>
-                        <Input type="text" placeholder="EnglishHelperBot"  :value="activeBot?.name" v-bind="componentField"/>
+                        <Input type="text" placeholder="EnglishHelperBot"  v-bind="componentField"/>
                     </FormControl>
                 <FormMessage />
             </FormItem>
@@ -107,7 +104,7 @@ const onSubmit = handleSubmit(async (v) => {
             <FormItem>
                 <FormLabel>Description</FormLabel>
                     <FormControl>
-                        <Input type="text" placeholder="EnglishHelperBot" v-bind="componentField" :value="activeBot?.description"/>
+                        <Input type="text" placeholder="EnglishHelperBot" v-bind="componentField"/>
                     </FormControl>
                 <FormMessage />
             </FormItem>
@@ -116,7 +113,7 @@ const onSubmit = handleSubmit(async (v) => {
             <FormItem>
                 <FormLabel>Prompt</FormLabel>
                     <FormControl>
-                        <Textarea  v-bind="componentField" :value="activeBot?.prompt"></Textarea>
+                        <Textarea  v-bind="componentField"></Textarea>
                     </FormControl>
                 <FormMessage />
             </FormItem>
@@ -168,7 +165,17 @@ const onSubmit = handleSubmit(async (v) => {
         </FormField>
         <FormItem>
             <Text type="small">Feed bot with PDF</Text>
-            <Input type="file" placeholder="EnglishHelperBot" :ref="inputPdf" @change="onFileChange" accept="application/pdf"/>
+            <div v-if="activeBot.document.filename !== ''" class="rounded-md border border-gray-400 p-3 flex justify-between items-center">
+                <div class="filename flex gap-3">
+                    <File />
+                    {{ activeBot.document.filename }}
+                </div>
+                <button type="button" class="hover:text-white" @click="db.removeBotDocument()">
+                    <X />
+                </button>
+            </div>
+            <Input v-else type="file" placeholder="EnglishHelperBot" :ref="inputPdf" @change="onFileChange" accept="application/pdf"/>
+
         </FormItem>
         <div class="flex justify-end">
         <Button type="submit">
