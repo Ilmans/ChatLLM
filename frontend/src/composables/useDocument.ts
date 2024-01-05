@@ -5,10 +5,24 @@ pdfJs.GlobalWorkerOptions.workerSrc = pdfJsWorker
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { MemoryVectorStore } from 'langchain/vectorstores/memory'
 import { XenovaTransformersEmbeddings } from "@/utils/hf";
-import { hasModelInCache } from "../../../../libs/web-llm"
+import '@tensorflow/tfjs-backend-wasm';
 import { TensorFlowEmbeddings } from "langchain/embeddings/tensorflow";
-import  '@tensorflow/tfjs-backend-cpu';
+import { setBackend, backend } from '@tensorflow/tfjs-core'
+import { setWasmPaths } from "@tensorflow/tfjs-backend-wasm";
+
+import wasmSimdPath from './../../node_modules/@tensorflow/tfjs-backend-wasm/dist/tfjs-backend-wasm-simd.wasm?url';
+import wasmSimdThreadedPath from './../../node_modules/@tensorflow/tfjs-backend-wasm/dist/tfjs-backend-wasm-threaded-simd.wasm?url';
+import wasmPath from './../../node_modules/@tensorflow/tfjs-backend-wasm/dist/tfjs-backend-wasm.wasm?url';
+import { onMounted } from "vue";
+
+setWasmPaths({
+    'tfjs-backend-wasm.wasm': wasmPath,
+    'tfjs-backend-wasm-simd.wasm': wasmSimdPath,
+    'tfjs-backend-wasm-threaded-simd.wasm': wasmSimdThreadedPath
+});
 // Adds the WASM backend to the global backend registry.
+setBackend('wasm')
+
 
 const readPdf = (file: File): Promise<string> => {
     
@@ -72,13 +86,13 @@ export const getPrompt = async (fileText, userInput) => {
     const docs = await textSplitter.createDocuments([fileText])
     const text = await textSplitter.splitDocuments(docs)
     
-    console.log('splitted', text)
     try {
-        const vectorStore = await MemoryVectorStore.fromTexts(
-            [...docs.map(doc => doc.pageContent)],
-            [...docs.map((_,k) => k)],
+        console.log('splitting:', text,  new TensorFlowEmbeddings())
+        const vectorStore = await MemoryVectorStore.fromDocuments(
+            docs,
             new TensorFlowEmbeddings()
         )
+        console.log('done splitting')
         const queryResult = await vectorStore.similaritySearch(userInput, 2)
         const qaPrompt = `You are an AI assistant providing helpful advice. You are given the following extracted parts of a long document and a question. Provide a conversational answer based on the context provided.
 You should only provide hyperlinks that reference the context below. Do NOT make up hyperlinks.
@@ -90,6 +104,7 @@ ${queryResult.map(result => result.pageContent).join('')}
 =========
 Answer:
         `
+        console.log(qaPrompt)
         return qaPrompt
     } catch(err) {
         console.log(err)

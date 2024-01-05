@@ -1,10 +1,11 @@
 import { computed, ref } from "vue"
 import { useDb } from "./useDb"
-import { ChatModule } from "../../../../libs/web-llm"
+import { ChatModule } from "../../libs/web-llm"
 import { useRoute, useRouter } from "vue-router"
 import type { Bot, ChatRole, IChatMessage } from "@/types"
 import { useModel } from "./useModel"
 import { getPrompt } from "./useDocument"
+
 
 export const useLLM = () => {
     const db = useDb()

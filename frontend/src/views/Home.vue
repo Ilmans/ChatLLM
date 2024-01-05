@@ -77,14 +77,13 @@ const insertMessage = (role: ChatRole, message: string) => {
 
 
 const currentResponse = ref('')
-const sendMessage = () => {
+const sendMessage = async () => {
 
   if (loading.value) {
     alert("Model still loading")
     return 
   }
   console.log('active bot text: ',activeBot.value.document.text)
-  getPrompt(activeBot.value.document.text, inputText.value)
   
   // Insert user message
   insertMessage("user", inputText.value)
