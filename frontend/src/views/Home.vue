@@ -53,10 +53,10 @@ onMounted(async () => {
   },200)
   const dbMessages = await db.getMessages(activeBotId.value)
 
-  // await llm.loadModel("RedPajama-INCITE-Chat-3B-v1-q4f32_1", (progress) => {
-  //   console.log(progress.progress)
-  //   loadingProgress.value = Math.round(progress.progress * 100) 
-  // })
+  await llm.loadModel("RedPajama-INCITE-Chat-3B-v1-q4f32_1", (progress) => {
+    console.log(progress.progress)
+    loadingProgress.value = Math.round(progress.progress * 100) 
+  })
 })
 
 onUnmounted(() => {
@@ -107,7 +107,7 @@ const sendMessage = async () => {
     currentResponse.value = currentMessage
     messages.value[0].message = currentMessage
     inputText.value = ""
-    inputTextarea.value.focus()
+    // inputTextarea.value.focus()
 
   
   }).then(()=> {

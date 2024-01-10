@@ -65,7 +65,6 @@ export const useLLM = () => {
     const infer = async (text: string, cb) => {
       const prompt = await getMessagePrompt(text)
       console.log(prompt)
-      return
       await chat.generate(prompt, cb)
     }
     

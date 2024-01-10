@@ -4,7 +4,7 @@ import {fileURLToPath} from 'url'
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import topLevelAwait from "vite-plugin-top-level-await";
-
+import {VitePWA} from 'vite-plugin-pwa'
 
 export default defineConfig({
   publicDir: 'static',
@@ -32,6 +32,24 @@ export default defineConfig({
 
   plugins: [
     vue(), 
+    VitePWA({ 
+      registerType: 'autoUpdate',
+      devOptions: {
+        enabled: true
+      },
+      manifest: {
+        name: "Rust LLM",
+        description: "LLM Chat Application",
+        short_name: "LLM",
+        icons: [
+          {
+            src: "logo.png",
+            sizes: '512x512',
+            type: 'image/png'
+          }
+        ]
+      }
+    }),
     topLevelAwait({
       // The export name of top-level await promise for each chunk module
       promiseExportName: "__tla",
