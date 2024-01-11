@@ -12,9 +12,25 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { useModel } from '@/composables/useModel';
 import { Button } from '@/components/ui/button';
-import { Download } from 'lucide-vue-next';
+import { Download, Check } from 'lucide-vue-next';
+import { hasModelInCache } from "@mlc-ai/web-llm"
+import { onMounted, ref } from 'vue';
 
 const { model_list } = useModel()
+const modelListWithStatus = ref([])
+
+onMounted(async () => {
+    for(let i = 0; i < model_list.length; i++) {
+        const model = model_list[i]
+        hasModelInCache(model.local_id, useModel())
+            .then((v) => {
+                modelListWithStatus.value.push({
+                    ...model,
+                    is_downloaded: v
+                })
+            })
+    }
+})
 
 </script>
 <template>
@@ -30,7 +46,7 @@ const { model_list } = useModel()
                         <CardTitle>Model List</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <Table>
+                        <Table v-if="modelListWithStatus.length == model_list.length">
                             <TableHeader>
                                 <TableRow>
                                     <TableHead class="w-[100px]">
@@ -38,26 +54,28 @@ const { model_list } = useModel()
                                     </TableHead>
                                     <TableHead>Name</TableHead>
                                     <TableHead>Download</TableHead>
-                                    <TableHead>Size</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                <TableRow v-for="(model, i) in model_list">
+                                <TableRow v-for="(model, i) in modelListWithStatus">
                                     <TableCell class="font-medium">
                                         {{ i + 1 }}
                                     </TableCell>
                                     <TableCell>{{ model.local_id }}</TableCell>
                                     <TableCell>
-                                        <Button variant="ghost">
+                                        <div class="flex items-center" v-if="model.is_downloaded">
+                                            <Check/> Downloaded
+                                        </div>
+                                        <Button variant="ghost" v-else>
                                             <Download/>
                                         </Button>
-                                    </TableCell>
-                                    <TableCell>
-                                        10GB
                                     </TableCell>
                                 </TableRow>
                             </TableBody>
                         </Table>
+                        <div v-else>
+                            Loading
+                        </div>
                     </CardContent>
                 </Card>
             </div>

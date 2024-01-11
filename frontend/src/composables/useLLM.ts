@@ -1,6 +1,6 @@
 import { computed, ref } from "vue"
 import { useDb } from "./useDb"
-import { ChatModule } from "../../libs/web-llm"
+import { ChatModule } from "@mlc-ai/web-llm"
 import { useRoute, useRouter } from "vue-router"
 import type { Bot, ChatRole, IChatMessage } from "@/types"
 import { useModel } from "./useModel"
@@ -32,7 +32,7 @@ export const useLLM = () => {
         conv_template: "redpajama_chat", 
         conv_config: {},
       }
-
+      console.log('chat reload')
       await chat.reload(model_id,  chatOptions, models)
     }
 
