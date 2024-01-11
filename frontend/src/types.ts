@@ -3,6 +3,7 @@ export interface Bot {
     name: string
     description: string
     prompt: string
+    botId?: string
     document: {
         filename: string 
         text: string

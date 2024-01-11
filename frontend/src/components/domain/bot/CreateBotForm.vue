@@ -11,8 +11,20 @@ import { Text } from "@/components/ui/text"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/components/ui/toast"
 import { useDb } from "@/composables/useDb"
+import { useModel } from '@/composables/useModel'
 import { onMounted, ref } from 'vue'
 import { getFileContent } from '@/composables/useDocument'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList
+} from '@/components/ui/command'
+import { cn } from '@/lib/utils'
+import { CheckIcon, ChevronsUpDown } from 'lucide-vue-next'
 
 const emit = defineEmits(['success'])
 const db = useDb()
@@ -46,6 +58,10 @@ const onFileChange = async (e: InputEvent) => {
     return read
 }
 
+
+const modelPopoverOpen = ref(false)
+const chosenModel = ref<string>('RedPajama-INCITE-Chat-3B-v1-q4f32_1')
+
 const onSubmit = handleSubmit(async (v) => {
     const botCount = (await db.getBots()).length
     const {toast} = useToast()
@@ -69,6 +85,7 @@ const onSubmit = handleSubmit(async (v) => {
         description: v.description,
         prompt: v.prompt,
         document,
+        botId: chosenModel.value,
         params: {
             top_p: v.top_p,
             temperature: v.temperature,
@@ -80,6 +97,10 @@ const onSubmit = handleSubmit(async (v) => {
     })
     emit("success", v)
 })
+
+
+const models = useModel().model_list
+
 </script>
 <template>
    <form class="space-y-6" @submit.prevent="onSubmit" method="POST" novalidate>
@@ -107,6 +128,56 @@ const onSubmit = handleSubmit(async (v) => {
                     <FormControl>
                         <Textarea  v-bind="componentField"></Textarea>
                     </FormControl>
+                <FormMessage />
+            </FormItem>
+        </FormField>
+        <FormField v-slot="{ componentField }" name="Model">
+            <FormItem>  
+                <FormLabel>Model</FormLabel>
+                <Popover v-model:open="modelPopoverOpen">
+                    <PopoverTrigger as-child>
+                    <Button
+                        variant="outline"
+                        role="combobox"
+                        :aria-expanded="modelPopoverOpen"
+                        class="w-full justify-between"
+                    >
+                        {{ chosenModel
+                        ? models.find((model) => model.local_id === chosenModel)?.local_id
+                        : "Select model..." }}
+                        <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                    </PopoverTrigger>
+                    <PopoverContent class="w-[300px] p-0">
+                    <Command>
+                        <CommandInput class="h-9" placeholder="Search framework..." />
+                        <CommandEmpty>No framework found.</CommandEmpty>
+                        <CommandList>
+                        <CommandGroup>
+                            <CommandItem
+                            v-for="model in models"
+                            :key="model.local_id"
+                            :value="model.local_id"
+                            @select="(ev) => {
+                                if (typeof ev.detail.value === 'string') {
+                                    chosenModel = ev.detail.value
+                                }
+                                modelPopoverOpen = false
+                            }"
+                            >
+                            {{ model.local_id }}
+                            <CheckIcon
+                                :class="cn(
+                                'ml-auto h-4 w-4',
+                                chosenModel === model.local_id ? 'opacity-100' : 'opacity-0',
+                                )"
+                            />
+                            </CommandItem>
+                        </CommandGroup>
+                        </CommandList>
+                    </Command>
+                    </PopoverContent>
+                </Popover>
                 <FormMessage />
             </FormItem>
         </FormField>
