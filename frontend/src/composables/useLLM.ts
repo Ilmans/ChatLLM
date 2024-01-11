@@ -40,8 +40,8 @@ export const useLLM = () => {
       let msgs = ""
 
       // Load document if provided to the bot
-      let document = activeBot.value.document.text
-      if (document !== "") {
+      let document = activeBot.value.document?.text
+      if (document && document !== "") {
         msgs = await getPrompt(document, input)
       }
 
@@ -57,6 +57,13 @@ export const useLLM = () => {
         })
       }
 
+
+      if (!document || document !== "") {
+        msgs = input
+      }
+
+
+      
 
       console.log("msgs",msgs)
       return msgs 

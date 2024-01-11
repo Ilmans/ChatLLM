@@ -51,8 +51,10 @@ export const useDb = () => {
             }
             store.openCursor().onsuccess = function(e) {
                 let cursor = this.result
-                if (cursor  && cursor.value.botId == botId) {
-                    result.push(cursor.value)
+                if(cursor) {
+                    if (cursor.value.botId == botId) {
+                        result.push(cursor.value)
+                    }
                     cursor.continue()
                 }
             }

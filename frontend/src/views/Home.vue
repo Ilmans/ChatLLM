@@ -46,12 +46,13 @@ onMounted(async () => {
   }catch(e){
     activeBot.value = null
   }
+  const dbMessages = await db.getMessages(activeBotId.value)
+  console.log('dbMessages', dbMessages)
   setTimeout(() => {
     loading.value = false 
     messages.value = dbMessages
     console.log(messages.value)
   },200)
-  const dbMessages = await db.getMessages(activeBotId.value)
 
   await llm.loadModel("RedPajama-INCITE-Chat-3B-v1-q4f32_1", (progress) => {
     console.log(progress.progress)
@@ -83,7 +84,7 @@ const sendMessage = async () => {
     alert("Model still loading")
     return 
   }
-  console.log('active bot text: ',activeBot.value.document.text)
+  console.log('active bot text: ',activeBot.value.document?.text)
   
   // Insert user message
   insertMessage("user", inputText.value)
