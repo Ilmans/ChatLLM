@@ -25,7 +25,7 @@ export const useLLM = () => {
       await chat.unload()
       if(onModelLoadingCb)
         chat.setInitProgressCallback(onModelLoadingCb);
-      
+      console.log('loading model')
       const currentModel = models.model_list.find(m => m.local_id == model_id)
       
       const chatOptions = { 
@@ -33,7 +33,11 @@ export const useLLM = () => {
         conv_config: {},
       }
       console.log('chat reload')
-      await chat.reload(model_id,  chatOptions, models)
+      try {
+        await chat.reload(model_id,  chatOptions, models)
+      }catch(err){
+        console.log('error loading model', err)
+      }
     }
 
     const getMessagePrompt = async (input: string) => {

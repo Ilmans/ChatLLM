@@ -53,7 +53,6 @@ onMounted(async () => {
     messages.value = dbMessages
     console.log(messages.value)
   },200)
-
   await llm.loadModel(activeBot.value.botId || "RedPajama-INCITE-Chat-3B-v1-q4f32_1", (progress) => {
     console.log(progress.progress)
     loadingProgress.value = Math.round(progress.progress * 100) 
