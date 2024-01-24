@@ -1,6 +1,6 @@
 import { computed, ref } from "vue"
 import { useDb } from "./useDb"
-import { ChatModule } from "@mlc-ai/web-llm"
+import { ChatModule, type ChatOptions } from "@mlc-ai/web-llm"
 import { useRoute, useRouter } from "vue-router"
 import type { Bot, ChatRole, IChatMessage } from "@/types"
 import { useModel } from "./useModel"
@@ -28,9 +28,14 @@ export const useLLM = () => {
       console.log('loading model')
       const currentModel = models.model_list.find(m => m.local_id == model_id)
       
-      const chatOptions = { 
-        conv_template: "redpajama_chat", 
-        conv_config: {},
+      const chatOptions: ChatOptions = { 
+        conv_template: "llama_default", 
+        conv_config: {
+          
+        },
+        repetition_penalty: activeBot.value.params.repetition_penalty[0],
+        temperature: activeBot.value.params.temperature[0],
+        top_p: activeBot.value.params.top_p[0],
       }
       console.log('chat reload')
       try {
@@ -65,10 +70,6 @@ export const useLLM = () => {
       if (!document || document !== "") {
         msgs = input
       }
-
-
-      
-
       console.log("msgs",msgs)
       return msgs 
     }
@@ -90,7 +91,7 @@ export const useLLM = () => {
         botId: botId,
         date: Date.now(),
         message: message,
-        role: role
+        role: role,
       })
     }
     

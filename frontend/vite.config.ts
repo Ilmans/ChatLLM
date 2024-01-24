@@ -18,7 +18,7 @@ export default defineConfig({
     },
   },
   build: {
-    target: 'esnext'
+    target: 'es2020'
   },  
   server: {
     port: 4200,
