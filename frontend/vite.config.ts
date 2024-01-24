@@ -21,7 +21,7 @@ export default defineConfig({
     target: 'es2020'
   },  
   server: {
-    port: 4200,
+    port: 5173,
     host: 'localhost',
   },
 
