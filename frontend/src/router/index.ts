@@ -9,7 +9,7 @@ export default createRouter({
             component: () => import('../views/Home.vue')
         },
         {
-            path: '/models',
+            path: '/model-list',
             name: 'models',
             component: () => import('../views/Models.vue')
         },

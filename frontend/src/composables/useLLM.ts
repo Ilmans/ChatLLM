@@ -1,10 +1,10 @@
-import { computed, ref } from "vue"
+import { computed, ref, type ComputedRef, watch } from "vue"
 import { useDb } from "./useDb"
-import { ChatModule, type ChatOptions } from "@mlc-ai/web-llm"
+import { ChatModule, type ChatCompletionRequest, type ChatOptions, type ChatCompletionChunk, type ChatCompletionMessageParam } from "web-llm"
 import { useRoute, useRouter } from "vue-router"
 import type { Bot, ChatRole, IChatMessage } from "@/types"
 import { useModel } from "./useModel"
-import { getPrompt } from "./useDocument"
+import { getDocumentPrompt } from "./useDocument"
 
 
 export const useLLM = () => {
@@ -13,6 +13,7 @@ export const useLLM = () => {
     
     let chat = new ChatModule
     let isFirstLoad = true
+    const conversationTemplateName = ref('llama_default')
 
     const unloadModel = async () => {
       await chat.unload()
@@ -22,62 +23,82 @@ export const useLLM = () => {
 
     // Load a model 
     const loadModel = async (model_id: string, onModelLoadingCb?: (report) => void) => {
-      await chat.unload()
+      console.log({onModelLoadingCb})
       if(onModelLoadingCb)
         chat.setInitProgressCallback(onModelLoadingCb);
-      console.log('loading model')
-      const currentModel = models.model_list.find(m => m.local_id == model_id)
       
       const chatOptions: ChatOptions = { 
-        conv_template: "llama_default", 
-        conv_config: {
-          
-        },
-        repetition_penalty: activeBot.value.params.repetition_penalty[0],
-        temperature: activeBot.value.params.temperature[0],
-        top_p: activeBot.value.params.top_p[0],
+        conv_template: "redpajama_chat", 
+        // conv_config: {},
+        // repetition_penalty: activeBot.value.params.repetition_penalty[0],
+        // temperature: activeBot.value.params.temperature[0],
+        // top_p: activeBot.value.params.top_p[0],
       }
-      console.log('chat reload')
       try {
-        await chat.reload(model_id,  chatOptions, models)
-      }catch(err){
-        console.log('error loading model', err)
+        await chat.reload(model_id, chatOptions, models)
+      } catch (err) {
+        throw err
       }
     }
 
-    const getMessagePrompt = async (input: string) => {
-      let msgs = ""
+    /**
+     * Feed bot with message history and document
+     */
+    // const feedBot = async () => {
+    //   // Load initial prompt
+    //   const userRoleKey = conversationTemplate.value.config.roles[0]
+    //   const botRoleKey = conversationTemplate.value.config.roles[1]
 
-      // Load document if provided to the bot
-      let document = activeBot.value.document?.text
-      if (document && document !== "") {
-        msgs = await getPrompt(document, input)
-      }
-
-      // Load initial prompt
-
-      // Load all message history to the first prompt
-      if(isFirstLoad) {
-        messages.value.slice().reverse().forEach(m => {
-          if(m.role == "user")
-            msgs += `<human>: ${m.message}\n<bot>:`
-          else 
-            msgs += `${m.message}\n`
-        })
-      }
-
-
-      if (!document || document !== "") {
-        msgs = input
-      }
-      console.log("msgs",msgs)
-      return msgs 
-    }
+    //   // Load all message history to the first prompt
+    //   console.log({isFirstLoad})
+    //   if(isFirstLoad) {
+    //     // Feed the document first before feeding the message history
+    //     let document = activeBot.value.document?.text
+        
+    //     if (document && document !== "") {
+          
+    //       chat.pipeline.conversation.config.system = `You are an AI assistant providing helpful advice. You are given the following extracted parts of a long document and a question. Provide a conversational answer based on the context provided. You should only provide hyperlinks that reference the context below. If you can't find the answer in the context below, just say "Hmm, I'm not sure." Don't try to make up an answer. If the question is not related to the context, politely respond that you are tuned to only answer questions that are related to the context.`
+    //       const documentPrompt = await getDocumentPrompt(document)
+    //       console.log('prefilling document..')
+    //       if (typeof documentPrompt == 'object') {
+    //         for(let i = 0; i < documentPrompt.length; i++) {
+    //           console.log('prefill no: ', i)
+    //           const prefill = await chat.prefill(documentPrompt[i])
+    //           chat.pipeline.triggerStop()
+    //         }
+    //       }
+    //       console.log('finished prefilling document')
+    //       // chat.pipeline.conversation.appendMessage(userRoleKey, documentPrompt)
+    //     }
+    //     // Feed the message history
+    //     // messages.value.slice().reverse().forEach(m => {
+    //     //   chat.pipeline.conversation.appendMessage(m.role == 'user' ? userRoleKey : botRoleKey, m.message)
+    //     // })
+    //   }
+    // }
     
-    const infer = async (text: string, cb) => {
-      const prompt = await getMessagePrompt(text)
-      console.log(prompt)
-      await chat.generate(prompt, cb)
+    const infer = async (text: ChatCompletionMessageParam[], cb: (msg: ChatCompletionChunk) => void) => {
+
+      const request: ChatCompletionRequest = {
+        stream: true,
+        messages: [
+          {
+            "role": "system",
+            "content": "You are a helpful, respectful and honest assistant. " +
+              "Be as happy as you can when speaking please."
+          },
+          ...text
+        ],
+      };
+      console.log({request})
+      for await (const chunk of await chat.chatCompletion(request)) {
+        console.log(chunk);
+        cb(chunk)
+      }
+      console.log(await chat.getMessage());  // the final response
+      console.log(await chat.runtimeStatsText());
+
+      isFirstLoad = false
     }
     
     const messages = ref<IChatMessage[]>([])
@@ -85,7 +106,6 @@ export const useLLM = () => {
 
 
     const insertMessage = (botId: number, role: ChatRole, message: string) => {
-      isFirstLoad = false
       // Insert the message to the very first index
       messages.value.unshift({
         botId: botId,

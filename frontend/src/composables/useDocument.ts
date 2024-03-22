@@ -81,7 +81,15 @@ export const getFileContent = async (file: File): Promise<string> => {
     return readFile(file)
 }
 
-export const getPrompt = async (fileText, userInput) => {
+export const getDocumentPrompt = async (fileText: string, userInput?: string) => {
+    
+    if (!userInput) return fileText.split('\n\n').map(t => `
+ CONTEXT:
+ =========
+ ${t}
+ =========
+`)
+
     const textSplitter = new RecursiveCharacterTextSplitter({ chunkSize: 1000 })
     const docs = await textSplitter.createDocuments([fileText])
     const text = await textSplitter.splitDocuments(docs)
@@ -98,15 +106,16 @@ export const getPrompt = async (fileText, userInput) => {
 You should only provide hyperlinks that reference the context below. Do NOT make up hyperlinks.
 If you can't find the answer in the context below, just say "Hmm, I'm not sure." Don't try to make up an answer.
 If the question is not related to the context, politely respond that you are tuned to only answer questions that are related to the context.
-Question: ${userInput}
+CONTEXT:
 =========
 ${queryResult.map(result => result.pageContent).join('')}
 =========
-Answer:
+
         `
         console.log(qaPrompt)
         return qaPrompt
     } catch(err) {
         console.log(err)
+        return null
     }
 }

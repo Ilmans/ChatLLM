@@ -18,7 +18,8 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { useToast } from '@/components/ui/toast';
 import UpdateBotForm from '@/components/domain/bot/UpdateBotForm.vue'
 import Loading from '@/components/ui/loading/Loading.vue';
-import { getPrompt } from '@/composables/useDocument'
+import type { ChatCompletionMessageParam } from 'web-llm';
+// import { getPrompt } from '@/composables/useDocument'
 
 const params = reactive({
   top_p: [0.8],
@@ -36,7 +37,6 @@ const loading = ref(true)
 // The loading state when user sent a message / inferencing
 const isBotThinking = ref(false)
 const llm = useLLM()
-const messages = llm.messages
 const loadingProgress = ref(0)
 
 onMounted(async () => {
@@ -49,15 +49,14 @@ onMounted(async () => {
   const dbMessages = await db.getMessages(activeBotId.value)
 
   if (activeBot.value) {
-    setTimeout(() => {
-      loading.value = false 
-      messages.value = dbMessages
-      console.log(messages.value)
-    },200)
+    llm.messages.value = dbMessages || []
+    console.log(llm.messages.value);
+    
     await llm.loadModel(activeBot.value.botId || "RedPajama-INCITE-Chat-3B-v1-q4f32_1", (progress) => {
-      console.log(progress.progress)
       loadingProgress.value = Math.round(progress.progress * 100) 
+      console.log(loadingProgress.value)
     })
+    loading.value = false 
   }
 })
 
@@ -79,41 +78,41 @@ const insertMessage = (role: ChatRole, message: string) => {
 
 
 const currentResponse = ref('')
+
+
 const sendMessage = async () => {
 
   if (loading.value) {
     alert("Model still loading")
     return 
   }
-  console.log('active bot text: ',activeBot.value.document?.text)
+  console.log('active bot: ', llm.messages.value)
   
   // Insert user message
   insertMessage("user", inputText.value)
-  
+  inputText.value = ""
+
+  const allMessagesCombined: ChatCompletionMessageParam[] = llm.messages.value.slice().reverse().map(msg => ({
+    role: msg.role === 'bot' ? 'assistant' : msg.role,
+    content: msg.message
+  }))
+
+  console.log({allMessagesCombined})
   // Get response from LLM
-  llm.infer(inputText.value, (step, currentMessage) => {
-    console.log('step', step, currentResponse.value)
-  
-    if (step == 2 && currentResponse.value == '') {
-  
+  let i = 0;
+  llm.infer(allMessagesCombined, (msg) => {
+    if(i === 0) {
       // Create new message
-      messages.value.unshift({
-        botId: activeBotId.value,
-        date: Date.now(),
-        message: currentResponse.value,
-        role: "bot"
-      })
-
+      insertMessage("bot", currentResponse.value)
     }
-
-    currentResponse.value = currentMessage
-    messages.value[0].message = currentMessage
-    inputText.value = ""
+    let response = msg.choices.map(choice => choice.delta.content).join('')
+    currentResponse.value += response
+    llm.messages.value[0].message = currentResponse.value
     // inputTextarea.value.focus()
-
+    i++
   
   }).then(()=> {
-
+    i=0
     // Only insert to database, not the state
     db.insertMessage(activeBotId.value, "bot",  currentResponse.value)
     currentResponse.value = ""
@@ -123,7 +122,7 @@ const sendMessage = async () => {
 
 const { toast } = useToast()
 const emptyChat = () => {
-  messages.value = []
+  llm.messages.value = []
   db.clearCurrentBotChat()
     .then(() => {
       toast({
@@ -157,7 +156,7 @@ const isModelLoading = computed(() => loadingProgress.value < 100)
           <ChatMessage v-if="isBotThinking" role="bot" :loading="isBotThinking"></ChatMessage>
           <ChatMessage v-if="loading" role="user" :loading="loading"></ChatMessage>
     
-          <ChatMessage v-else v-for="message in messages" :role="message.role" :loading="false" >
+          <ChatMessage v-else v-for="message in llm.messages.value" :role="message.role" :loading="false" >
             <div v-html="message.message"></div>
           </ChatMessage>
           <div class="time mb-8">

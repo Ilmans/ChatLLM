@@ -88,7 +88,7 @@ const onBotCreated = () => {
               <MessageCircle width="20" />
               Chat 
             </MenuItem>
-            <MenuItem to="/models">
+            <MenuItem to="/model-list">
               <BookA width="20" />
               Models
             </MenuItem>

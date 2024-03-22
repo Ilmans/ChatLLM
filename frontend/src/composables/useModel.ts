@@ -1,5 +1,8 @@
 import type { AppConfig } from "@mlc-ai/web-llm"
 
+const baseUrl = "http://localhost:5173"
+
+
 export const useModel = () => {
     return {
       "model_list": [
@@ -9,15 +12,15 @@ export const useModel = () => {
           "model_lib_url": "https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/Llama-2-7b-chat-hf/Llama-2-7b-chat-hf-q4f32_1-ctx4k_cs1k-webgpu.wasm",
         },
         {
-          "model_url": "/models/Llama-2-7b-chat-hf-q4f16_1/params/",
+          "model_url": baseUrl+ "/models/Llama-2-7b-chat-hf-q4f16_1/params/",
           "local_id": "Llama-2-7b-chat-hf-q4f16_1",
-          "model_lib_url": "/models/Llama-2-7b-chat-hf-q4f16_1/Llama-2-7b-chat-hf-q4f16_1-webgpu.wasm",
+          "model_lib_url": baseUrl+ "/models/Llama-2-7b-chat-hf-q4f16_1/Llama-2-7b-chat-hf-q4f16_1-webgpu.wasm",
           "required_features": ["shader-f16"],
         },
         {
-          "model_url": "/models/orca_mini_3b-q4f16_1/params/",
+          "model_url": baseUrl+ "/models/orca_mini_3b-q4f16_1/params/",
           "local_id": "orca_mini_3b-q4f16_1",
-          "model_lib_url": "/models/orca_mini_3b-q4f16_1/orca_mini_3b-q4f16_1-webgpu.wasm",
+          "model_lib_url": baseUrl+ "/models/orca_mini_3b-q4f16_1/orca_mini_3b-q4f16_1-webgpu.wasm",
           "required_features": ["shader-f16"],
         },
         // {
