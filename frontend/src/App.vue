@@ -24,7 +24,7 @@ import { isDirty } from "zod"
 const chatStore = useChatStore()
 const bots = ref([])
 const db = useDb()
-const activeBot = ref()
+const activeBotId = ref()
 const isCreateBotDialogOpen = ref(false)
 
 chatStore.fetchBots()
@@ -41,21 +41,18 @@ onMounted(async () => {
     throw Error(message)
   }
 
-
   bots.value = await db.getBots()
   db.getActiveBot()
     .then((v) => {
-      activeBot.value = v
-      console.log()
+      activeBotId.value = v
     })
-    .catch(err => console.log('arst'))
+    .catch(err => console.log('Error getting active bot'))
 
 })
 
-const setActiveBot = (bot: Bot) => {
-  db.setActiveBot(bot.id)
-  activeBot.value = bot
-  console.log('active bot', activeBot.value)
+const setActiveBotId = (bot: number) => {
+  db.setActiveBotId(bot)
+  activeBotId.value = bot
 }
 
 const onBotCreated = () => {
@@ -101,7 +98,7 @@ const onBotCreated = () => {
             <Text type="p" class="my-3">Your Bots</Text>
             <ul>
               <li class="menu-item mb-1" v-for="bot in bots">
-                  <button @click="setActiveBot(bot)" :class="cn(activeBot.id == bot.id ? 'text-white' : 'text-gray-500','menu-link px-3 py-2 bg-transparent  hover:text-gray-200 transition duration-200 rounded-md flex gap-2')">
+                  <button @click="setActiveBotId(bot.id)" :class="cn(activeBotId == bot.id ? 'text-white' : 'text-gray-500','menu-link px-3 py-2 bg-transparent  hover:text-gray-200 transition duration-200 rounded-md flex gap-2')">
                     <AlignLeft width="20" />
                     {{bot.name}}
                   </button>

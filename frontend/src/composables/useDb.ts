@@ -1,6 +1,6 @@
 import { useStorage } from "@vueuse/core";
 import type { Bot, IChatMessage, ChatRole } from "../types";
-import type { Ref } from "vue";
+import { watch, type Ref, type WatchCallback } from "vue";
 
 const DB_VERSION = 1
 const DB_NAME = "llm"
@@ -113,19 +113,19 @@ export const useDb = () => {
             store.put(bot)
         })
     }
-    const activeBot = useStorage("activeBotId", 1);
+    const activeBotId = useStorage("activeBotId", 1);
 
-    const setActiveBot = (id: number) => {
-        activeBot.value = id
+    const setActiveBotId = (id: number) => {
+        activeBotId.value = id
     }
 
     const getActiveBotId = (): Ref<number> => {
-        return activeBot
+        return activeBotId
     }
 
     const getActiveBot = async (): Promise<Bot> => {
         const allBots = await getBots()
-        const find = allBots.find(bot => bot.id == activeBot.value)
+        const find = allBots.find(bot => bot.id == activeBotId.value)
 
         if (!find) throw new Error("Bot not found"); 
         return find
@@ -160,7 +160,7 @@ export const useDb = () => {
             }
             store.openCursor().onsuccess = function(e) {
                 let cursor = this.result
-                if (cursor && cursor.value.botId == activeBot.value) {
+                if (cursor && cursor.value.botId == activeBotId.value) {
                     cursor.delete()
                     cursor.continue()
                 }
@@ -170,6 +170,7 @@ export const useDb = () => {
     }
 
     return {
+        activeBotId,
         drop,
         closeConnection,
         getConnection,
@@ -179,7 +180,7 @@ export const useDb = () => {
         insertBot,
         getActiveBot, 
         getActiveBotId,
-        setActiveBot,
+        setActiveBotId,
         clearCurrentBotChat,
         updateBot,
         removeBotDocument,

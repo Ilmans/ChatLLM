@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, onMounted, onUnmounted, reactive, ref } from 'vue';
+import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
 
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/Badge"
@@ -30,7 +30,7 @@ const params = reactive({
 })
 const chatStore = useChatStore()
 const db = useDb()
-const activeBotId = db.getActiveBotId()
+const activeBotId = computed(() => db.activeBotId.value)
 const activeBot = ref<Bot|null>()
 const inputText = ref('')
 const inputTextarea = ref<HTMLTextAreaElement>()
@@ -41,13 +41,20 @@ const llm = useLLM()
 const loadingProgress = ref(0)
 const isErrorLoadingModel = ref(false)
 
-onMounted(async () => {
+const setActiveBot = async () => {
   try {
+    llm.unloadModel()
     activeBot.value = await db.getActiveBot()
     llm.activeBot.value = activeBot.value
+    
   }catch(e){
     activeBot.value = null
   }
+}
+
+const loadModel = async () => {
+  isErrorLoadingModel.value = false
+  loading.value = true 
   const dbMessages = await db.getMessages(activeBotId.value)
 
   if (activeBot.value) {
@@ -60,9 +67,20 @@ onMounted(async () => {
     }).then(() => {
       loading.value = false 
     }).catch(err => {
+      loading.value = false 
       isErrorLoadingModel.value = true
     })
   }
+}
+
+watch(activeBotId, async () => {
+  await setActiveBot()
+  await loadModel()
+})
+
+onMounted(async () => {
+  await setActiveBot()
+  await loadModel()
 })
 
 onUnmounted(() => {
@@ -145,6 +163,7 @@ const isModelLoading = computed(() => loadingProgress.value < 100)
 
 </script>
 <template>
+  {{ db.activeBotId }}
   <main class="py-10 px-8 lg:px-8 xl:px-12 flex-grow flex flex-col">
     <div class="text-center" v-if="activeBot === null">
       <Text type="p" >Create a bot to start chatting</Text>
@@ -152,18 +171,18 @@ const isModelLoading = computed(() => loadingProgress.value < 100)
     <template v-else>
       <!-- Chat messages area -->
       <div class="messages flex-grow relative ">
-        <div class="loading-screen text-center items-center mt-10" v-if="isModelLoading">
+        <div class="loading-screen text-center items-center mt-10">
           <template  v-if="isErrorLoadingModel">
             <Badge  variant="destructive" class="text-lg mb-3">Error Loading Model</Badge>
             <Text type="h4">Please change to another model</Text>
           </template>
-          <template  v-else>
+          <template  v-else-if="isModelLoading">
             <Loading name="spinner"></Loading>
             <Text type="h4">Loading model:</Text>
             <p>{{ loadingProgress }}%</p>
           </template>
         </div>
-        <div class="chat-messages px-5 overflow-y-auto flex flex-col-reverse absolute inset-0" v-else >
+        <div class="chat-messages px-5 overflow-y-auto flex flex-col-reverse absolute inset-0" v-if="!isModelLoading" >
           <ChatMessage v-if="isBotThinking" role="bot" :loading="isBotThinking"></ChatMessage>
           <ChatMessage v-if="loading" role="user" :loading="loading"></ChatMessage>
     
@@ -226,7 +245,7 @@ const isModelLoading = computed(() => loadingProgress.value < 100)
                 <Text type="h4">{{ activeBot?.name }}</Text>
               </div>
               <Dialog>
-                <DialogTrigger class="menu-link w-full px-3 py-2 bg-transparent text-gray-500 hover:text-gray-200 transition duration-200 rounded-md flex gap-2">
+                <DialogTrigger class="menu-link px-3 py-2 bg-transparent text-gray-500 hover:text-gray-200 transition duration-200 rounded-md flex gap-2">
                   <Settings></Settings>
                 </DialogTrigger>
                 <DialogContent>

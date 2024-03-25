@@ -15,7 +15,7 @@ import type { Bot } from "@/types";
 import { onMounted, reactive, ref } from 'vue'
 import type { TextItem } from 'pdfjs-dist/types/src/display/api'
 import { getFileContent } from '@/composables/useDocument'
-import { CheckIcon, X } from 'lucide-vue-next'
+import { CheckIcon, ChevronsUpDown, X } from 'lucide-vue-next'
 import { File } from 'lucide-vue-next'
 import { useModel } from '@/composables/useModel'
 import { cn } from '@/lib/utils'
