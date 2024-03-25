@@ -1,6 +1,6 @@
 import type { AppConfig } from "@mlc-ai/web-llm"
 
-const baseUrl = "http://localhost:5173"
+const baseUrl = "http://localhost:5174"
 
 
 export const useModel = () => {
@@ -18,9 +18,9 @@ export const useModel = () => {
           "required_features": ["shader-f16"],
         },
         {
-          "model_url": baseUrl+ "/models/orca_mini_3b-q4f16_1/params/",
+          "model_url": baseUrl+ "/models/orca_mini_3b-q4f32_1/",
           "local_id": "orca_mini_3b-q4f16_1",
-          "model_lib_url": baseUrl+ "/models/orca_mini_3b-q4f16_1/orca_mini_3b-q4f16_1-webgpu.wasm",
+          "model_lib_url": baseUrl+ "/models/orca_mini_3b-q4f16_1/orca_mini_3b-q4f32_1-webgpu.wasm",
           "required_features": ["shader-f16"],
         },
         // {

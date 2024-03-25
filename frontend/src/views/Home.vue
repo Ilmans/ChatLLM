@@ -2,7 +2,7 @@
 import { computed, onMounted, onUnmounted, reactive, ref } from 'vue';
 
 import { Button } from "@/components/ui/button"
-import { Text } from "@/components/ui/text"
+import { Badge } from "@/components/ui/Badge"
 import { Slider } from "@/components/ui/slider"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
@@ -19,6 +19,7 @@ import { useToast } from '@/components/ui/toast';
 import UpdateBotForm from '@/components/domain/bot/UpdateBotForm.vue'
 import Loading from '@/components/ui/loading/Loading.vue';
 import type { ChatCompletionMessageParam } from 'web-llm';
+import Text from '@/components/ui/text/Text.vue';
 // import { getPrompt } from '@/composables/useDocument'
 
 const params = reactive({
@@ -38,6 +39,7 @@ const loading = ref(true)
 const isBotThinking = ref(false)
 const llm = useLLM()
 const loadingProgress = ref(0)
+const isErrorLoadingModel = ref(false)
 
 onMounted(async () => {
   try {
@@ -52,11 +54,14 @@ onMounted(async () => {
     llm.messages.value = dbMessages || []
     console.log(llm.messages.value);
     
-    await llm.loadModel(activeBot.value.botId || "RedPajama-INCITE-Chat-3B-v1-q4f32_1", (progress) => {
+    llm.loadModel(activeBot.value.botId || "RedPajama-INCITE-Chat-3B-v1-q4f32_1", (progress) => {
       loadingProgress.value = Math.round(progress.progress * 100) 
       console.log(loadingProgress.value)
+    }).then(() => {
+      loading.value = false 
+    }).catch(err => {
+      isErrorLoadingModel.value = true
     })
-    loading.value = false 
   }
 })
 
@@ -148,9 +153,15 @@ const isModelLoading = computed(() => loadingProgress.value < 100)
       <!-- Chat messages area -->
       <div class="messages flex-grow relative ">
         <div class="loading-screen text-center items-center mt-10" v-if="isModelLoading">
-          <Loading name="spinner"></Loading>
-          <Text type="h4">Loading model:</Text>
-          <p>{{ loadingProgress }}%</p>
+          <template  v-if="isErrorLoadingModel">
+            <Badge  variant="destructive" class="text-lg mb-3">Error Loading Model</Badge>
+            <Text type="h4">Please change to another model</Text>
+          </template>
+          <template  v-else>
+            <Loading name="spinner"></Loading>
+            <Text type="h4">Loading model:</Text>
+            <p>{{ loadingProgress }}%</p>
+          </template>
         </div>
         <div class="chat-messages px-5 overflow-y-auto flex flex-col-reverse absolute inset-0" v-else >
           <ChatMessage v-if="isBotThinking" role="bot" :loading="isBotThinking"></ChatMessage>

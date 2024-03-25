@@ -1,6 +1,6 @@
 import { computed, ref, type ComputedRef, watch } from "vue"
 import { useDb } from "./useDb"
-import { ChatModule, type ChatCompletionRequest, type ChatOptions, type ChatCompletionChunk, type ChatCompletionMessageParam } from "web-llm"
+import { ChatModule, type ChatCompletionRequest, type ChatOptions, type ChatCompletionChunk, type ChatCompletionMessageParam } from "@mlc-ai/web-llm"
 import { useRoute, useRouter } from "vue-router"
 import type { Bot, ChatRole, IChatMessage } from "@/types"
 import { useModel } from "./useModel"
@@ -81,19 +81,21 @@ export const useLLM = () => {
 
       const request: ChatCompletionRequest = {
         stream: true,
+        top_p: activeBot.value.params.top_p[0],
+        temperature: activeBot.value.params.temperature[0],
         messages: [
           {
             "role": "system",
-            "content": "You are a helpful, respectful and honest assistant. " +
-              "Be as happy as you can when speaking please."
+            "content": activeBot.value.prompt
           },
           ...text
         ],
       };
-      console.log({request})
+      let i = 0
       for await (const chunk of await chat.chatCompletion(request)) {
-        console.log(chunk);
+        if(i == 0 && chunk.choices[0].delta.content == '\n') continue
         cb(chunk)
+        i++ 
       }
       console.log(await chat.getMessage());  // the final response
       console.log(await chat.runtimeStatsText());
