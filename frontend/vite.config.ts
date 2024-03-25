@@ -12,18 +12,16 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      '@mlc-ai/web-llm': fileURLToPath(
-        new URL('./libs/web-llm/src/index.ts', import.meta.url)
-      ),
     },
   },
   build: {
     target: 'es2020'
   },  
   server: {
-    port: 5173,
+    port: 5174,
     host: 'localhost',
   },
+  
 
   preview: {
     port: 4300,

@@ -1446,6 +1446,11 @@
   resolved "https://registry.yarnpkg.com/@microsoft/tsdoc/-/tsdoc-0.14.2.tgz#c3ec604a0b54b9a9b87e9735dfc59e1a5da6a5fb"
   integrity sha512-9b8mPpKrfeGRuhFH5iO1iwCLeIIsV6+H1sRfxbkoGXIyQE2BTsPd9zqSqQJ+pv5sJ/hT5M1zvOFL02MnEezFug==
 
+"@mlc-ai/web-llm@0.2.29":
+  version "0.2.29"
+  resolved "https://registry.yarnpkg.com/@mlc-ai/web-llm/-/web-llm-0.2.29.tgz#53f51fc63d6a345a77ae611c20cb9a8a08c7a916"
+  integrity sha512-7SA1g0tcJFainLfpW+THXPgStYnx3DUJTFNQkhjI+Clh678Bp06mQgGkL2ZxIonfXLW/Z2lThAqNB4NX1cgUKw==
+
 "@mole-inc/bin-wrapper@^8.0.1":
   version "8.0.1"
   resolved "https://registry.yarnpkg.com/@mole-inc/bin-wrapper/-/bin-wrapper-8.0.1.tgz#d7fd0ceb1cfa8a855293a3ed9d7d135f4d442f0e"
@@ -6979,9 +6984,6 @@ w3c-xmlserializer@^4.0.0:
   integrity sha512-d+BFHzbiCx6zGfz0HyQ6Rg69w9k19nviJspaj4yNscGjrHu94sVP+aRm75yEbCh+r2/yR+7q6hux9LVtbuTGBw==
   dependencies:
     xml-name-validator "^4.0.0"
-
-"web-llm@file:./libs/web-llm":
-  version "0.2.29"
 
 web-streams-polyfill@4.0.0-beta.3:
   version "4.0.0-beta.3"
