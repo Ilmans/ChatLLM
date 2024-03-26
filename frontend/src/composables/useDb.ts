@@ -63,6 +63,7 @@ export const useDb = () => {
     }
 
     const insertMessage = (botId: number, role: ChatRole, message: string) => {
+        console.trace('insert message db')
         return new Promise(async (resolve, reject) => {
             const conn = await getConnection()
             const read = conn.transaction('messages', 'readwrite')
@@ -160,8 +161,11 @@ export const useDb = () => {
             }
             store.openCursor().onsuccess = function(e) {
                 let cursor = this.result
-                if (cursor && cursor.value.botId == activeBotId.value) {
-                    cursor.delete()
+                if(cursor) {
+                    console.log(cursor.value)
+                    if (cursor.value.botId == activeBotId.value) {
+                        cursor.delete()
+                    }
                     cursor.continue()
                 }
             }

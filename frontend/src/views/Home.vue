@@ -18,16 +18,10 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { useToast } from '@/components/ui/toast';
 import UpdateBotForm from '@/components/domain/bot/UpdateBotForm.vue'
 import Loading from '@/components/ui/loading/Loading.vue';
-import type { ChatCompletionMessageParam } from 'web-llm';
+import type { ChatCompletionMessageParam } from '@mlc-ai/web-llm';
 import Text from '@/components/ui/text/Text.vue';
 // import { getPrompt } from '@/composables/useDocument'
 
-const params = reactive({
-  top_p: [0.8],
-  top_k: [0.2],
-  temperature: [0.4],
-  max_length: [400],
-})
 const chatStore = useChatStore()
 const db = useDb()
 const activeBotId = computed(() => db.activeBotId.value)
@@ -40,7 +34,22 @@ const isBotThinking = ref(false)
 const llm = useLLM()
 const loadingProgress = ref(0)
 const isErrorLoadingModel = ref(false)
+const updateBotFormOpen = ref(false)
 
+const params = computed({
+  get() {
+    const p = activeBot.value.params
+    return {
+      top_p: p.top_p,
+      temperature: p.temperature,
+      max_gen_len: p.max_gen_len,
+      frequency_penalty: p.frequency_penalty,
+    }
+  },
+  set() {
+
+  }
+})
 const setActiveBot = async () => {
   try {
     llm.unloadModel()
@@ -109,8 +118,6 @@ const sendMessage = async () => {
     alert("Model still loading")
     return 
   }
-  console.log('active bot: ', llm.messages.value)
-  
   // Insert user message
   insertMessage("user", inputText.value)
   inputText.value = ""
@@ -122,20 +129,17 @@ const sendMessage = async () => {
 
   console.log({allMessagesCombined})
   // Get response from LLM
-  let i = 0;
-  llm.infer(allMessagesCombined, (msg) => {
+  llm.infer(allMessagesCombined, (msg, i) => {
     if(i === 0) {
       // Create new message
-      insertMessage("bot", currentResponse.value)
+      llm.insertMessage(activeBotId.value, "bot", currentResponse.value)
     }
+    console.log(msg)
     let response = msg.choices.map(choice => choice.delta.content).join('')
     currentResponse.value += response
     llm.messages.value[0].message = currentResponse.value
     // inputTextarea.value.focus()
-    i++
-  
   }).then(()=> {
-    i=0
     // Only insert to database, not the state
     db.insertMessage(activeBotId.value, "bot",  currentResponse.value)
     currentResponse.value = ""
@@ -163,7 +167,6 @@ const isModelLoading = computed(() => loadingProgress.value < 100)
 
 </script>
 <template>
-  {{ db.activeBotId }}
   <main class="py-10 px-8 lg:px-8 xl:px-12 flex-grow flex flex-col">
     <div class="text-center" v-if="activeBot === null">
       <Text type="p" >Create a bot to start chatting</Text>
@@ -216,23 +219,30 @@ const isModelLoading = computed(() => loadingProgress.value < 100)
           <li class="mb-8">
             <div class="flex justify-between">
               <Text type="p" class="mb-3">Top P</Text>
-              <Text type="p" class="mb-3">{{ params.top_p[0] }}</Text>
+              <Text type="p" class="mb-3">{{ activeBot.params.top_p }}</Text>
             </div>
-            <Slider v-model="params.top_p" :min="0" :max="1" :step="0.1"></Slider>
+            <Slider v-model="activeBot.params.top_p" :min="0" :max="1" :step="0.1"></Slider>
           </li>
           <li class="mb-8">
             <div class="flex justify-between">
               <Text type="p" class="mb-3">Temperature</Text>
-              <Text type="p" class="mb-3">{{ params.temperature[0] }}</Text>
+              <Text type="p" class="mb-3">{{ activeBot.params.temperature }}</Text>
             </div>
-            <Slider v-model="params.temperature" :min="0" :max="1" :step="0.1"></Slider>
+            <Slider v-model="activeBot.params.temperature" :min="0" :max="1" :step="0.1"></Slider>
           </li>
           <li class="mb-8">
             <div class="flex justify-between">
               <Text type="p" class="mb-3">Maximum Length</Text>
-              <Text type="p" class="mb-3">{{ params.max_length[0] }}</Text>
+              <Text type="p" class="mb-3">{{ activeBot.params.max_gen_len }}</Text>
             </div>
-            <Slider v-model="params.max_length" :step="5" :max="4000"></Slider>
+            <Slider v-model="activeBot.params.max_gen_len" :step="5" :max="4000"></Slider>
+          </li>
+          <li class="mb-8">
+            <div class="flex justify-between">
+              <Text type="p" class="mb-3">Frequency Penalty</Text>
+              <Text type="p" class="mb-3">{{ activeBot.params.frequency_penalty }}</Text>
+            </div>
+            <Slider v-model="activeBot.params.frequency_penalty" :step="0.1" :min="-2" :max="2"></Slider>
           </li>
         </ul>
       </div>
@@ -244,7 +254,7 @@ const isModelLoading = computed(() => loadingProgress.value < 100)
                 <div class="w-10 h-10 bg-gradient-to-r from-red-500 to-orange-500 rounded-full"></div>
                 <Text type="h4">{{ activeBot?.name }}</Text>
               </div>
-              <Dialog>
+              <Dialog v-model:open="updateBotFormOpen">
                 <DialogTrigger class="menu-link px-3 py-2 bg-transparent text-gray-500 hover:text-gray-200 transition duration-200 rounded-md flex gap-2">
                   <Settings></Settings>
                 </DialogTrigger>
@@ -255,7 +265,7 @@ const isModelLoading = computed(() => loadingProgress.value < 100)
                       Change the bot data or feed with documents
                     </DialogDescription>
                   </DialogHeader>
-                  <UpdateBotForm/>
+                  <UpdateBotForm @success="updateBotFormOpen = false"/>
                 </DialogContent>
               </Dialog>
             </div>

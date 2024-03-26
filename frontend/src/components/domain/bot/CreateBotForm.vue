@@ -30,23 +30,21 @@ const emit = defineEmits(['success'])
 const db = useDb()
 const file = ref()
 
-onMounted(() => {
-    console.log('test', )
-})
-
 const formSchema = toTypedSchema(z.object({
     name: z.string(),
     description: z.string(),
     prompt: z.string(),
     top_p: z.array(z.number().min(0).max(1)).nullable(),
-    temperature: z.array(z.number().min(0).max(1)).nullable(),
-    repetition_penalty: z.array(z.number().min(0).max(1)).nullable(),
+    temperature: z.array(z.number().min(0).max(2)).nullable(),
+    frequency_penalty: z.array(z.number().min(-2).max(2)).nullable(),
+    max_gen_len: z.array(z.number().min(0).max(1000)).nullable(),
 }))
 
 const { handleSubmit, values } = useForm({
     validationSchema: formSchema,
     initialValues: {
-        repetition_penalty: [0.5],
+        frequency_penalty: [0.5],
+        max_gen_len: [300],
         top_p: [0.7],
         temperature: [0.4],
     }
@@ -88,8 +86,9 @@ const onSubmit = handleSubmit(async (v) => {
         botId: chosenModel.value,
         params: {
             top_p: v.top_p,
+            max_gen_len: v.max_gen_len,
             temperature: v.temperature,
-            repetition_penalty: v.repetition_penalty,
+            frequency_penalty: v.frequency_penalty,
         }
     })
     toast({
@@ -207,21 +206,35 @@ const models = useModel().model_list
                     </div>
                 </FormLabel>
                 <FormControl>
-                    <Slider :min="0" :max="1" :step="0.1"  v-bind="componentField"></Slider>
+                    <Slider :min="0" :max="2" :step="0.1"  v-bind="componentField"></Slider>
                 </FormControl>
                 <FormMessage />
             </FormItem>
         </FormField>
-        <FormField v-slot="{ componentField }" name="repetition_penalty">
+        <FormField v-slot="{ componentField }" name="temperature">
             <FormItem>
                 <FormLabel>
                     <div class="flex justify-between mt-2">
-                        Repetition Penalty
-                        <Text type="small">{{ values.repetition_penalty?.[0] || 0 }}</Text>
+                        Max Generation Length
+                        <Text type="small">{{ values.max_gen_len?.[0] || 0 }}</Text>
                     </div>
                 </FormLabel>
                 <FormControl>
-                    <Slider :min="0" :max="1" :step="0.1"  v-bind="componentField"></Slider>
+                    <Slider :min="10" :max="1000" :step="10"  v-bind="componentField"></Slider>
+                </FormControl>
+                <FormMessage />
+            </FormItem>
+        </FormField>
+        <FormField v-slot="{ componentField }" name="frequency_penalty">
+            <FormItem>
+                <FormLabel>
+                    <div class="flex justify-between mt-2">
+                        Frequency Penalty
+                        <Text type="small">{{ values.frequency_penalty?.[0] || 0 }}</Text>
+                    </div>
+                </FormLabel>
+                <FormControl>
+                    <Slider :min="-2" :max="2" :step="0.1"  v-bind="componentField"></Slider>
                 </FormControl>
                 <FormMessage />
             </FormItem>

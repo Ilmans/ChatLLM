@@ -41,9 +41,10 @@ const activeBot = reactive<Bot>({
         text: ''
     },
     params: {
-        top_p: 0.2,
-        temperature: 0.2,
-        repetition_penalty: 0.2 
+        frequency_penalty: [0.5],
+        max_gen_len: [300],
+        top_p: [0.7],
+        temperature: [0.4],
     }
 })
 const modelPopoverOpen = ref(false)
@@ -55,14 +56,16 @@ const formSchema = toTypedSchema(z.object({
     description: z.string(),
     prompt: z.string(),
     top_p: z.array(z.number().min(0).max(1)).nullable(),
-    temperature: z.array(z.number().min(0).max(1)).nullable(),
-    repetition_penalty: z.array(z.number().min(0).max(1)).nullable(),
+    temperature: z.array(z.number().min(0).max(2)).nullable(),
+    frequency_penalty: z.array(z.number().min(-2).max(2)).nullable(),
+    max_gen_len: z.array(z.number().min(0).max(1000)).nullable(),
 }))
 
 const { handleSubmit, values, setValues } = useForm({
     validationSchema: formSchema,
     initialValues: {
-        repetition_penalty: [0.5],
+        max_gen_len: [300],
+        frequency_penalty: [0.5],
         top_p: [0.7],
         temperature: [0.4],
     }
@@ -75,6 +78,10 @@ onMounted(async () => {
         name: activeBot.name,
         prompt: activeBot.prompt,
         description: activeBot.description,
+        frequency_penalty: activeBot.params.frequency_penalty,
+        top_p: activeBot.params.top_p,
+        temperature: activeBot.params.temperature,
+        max_gen_len: activeBot.params.max_gen_len,
     })
 })
 
@@ -94,7 +101,8 @@ const onSubmit = handleSubmit(async (v) => {
     activeBot.botId = chosenModel.value
     activeBot.description = v.description
     activeBot.name = v.name
-    activeBot.params.repetition_penalty = v.repetition_penalty
+    activeBot.params.frequency_penalty = v.frequency_penalty
+    activeBot.params.max_gen_len = v.max_gen_len
     activeBot.params.temperature = v.temperature
     activeBot.params.top_p = v.top_p
     activeBot.prompt = v.prompt
@@ -214,21 +222,35 @@ const models = useModel().model_list
                     </div>
                 </FormLabel>
                 <FormControl>
-                    <Slider :min="0" :max="1" :step="0.1"  v-bind="componentField" :value="activeBot?.params.temperature"></Slider>
+                    <Slider :min="0" :max="2" :step="0.1"  v-bind="componentField" :value="activeBot?.params.temperature"></Slider>
                 </FormControl>
                 <FormMessage />
             </FormItem>
         </FormField>
-        <FormField v-slot="{ componentField }" name="repetition_penalty">
+        <FormField v-slot="{ componentField }" name="max_gen_len">
             <FormItem>
                 <FormLabel>
                     <div class="flex justify-between mt-2">
-                        Repetition Penalty
-                        <Text type="small">{{ values.repetition_penalty?.[0] || 0 }}</Text>
+                        Max Generation Length
+                        <Text type="small">{{ values.max_gen_len?.[0] || 0 }}</Text>
                     </div>
                 </FormLabel>
                 <FormControl>
-                    <Slider :min="0" :max="1" :step="0.1"  v-bind="componentField" :value="activeBot?.params.repetition_penalty"></Slider>
+                    <Slider :min="10" :max="1000" :step="10"  v-bind="componentField"></Slider>
+                </FormControl>
+                <FormMessage />
+            </FormItem>
+        </FormField>
+        <FormField v-slot="{ componentField }" name="frequency_penalty">
+            <FormItem>
+                <FormLabel>
+                    <div class="flex justify-between mt-2">
+                        Frequency Penalty
+                        <Text type="small">{{ values.frequency_penalty?.[0] || 0 }}</Text>
+                    </div>
+                </FormLabel>
+                <FormControl>
+                    <Slider :min="-2" :max="2" :step="0.1"  v-bind="componentField"></Slider>
                 </FormControl>
                 <FormMessage />
             </FormItem>

@@ -1,21 +1,19 @@
 <script setup lang="ts">
 import { DialogRoot } from 'radix-vue'
-import { provide, ref, toRef } from 'vue';
+import { computed, provide, ref, toRef } from 'vue';
 
 const props = defineProps<{
   open?: boolean
 }>()
 
-const open = ref(props.open)
 const emit = defineEmits(['update:open']) 
 
 
 const toggleOpen = (v: boolean) => {
-  open.value = v
   emit('update:open',v)
 }
 
-
+const open = computed(() => props.open)
 provide('open',open)
 </script>
 

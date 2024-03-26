@@ -28,7 +28,6 @@ export const useLLM = () => {
         chat.setInitProgressCallback(onModelLoadingCb);
       
       const chatOptions: ChatOptions = { 
-        conv_template: "redpajama_chat", 
         // conv_config: {},
         // repetition_penalty: activeBot.value.params.repetition_penalty[0],
         // temperature: activeBot.value.params.temperature[0],
@@ -77,11 +76,13 @@ export const useLLM = () => {
     //   }
     // }
     
-    const infer = async (text: ChatCompletionMessageParam[], cb: (msg: ChatCompletionChunk) => void) => {
+    const infer = async (text: ChatCompletionMessageParam[], cb: (msg: ChatCompletionChunk, i: number) => void) => {
 
       const request: ChatCompletionRequest = {
         stream: true,
         top_p: activeBot.value.params.top_p[0],
+        max_gen_len: activeBot.value.params.max_gen_len[0],
+        frequency_penalty: activeBot.value.params.frequency_penalty[0],
         temperature: activeBot.value.params.temperature[0],
         messages: [
           {
@@ -91,10 +92,11 @@ export const useLLM = () => {
           ...text
         ],
       };
+      console.log(request)
       let i = 0
       for await (const chunk of await chat.chatCompletion(request)) {
         if(i == 0 && chunk.choices[0].delta.content == '\n') continue
-        cb(chunk)
+        cb(chunk, i)
         i++ 
       }
       console.log(await chat.getMessage());  // the final response

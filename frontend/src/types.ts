@@ -9,9 +9,10 @@ export interface Bot {
         text: string
     }
     params: {
-        top_p: number | number[],
-        temperature: number | number[],
-        repetition_penalty: number | number[]
+        top_p: number[],
+        temperature: number[],
+        frequency_penalty: number[]
+        max_gen_len: number[]
     }
 }
 

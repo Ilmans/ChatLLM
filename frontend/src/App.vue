@@ -24,7 +24,7 @@ import { isDirty } from "zod"
 const chatStore = useChatStore()
 const bots = ref([])
 const db = useDb()
-const activeBotId = ref()
+const activeBotId = ref(db.getActiveBotId())
 const isCreateBotDialogOpen = ref(false)
 
 chatStore.fetchBots()
@@ -42,11 +42,6 @@ onMounted(async () => {
   }
 
   bots.value = await db.getBots()
-  db.getActiveBot()
-    .then((v) => {
-      activeBotId.value = v
-    })
-    .catch(err => console.log('Error getting active bot'))
 
 })
 
