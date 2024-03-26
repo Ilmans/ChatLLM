@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Text } from "./components/ui/text"
 import MenuItem from "./components/ui/menu-item/MenuItem.vue"
 import { MessageCircle, BookA, ChefHat, Plus, AlignLeft,X, Menu } from 'lucide-vue-next'
-import { computed, onMounted, reactive, ref, watch } from "vue"
+import { computed, onMounted, provide, reactive, ref, watch } from "vue"
 import { useChatStore } from '@/store/chat'
 import CreateBotForm from "@/components/domain/bot/CreateBotForm.vue"
 import { useDb } from "./composables/useDb"
@@ -13,6 +13,7 @@ import Toaster from '@/components/ui/toast/Toaster.vue'
 import { cn } from "./lib/utils"
 import {useWebGPU} from '@/composables/useWebGPU'
 import { useWindowSize } from '@vueuse/core'
+import { ChevronRight } from "lucide-vue-next"
 
 const chatStore = useChatStore()
 const bots = ref([])
@@ -49,14 +50,20 @@ const onBotCreated = () => {
 
 const { width } = useWindowSize()
 const showSidebar = ref(true)
+const showRightSidebar = ref(true)
 const showHeader = computed(() => width.value >= 1024 ? false : true)
-watch(width, () => {
+const checkWindowSize = () => {
   showSidebar.value = width.value >= 1024 ? true : false
+  showRightSidebar.value = showSidebar.value
+}
+watch(width, () => {
+  checkWindowSize()
 })
 onMounted(() => {
   console.log(width.value)
+  checkWindowSize()
 })
-
+provide('showRightSidebar',showRightSidebar)
 </script>
 
 <template>
@@ -133,9 +140,13 @@ onMounted(() => {
         </div>
       </aside>
       <div id="main-content" class="w-full z-1 flex">
-        <header v-show="showHeader"class="fixed py-4 px-8 border-b border-gray-200 bg-background w-full z-10">
-          <button @click="showSidebar = true">
+        <header v-show="showHeader"class="fixed flex justify-between items-center py-4 px-8 border-b border-gray-200 bg-background w-full z-10">
+          <button @click="() => showSidebar = !showSidebar">
             <Menu></Menu>
+          </button>
+          <button @click="() => showRightSidebar = !showRightSidebar" class="flex">
+            <span>Model Options</span>
+            <ChevronRight></ChevronRight>
           </button>
         </header>
         <router-view/>

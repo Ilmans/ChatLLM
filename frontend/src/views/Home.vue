@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
+import { computed, inject, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
 
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/Badge"
@@ -165,7 +165,7 @@ const textareaKeydown = (e: KeyboardEvent) => {
 }
 
 const isModelLoading = computed(() => loadingProgress.value < 100)
-
+const showRightSidebar = inject('showRightSidebar')
 </script>
 <template>
   <main class="flex-grow flex flex-col h-full">
@@ -213,7 +213,7 @@ const isModelLoading = computed(() => loadingProgress.value < 100)
 
   <!-- Parameter Adjust -->
   <div v-if="activeBot">
-    <aside class="py-3 px-10 xl:w-96 w-72 flex-shrink-0">
+    <aside class="py-3 px-10 xl:w-96 w-72 flex-shrink-0" v-show="showRightSidebar">
       <Text type="h3" class="mb-10 my-12">Parameters</Text>
 
       <div class="menu">
