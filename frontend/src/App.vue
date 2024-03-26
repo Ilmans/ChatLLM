@@ -2,8 +2,8 @@
 import { Button } from "@/components/ui/button"
 import { Text } from "./components/ui/text"
 import MenuItem from "./components/ui/menu-item/MenuItem.vue"
-import { MessageCircle, BookA, ChefHat, Plus, AlignLeft, FileOutput, Settings } from 'lucide-vue-next'
-import { onMounted, reactive, ref } from "vue"
+import { MessageCircle, BookA, ChefHat, Plus, AlignLeft,X, Menu } from 'lucide-vue-next'
+import { computed, onMounted, reactive, ref, watch } from "vue"
 import { useChatStore } from '@/store/chat'
 import CreateBotForm from "@/components/domain/bot/CreateBotForm.vue"
 import { useDb } from "./composables/useDb"
@@ -12,6 +12,7 @@ import DarkToggle from '@/components/dark-toggle/DarkToggle.vue'
 import Toaster from '@/components/ui/toast/Toaster.vue'
 import { cn } from "./lib/utils"
 import {useWebGPU} from '@/composables/useWebGPU'
+import { useWindowSize } from '@vueuse/core'
 
 const chatStore = useChatStore()
 const bots = ref([])
@@ -46,6 +47,15 @@ const onBotCreated = () => {
   isCreateBotDialogOpen.value = false
 }
 
+const { width } = useWindowSize()
+const showSidebar = ref(true)
+const showHeader = computed(() => width.value >= 1024 ? false : true)
+watch(width, () => {
+  showSidebar.value = width.value >= 1024 ? true : false
+})
+onMounted(() => {
+  console.log(width.value)
+})
 
 </script>
 
@@ -66,10 +76,10 @@ const onBotCreated = () => {
       </div>
     </header> -->
     <div class="body-content flex flex-grow">
-      <aside class="p-3 px-8  w-72 flex-shrink-0">
-        <div class="header-left flex items-center justify-between w-full pr-5 py-10">
+      <aside v-show="showSidebar" class="p-3 px-8 fixed lg:static max-w-80 h-full min-w-72 flex-shrink-0 shadow-lg lg:shadow-none z-20 bg-background">
+        <div class="header-left flex items-center justify-between w-full pr-5 py-10 relative">
           <Text type="h2">ChatLLM</Text>
-          <DarkToggle/>
+          <button class="absolute top-11 right-0" @click="showSidebar = false"><X></X></button>
         </div>
         <div class="menu">
           <ul>
@@ -115,9 +125,21 @@ const onBotCreated = () => {
               </li>
             </ul>
           </template>
+          <div class="dark-toggle mt-10 flex justify-between">
+            <span>Dark Mode</span>
+            <DarkToggle/>
+          </div>
+
         </div>
       </aside>
-      <router-view/>
+      <div id="main-content" class="w-full z-1 flex">
+        <header v-show="showHeader"class="fixed py-4 px-8 border-b border-gray-200 bg-background w-full z-10">
+          <button @click="showSidebar = true">
+            <Menu></Menu>
+          </button>
+        </header>
+        <router-view/>
+      </div>
     </div>
   </div>
   <Toaster />

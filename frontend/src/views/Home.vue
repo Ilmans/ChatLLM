@@ -168,7 +168,7 @@ const isModelLoading = computed(() => loadingProgress.value < 100)
 
 </script>
 <template>
-  <main class="flex-grow flex flex-col">
+  <main class="flex-grow flex flex-col h-full">
     <div class="text-center" v-if="activeBot === null">
       <Text type="p" >Create a bot to start chatting</Text>
     </div>
@@ -198,7 +198,7 @@ const isModelLoading = computed(() => loadingProgress.value < 100)
           </div>
         </div>
       </div>
-      <div class="message-box dark:bg-slate-900 rounded-lg py-3 px-5 xl:px-24 flex items-start gap-3"  v-if="!isModelLoading">
+      <div class="message-box rounded-lg py-3 px-5 xl:px-24 flex items-start gap-3"  v-if="!isModelLoading">
         <div class="w-full">
           <form @submit.prevent="sendMessage">
             <Textarea placeholder="Ask me anything" rows="3" @keydown="textareaKeydown" v-model="inputText" ref="inputTextarea"/>
