@@ -11,6 +11,7 @@ const props = defineProps<{
 <style>
 .menu-link.router-link-active {
     color: white;
-    background: #222
+    background: var(--primary);
+    border-radius: .3rem;
 }
 </style>

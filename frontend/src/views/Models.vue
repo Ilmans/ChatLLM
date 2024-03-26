@@ -34,7 +34,7 @@ onMounted(async () => {
 
 </script>
 <template>
-    <main class="px-8 w-full">
+    <main class="px-8 w-full pt-16">
         <section>
             <div class="section-header mb-10">
                 <Text type="h2">Models</Text>

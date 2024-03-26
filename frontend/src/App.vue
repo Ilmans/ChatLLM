@@ -1,11 +1,6 @@
 <script setup lang="ts">
 import { Button } from "@/components/ui/button"
 import { Text } from "./components/ui/text"
-import { Input } from "./components/ui/input"
-import { Slider } from "./components/ui/slider"
-import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card"
-import ChatMessage from "./components/ui/chat/ChatMessage.vue"
-import { Textarea } from "./components/ui/textarea"
 import MenuItem from "./components/ui/menu-item/MenuItem.vue"
 import { MessageCircle, BookA, ChefHat, Plus, AlignLeft, FileOutput, Settings } from 'lucide-vue-next'
 import { onMounted, reactive, ref } from "vue"
@@ -13,13 +8,10 @@ import { useChatStore } from '@/store/chat'
 import CreateBotForm from "@/components/domain/bot/CreateBotForm.vue"
 import { useDb } from "./composables/useDb"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "./components/ui/dialog"
+import DarkToggle from '@/components/dark-toggle/DarkToggle.vue'
 import Toaster from '@/components/ui/toast/Toaster.vue'
 import { cn } from "./lib/utils"
 import {useWebGPU} from '@/composables/useWebGPU'
-import { useLLM } from "./composables/useLLM"
-import type { Bot } from "./types"
-import { DialogRoot } from "radix-vue"
-import { isDirty } from "zod"
 
 const chatStore = useChatStore()
 const bots = ref([])
@@ -59,9 +51,10 @@ const onBotCreated = () => {
 
 <template>
   <div class="main h-screen flex flex-col">
-    <header class="py-5 px-8 flex justify-between">
-      <div class="header-left">
+    <!-- <header class="py-5 px-8 flex justify-between">
+      <div class="header-left flex items-center justify-between w-full pr-5">
         <Text type="h2">ChatLLM</Text>
+        <DarkToggle/>
       </div>
       <div class="header-right">
         <Button>
@@ -71,9 +64,13 @@ const onBotCreated = () => {
           </div>
         </Button>
       </div>
-    </header>
+    </header> -->
     <div class="body-content flex flex-grow">
       <aside class="p-3 px-8  w-72 flex-shrink-0">
+        <div class="header-left flex items-center justify-between w-full pr-5 py-10">
+          <Text type="h2">ChatLLM</Text>
+          <DarkToggle/>
+        </div>
         <div class="menu">
           <ul>
             <MenuItem to="/">
@@ -93,7 +90,7 @@ const onBotCreated = () => {
             <Text type="p" class="my-3">Your Bots</Text>
             <ul>
               <li class="menu-item mb-1" v-for="bot in bots">
-                  <button @click="setActiveBotId(bot.id)" :class="cn(activeBotId == bot.id ? 'text-white' : 'text-gray-500','menu-link px-3 py-2 bg-transparent  hover:text-gray-200 transition duration-200 rounded-md flex gap-2')">
+                  <button @click="setActiveBotId(bot.id)" :class="cn(activeBotId == bot.id ? 'light:text-black dark:text-white' : 'text-gray-500','menu-link px-3 py-2 bg-transparent hover:text-primary dark:hover:text-gray-200 transition duration-200 rounded-md flex gap-2')">
                     <AlignLeft width="20" />
                     {{bot.name}}
                   </button>

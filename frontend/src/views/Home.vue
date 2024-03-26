@@ -20,6 +20,7 @@ import UpdateBotForm from '@/components/domain/bot/UpdateBotForm.vue'
 import Loading from '@/components/ui/loading/Loading.vue';
 import type { ChatCompletionMessageParam } from '@mlc-ai/web-llm';
 import Text from '@/components/ui/text/Text.vue';
+import { Heading } from 'lucide-vue-next';
 // import { getPrompt } from '@/composables/useDocument'
 
 const chatStore = useChatStore()
@@ -167,7 +168,7 @@ const isModelLoading = computed(() => loadingProgress.value < 100)
 
 </script>
 <template>
-  <main class="py-10 px-8 lg:px-8 xl:px-12 flex-grow flex flex-col">
+  <main class="flex-grow flex flex-col">
     <div class="text-center" v-if="activeBot === null">
       <Text type="p" >Create a bot to start chatting</Text>
     </div>
@@ -185,7 +186,7 @@ const isModelLoading = computed(() => loadingProgress.value < 100)
             <p>{{ loadingProgress }}%</p>
           </template>
         </div>
-        <div class="chat-messages px-5 overflow-y-auto flex flex-col-reverse absolute inset-0" v-if="!isModelLoading" >
+        <div class="chat-messages py-10 px-8 lg:px-8 xl:px-24  overflow-y-auto flex flex-col-reverse absolute inset-0" v-if="!isModelLoading" >
           <ChatMessage v-if="isBotThinking" role="bot" :loading="isBotThinking"></ChatMessage>
           <ChatMessage v-if="loading" role="user" :loading="loading"></ChatMessage>
     
@@ -197,8 +198,7 @@ const isModelLoading = computed(() => loadingProgress.value < 100)
           </div>
         </div>
       </div>
-      <div class="message-box bg-slate-900 rounded-lg py-3 px-5 flex items-start gap-3"  v-if="!isModelLoading">
-        <div class="w-10 h-10 bg-gradient-to-r flex-shrink-0 from-red-500 to-orange-500 mt-2 rounded-full"></div>
+      <div class="message-box dark:bg-slate-900 rounded-lg py-3 px-5 xl:px-24 flex items-start gap-3"  v-if="!isModelLoading">
         <div class="w-full">
           <form @submit.prevent="sendMessage">
             <Textarea placeholder="Ask me anything" rows="3" @keydown="textareaKeydown" v-model="inputText" ref="inputTextarea"/>
@@ -214,6 +214,8 @@ const isModelLoading = computed(() => loadingProgress.value < 100)
   <!-- Parameter Adjust -->
   <div v-if="activeBot">
     <aside class="py-3 px-10 xl:w-96 w-72 flex-shrink-0">
+      <Text type="h3" class="mb-10 my-12">Parameters</Text>
+
       <div class="menu">
         <ul>
           <li class="mb-8">
