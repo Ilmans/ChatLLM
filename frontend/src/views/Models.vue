@@ -41,43 +41,37 @@ onMounted(async () => {
                 <Text type="p">These are models that are available to use</Text>
             </div>
             <div class="section-body">
-                <Card class="w-full">
-                    <CardHeader>
-                        <CardTitle>Model List</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <Table v-if="modelListWithStatus.length == model_list.length">
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead class="w-[100px]">
-                                        #
-                                    </TableHead>
-                                    <TableHead>Name</TableHead>
-                                    <TableHead>Download</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                <TableRow v-for="(model, i) in modelListWithStatus">
-                                    <TableCell class="font-medium">
-                                        {{ i + 1 }}
-                                    </TableCell>
-                                    <TableCell>{{ model.local_id }}</TableCell>
-                                    <TableCell>
-                                        <div class="flex items-center" v-if="model.is_downloaded">
-                                            <Check/> Downloaded
-                                        </div>
-                                        <Button variant="ghost" v-else>
-                                            <Download/>
-                                        </Button>
-                                    </TableCell>
-                                </TableRow>
-                            </TableBody>
-                        </Table>
-                        <div v-else>
-                            Loading
-                        </div>
-                    </CardContent>
-                </Card>
+                <Table v-if="modelListWithStatus.length == model_list.length">
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead class="w-[100px]">
+                                #
+                            </TableHead>
+                            <TableHead>Name</TableHead>
+                            <TableHead>Size</TableHead>
+                            <TableHead>VRAM/RAM Required</TableHead>
+                            <TableHead>Download</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        <TableRow v-for="(model, i) in modelListWithStatus">
+                            <TableCell class="font-medium">
+                                {{ i + 1 }}
+                            </TableCell>
+                            <TableCell>{{ model.local_id }}</TableCell>
+                            <TableCell>{{ model.size }} MB</TableCell>
+                            <TableCell>{{ model.vram_required_MB }} MB</TableCell>
+                            <TableCell>
+                                <div class="flex items-center" v-if="model.is_downloaded">
+                                    <Check/> Downloaded
+                                </div>
+                                <Button variant="ghost" v-else>
+                                    <Download/>
+                                </Button>
+                            </TableCell>
+                        </TableRow>
+                    </TableBody>
+                </Table>
             </div>
         </section>
     </main>
