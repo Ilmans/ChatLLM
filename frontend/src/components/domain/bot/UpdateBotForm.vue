@@ -99,7 +99,8 @@ const onSubmit = handleSubmit(async (v) => {
     activeBot.params.top_p = v.top_p
     activeBot.prompt = v.prompt
     toast({
-        title: "Bot updated successfully"
+        title: "Bot updated successfully",
+        variant: 'success'
     })
     db.updateBot(JSON.parse(JSON.stringify(activeBot)))
     emit("success", v)
