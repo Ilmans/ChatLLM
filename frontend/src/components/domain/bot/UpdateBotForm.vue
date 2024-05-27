@@ -14,7 +14,6 @@ import { useDb } from "@/composables/useDb"
 import type { Bot } from "@/types";
 import { onMounted, reactive, ref } from 'vue'
 import type { TextItem } from 'pdfjs-dist/types/src/display/api'
-import { getFileContent } from '@/composables/useDocument'
 import { CheckIcon, ChevronsUpDown, X } from 'lucide-vue-next'
 import { File } from 'lucide-vue-next'
 import { useModel } from '@/composables/useModel'
@@ -36,10 +35,6 @@ const activeBot = reactive<Bot>({
     description: '',
     prompt: '',
     id: 0,
-    document: {
-        filename: '',
-        text: ''
-    },
     params: {
         frequency_penalty: [0.5],
         max_gen_len: [300],
@@ -86,14 +81,6 @@ onMounted(async () => {
 })
 
 
-
-const onFileChange = async (e: InputEvent) => {
-    const files = (e.target as HTMLInputElement).files
-    activeBot.document = {
-        filename: files[0].name,
-        text: await getFileContent(files[0])
-    }
-}
 
 const onSubmit = handleSubmit(async (v) => {
     const botCount = (await db.getBots()).length
@@ -255,20 +242,6 @@ const models = useModel().model_list
                 <FormMessage />
             </FormItem>
         </FormField>
-        <FormItem>
-            <Text type="small">Feed bot with PDF</Text>
-            <div v-if="activeBot.document.filename !== ''" class="rounded-md border border-gray-400 p-3 flex justify-between items-center">
-                <div class="filename flex gap-3">
-                    <File />
-                    {{ activeBot.document.filename }}
-                </div>
-                <button type="button" class="hover:text-white" @click="db.removeBotDocument()">
-                    <X />
-                </button>
-            </div>
-            <Input v-else type="file" placeholder="EnglishHelperBot" :ref="inputPdf" @change="onFileChange" accept="application/pdf"/>
-
-        </FormItem>
         <div class="flex justify-end">
         <Button type="submit">
             Update

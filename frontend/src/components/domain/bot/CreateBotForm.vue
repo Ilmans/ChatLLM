@@ -13,7 +13,6 @@ import { useToast } from "@/components/ui/toast"
 import { useDb } from "@/composables/useDb"
 import { useModel } from '@/composables/useModel'
 import { onMounted, ref } from 'vue'
-import { getFileContent } from '@/composables/useDocument'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
   Command,
@@ -25,9 +24,11 @@ import {
 } from '@/components/ui/command'
 import { cn } from '@/lib/utils'
 import { CheckIcon, ChevronsUpDown } from 'lucide-vue-next'
+import { useLLM } from '@/composables/useLLM'
 
 const emit = defineEmits(['success'])
 const db = useDb()
+const llm = useLLM()
 const file = ref()
 
 const formSchema = toTypedSchema(z.object({
@@ -50,12 +51,6 @@ const { handleSubmit, values } = useForm({
     }
 })
 
-const onFileChange = async (e: InputEvent) => {
-    const files = (e.target as HTMLInputElement).files
-    const read = await getFileContent(files[0])
-    return read
-}
-
 
 const modelPopoverOpen = ref(false)
 const chosenModel = ref<string>('RedPajama-INCITE-Chat-3B-v1-q4f32_1')
@@ -64,25 +59,23 @@ const onSubmit = handleSubmit(async (v) => {
     const botCount = (await db.getBots()).length
     const {toast} = useToast()
 
-    let document = {
-        filename: '',
-        text: ''
-    }
-    const inputFiles = (file.value.inputElement as HTMLInputElement).files
-    if(inputFiles.length > 0) {
-        // read file if exists
-        document = {
-            filename: inputFiles[0].name,
-            text: await getFileContent(inputFiles[0])
-        }
-
-    }
-    await db.insertBot({
+    // let document = {
+    //     filename: '',
+    //     text: ''
+    // }
+    // const inputFiles = (file.value.inputElement as HTMLInputElement).files
+    // if(inputFiles.length > 0) {
+    //     // read file if exists
+    //     document = {
+    //         filename: inputFiles[0].name,
+    //         text: await getFileContent(inputFiles[0])
+    //     }
+    // }
+    await llm.insertBot({
         id: botCount+1,
         name: v.name,
         description: v.description,
         prompt: v.prompt,
-        document,
         botId: chosenModel.value,
         params: {
             top_p: v.top_p,
@@ -125,7 +118,7 @@ const models = useModel().model_list
             <FormItem>
                 <FormLabel>Prompt</FormLabel>
                     <FormControl>
-                        <Textarea  v-bind="componentField"></Textarea>
+                        <Textarea  v-bind="componentField" placeholder='Imagine you are having a casual conversation with a new friend. Use polite, conversational language and tone. Avoid controversial or overly personal topics.'></Textarea>
                     </FormControl>
                 <FormMessage />
             </FormItem>
@@ -211,7 +204,7 @@ const models = useModel().model_list
                 <FormMessage />
             </FormItem>
         </FormField>
-        <FormField v-slot="{ componentField }" name="temperature">
+        <FormField v-slot="{ componentField }" name="max_gen_len">
             <FormItem>
                 <FormLabel>
                     <div class="flex justify-between mt-2">
@@ -239,10 +232,10 @@ const models = useModel().model_list
                 <FormMessage />
             </FormItem>
         </FormField>
-        <FormItem>
+        <!-- <FormItem>
             <Text type="small">Feed bot </Text>
             <Input type="file" placeholder="EnglishHelperBot" ref="file" @change="onFileChange" accept="application/pdf, text/plain"/>
-        </FormItem>
+        </FormItem> -->
         <div class="flex justify-end">
         <Button type="submit">
             Create

@@ -4,10 +4,6 @@ export interface Bot {
     description: string
     prompt: string
     botId?: string
-    document: {
-        filename: string 
-        text: string
-    }
     params: {
         top_p: number[],
         temperature: number[],

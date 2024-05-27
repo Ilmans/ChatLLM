@@ -14,15 +14,17 @@ import { cn } from "./lib/utils"
 import {useWebGPU} from '@/composables/useWebGPU'
 import { useWindowSize } from '@vueuse/core'
 import { ChevronRight } from "lucide-vue-next"
+import { useLLM } from "./composables/useLLM"
 
 const chatStore = useChatStore()
-const bots = ref([])
+const llm = useLLM()
 const db = useDb()
 const activeBotId = ref(db.getActiveBotId())
 const isCreateBotDialogOpen = ref(false)
 
 chatStore.fetchBots()
 
+const bots = computed(() => chatStore.bots)
 const webGPU = useWebGPU()
 
 onMounted(async () => {
@@ -34,8 +36,6 @@ onMounted(async () => {
     alert(message)
     throw Error(message)
   }
-
-  bots.value = await db.getBots()
 
 })
 

@@ -4,12 +4,13 @@ import { ChatModule, type ChatCompletionRequest, type ChatOptions, type ChatComp
 import { useRoute, useRouter } from "vue-router"
 import type { Bot, ChatRole, IChatMessage } from "@/types"
 import { useModel } from "./useModel"
-import { getDocumentPrompt } from "./useDocument"
+import { useChatStore } from "@/store/chat"
 
 
 export const useLLM = () => {
     const db = useDb()
     const activeBot = ref<Bot|null>()
+    const chatStore = useChatStore()
     
     let chat = new ChatModule
     let isFirstLoad = true
@@ -77,7 +78,7 @@ export const useLLM = () => {
     // }
     
     const infer = async (text: ChatCompletionMessageParam[], cb: (msg: ChatCompletionChunk, i: number) => void) => {
-
+      console.log(activeBot.value.params)
       const request: ChatCompletionRequest = {
         stream: true,
         top_p: activeBot.value.params.top_p[0],
@@ -107,6 +108,11 @@ export const useLLM = () => {
     
     const messages = ref<IChatMessage[]>([])
     
+    const insertBot = (bot: Bot) => {
+      chatStore.bots.push(bot)
+      db.insertBot(bot)
+    }
+
 
 
     const insertMessage = (botId: number, role: ChatRole, message: string) => {
@@ -120,11 +126,12 @@ export const useLLM = () => {
     }
     
     return {
-        loadModel,
-        unloadModel,
-        messages,
-        infer,
-        activeBot,
-        insertMessage
+      insertBot,
+      loadModel,
+      unloadModel,
+      messages,
+      infer,
+      activeBot,
+      insertMessage
     }
 }

@@ -21,7 +21,6 @@ import Loading from '@/components/ui/loading/Loading.vue';
 import type { ChatCompletionMessageParam } from '@mlc-ai/web-llm';
 import Text from '@/components/ui/text/Text.vue';
 import { Heading } from 'lucide-vue-next';
-// import { getPrompt } from '@/composables/useDocument'
 
 const chatStore = useChatStore()
 const db = useDb()
@@ -169,7 +168,7 @@ const showRightSidebar = inject('showRightSidebar')
 </script>
 <template>
   <main class="flex-grow flex flex-col h-full">
-    <div class="text-center" v-if="activeBot === null">
+    <div class="text-center pt-24" v-if="activeBot === null">
       <Text type="p" >Create a bot to start chatting</Text>
     </div>
     <template v-else>
@@ -190,7 +189,7 @@ const showRightSidebar = inject('showRightSidebar')
           <ChatMessage v-if="isBotThinking" role="bot" :loading="isBotThinking"></ChatMessage>
           <ChatMessage v-if="loading" role="user" :loading="loading"></ChatMessage>
     
-          <ChatMessage v-else v-for="message in llm.messages.value" :role="message.role" :loading="false" >
+          <ChatMessage v-else v-for="message in llm.messages.value" :role="message.role" :loading="message.role === 'bot' && message.message == ''" >
             <div v-html="message.message"></div>
           </ChatMessage>
           <div class="time mb-8">

@@ -7,6 +7,15 @@ export const useModel = () => {
     return {
       "model_list": [
         // Llama-2
+        // {
+        //   "model_url": "https://huggingface.co/mlc-ai/Qwen-1_8B-Chat-q4f32_1-MLC/resolve/main",
+        //   "local_id": "Qwen-1_8B-Chat-q4f32_1",
+        //   "model_lib_url": "https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/Llama-2-7b-chat-hf/Llama-2-7b-chat-hf-q4f32_1-ctx4k_cs1k-webgpu.wasm",
+        //   "vram_required_MB": 9109.03,
+        //   conv_template: "llama-2",
+        //   size: '4039.27', 
+        //   "low_resource_required": false,
+        // },
         {
           "model_url": "https://huggingface.co/mlc-ai/Llama-2-7b-chat-hf-q4f32_1-MLC/resolve/main/",
           "local_id": "Llama-2-7b-chat-hf-q4f32_1",

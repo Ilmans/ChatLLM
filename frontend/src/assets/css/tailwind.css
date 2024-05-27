@@ -28,7 +28,7 @@
     --primary: rgb(70, 154, 196);
     --primary-foreground: hsl(210 40% 98%);
  
-    --secondary: hsl(210 40% 96.1%);
+    --secondary: hsl(210, 27%, 94%);
     --secondary-foreground: hsl(222.2 47.4% 11.2%);
  
     --accent: hsl(210 40% 96.1%);
@@ -37,7 +37,7 @@
     --destructive: hsl(348 100% 57%);
     --destructive-foreground: hsl(210 40% 98%);
  
-    --success: hsl(136 63% 38%);
+    --success: hsl(167.26deg 52.66% 48.79%);
     --success-foreground: hsl(136, 0%, 100%);
  
     --ring: hsl(222.2 84% 4.9%);
@@ -48,9 +48,9 @@
 }
  
 .dark {
-  --background: hsl(180 30% 5%);
+  --background: hsl(180, 31%, 6%);
   --foreground: hsl(218 11% 65%);
-  --main-bg: rgba(57, 62, 73, 0.095);;
+  --main-bg: rgba(24, 28, 40, 0.481);;
 
   --scrollbarBG: #1b1e2f;
   --thumbBG: #90A4AE;
