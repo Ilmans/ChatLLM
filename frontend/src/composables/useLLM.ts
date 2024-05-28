@@ -1,7 +1,6 @@
-import { computed, ref, type ComputedRef, watch } from "vue"
+import { ref } from "vue"
 import { useDb } from "./useDb"
 import { ChatModule, type ChatCompletionRequest, type ChatOptions, type ChatCompletionChunk, type ChatCompletionMessageParam } from "@mlc-ai/web-llm"
-import { useRoute, useRouter } from "vue-router"
 import type { Bot, ChatRole, IChatMessage } from "@/types"
 import { useModel } from "./useModel"
 import { useChatStore } from "@/store/chat"

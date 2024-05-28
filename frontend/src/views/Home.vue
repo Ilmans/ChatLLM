@@ -2,7 +2,7 @@
 import { computed, inject, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
 
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/Badge"
+import { Badge } from "@/components/ui/badge"
 import { Slider } from "@/components/ui/slider"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
