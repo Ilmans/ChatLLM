@@ -40,3 +40,8 @@ testem.log
 Thumbs.db
 
 .nx/cache
+
+.yarn/*
+!.yarn/releases
+!.yarn/plugins
+.pnp.*
