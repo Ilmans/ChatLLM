@@ -9,7 +9,7 @@
   },
   "private": true,
   "dependencies": {
-    "@mlc-ai/web-llm": "file:libs/web-llm",
+    "@mlc-ai/web-llm": "^0.2.50",
     "@swc/helpers": "~0.5.12",
     "@vee-validate/zod": "^4.13.2",
     "@vueuse/core": "^10.11.0",
