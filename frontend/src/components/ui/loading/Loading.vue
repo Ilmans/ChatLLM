@@ -12,7 +12,7 @@ const props = defineProps<{
 .loader-spinner {
     width: 48px;
     height: 48px;
-    border: 5px solid white;
+    border: 5px solid var(--primary);
     border-bottom-color: transparent;
     display: inline-block;
     border-radius: 50%;

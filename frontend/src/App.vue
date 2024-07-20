@@ -44,8 +44,9 @@ const setActiveBotId = (bot: number) => {
   activeBotId.value = bot
 }
 
-const onBotCreated = () => {
+const onBotCreated = (bot) => {
   isCreateBotDialogOpen.value = false
+  setActiveBotId(bot.botId)
 }
 
 const { width } = useWindowSize()
@@ -60,7 +61,6 @@ watch(width, () => {
   checkWindowSize()
 })
 onMounted(() => {
-  console.log(width.value)
   checkWindowSize()
 })
 provide('showRightSidebar',showRightSidebar)
@@ -98,10 +98,6 @@ provide('showRightSidebar',showRightSidebar)
               <BookA width="20" />
               Models
             </MenuItem>
-            <MenuItem to="/prompts">
-              <ChefHat width="20" />
-              Prompts 
-            </MenuItem>
           </ul>
           <template v-if="$route.name == 'home'">
             <Text type="p" class="my-3">Your Bots</Text>
@@ -112,10 +108,10 @@ provide('showRightSidebar',showRightSidebar)
                     {{bot.name}}
                   </button>
               </li>
-              <li class="border mt-10 rounded-md border-dashed border-gray-500 hover:border-gray-200 transition duration-200">
+              <li class="border mt-10 rounded-md border-dashed border-gray-500 hover:border-primary transition duration-200">
                 <!-- Create new bot modal -->
                 <Dialog v-model:open="isCreateBotDialogOpen">
-                  <DialogTrigger class="menu-link w-full px-3 py-2 bg-transparent text-gray-500 hover:text-gray-200 transition duration-200 rounded-md flex gap-2">
+                  <DialogTrigger class="menu-link w-full px-3 py-2 bg-transparent text-gray-500 dark:hover:text-gray-200 hover:text-primary transition duration-200 rounded-md flex gap-2">
                     <Plus width="20" />
                     Create new bot 
                   </DialogTrigger>

@@ -36,7 +36,7 @@ export default defineConfig({
         enabled: true
       },
       manifest: {
-        name: "Rust LLM",
+        name: "ChatLLM",
         description: "LLM Chat Application",
         short_name: "LLM",
         icons: [

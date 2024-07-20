@@ -6,6 +6,8 @@
     "jsx": "preserve",
     "jsxImportSource": "vue",
     "moduleResolution": "node",
+    "types": ["vite/client", "vite-plugin-pwa/vue"],
+    "typeRoots": ["./node_modules/@types/", "./types", "./node_modules"],
     "resolveJsonModule": true,
     "paths": {
       "@/*": ["./src/*"]
