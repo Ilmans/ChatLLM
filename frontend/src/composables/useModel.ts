@@ -59,15 +59,16 @@ export const useModel = (): (ModelRecord & {
     },
     {
       name: 'RedPajama 3B',
-
-      low_resource_required: true,
       model:
-        'https://huggingface.co/mlc-ai/RedPajama-INCITE-Chat-3B-v1-q4f32_1-MLC',
-      model_id: 'RedPajama-INCITE-Chat-3B-v1-q4f32_1-MLC-1k',
+        "https://huggingface.co/mlc-ai/RedPajama-INCITE-Chat-3B-v1-q4f32_1-MLC",
+      model_id: "RedPajama-INCITE-Chat-3B-v1-q4f32_1-MLC-1k",
       model_lib:
-        'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_43/RedPajama-INCITE-Chat-3B-v1-q4f32_1-ctx2k_cs1k-webgpu.wasm',
-      size: '3928.09',
-      vram_required_MB: 3928.09,
+        modelLibURLPrefix +
+        modelVersion +
+        "/RedPajama-INCITE-Chat-3B-v1-q4f32_1-ctx2k_cs1k-webgpu.wasm",
+      vram_required_MB: 2558.09,
+      size: "2558.09",
+      low_resource_required: true,
       conv_template: 'redpajama_chat',
       info: {
         author: 'Together Computer',
