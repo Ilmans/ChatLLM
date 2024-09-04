@@ -99,7 +99,7 @@ const models = useModel()
 
 </script>
 <template>
-   <form class="space-y-6" @submit.prevent="onSubmit" method="POST" novalidate>
+   <form class="space-y-6" @submit.prevent="onSubmit" method="POST" novalidate >
         <FormField v-slot="{ componentField }" name="name">
             <FormItem>
                 <FormLabel>Bot Name</FormLabel>
@@ -217,7 +217,7 @@ const models = useModel()
                     </div>
                 </FormLabel>
                 <FormControl>
-                    <Slider :min="10" :max="1000" :step="10"  v-bind="componentField"></Slider>
+                    <Slider :min="100" :max="1000" :step="10"  v-bind="componentField"></Slider>
                 </FormControl>
                 <FormMessage />
             </FormItem>
@@ -241,7 +241,7 @@ const models = useModel()
             <Input type="file" placeholder="EnglishHelperBot" ref="file" @change="onFileChange" accept="application/pdf, text/plain"/>
         </FormItem> -->
         <div class="flex justify-end">
-        <Button type="submit">
+        <Button type="submit" class="mb-10">
             Create
         </Button>
         </div>

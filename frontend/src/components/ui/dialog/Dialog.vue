@@ -18,7 +18,7 @@ provide('open',open)
 </script>
 
 <template>
-  <DialogRoot :open="open" @update:open="toggleOpen">
+  <DialogRoot :open="open" @update:open="toggleOpen" >
     <slot />
   </DialogRoot>
 </template>

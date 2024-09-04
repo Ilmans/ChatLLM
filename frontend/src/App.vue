@@ -110,12 +110,12 @@ provide('showRightSidebar',showRightSidebar)
               </li>
               <li class="border mt-10 rounded-md border-dashed border-gray-500 hover:border-primary transition duration-200">
                 <!-- Create new bot modal -->
-                <Dialog v-model:open="isCreateBotDialogOpen">
+                <Dialog v-model:open="isCreateBotDialogOpen" >
                   <DialogTrigger class="menu-link w-full px-3 py-2 bg-transparent text-gray-500 dark:hover:text-gray-200 hover:text-primary transition duration-200 rounded-md flex gap-2">
                     <Plus width="20" />
                     Create new bot 
                   </DialogTrigger>
-                  <DialogContent>
+                  <DialogContent >
                     <DialogHeader>
                       <DialogTitle>Create new bot</DialogTitle>
                       <DialogDescription>

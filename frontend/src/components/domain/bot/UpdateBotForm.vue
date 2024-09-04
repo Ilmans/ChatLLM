@@ -223,7 +223,7 @@ const models = useModel()
                     </div>
                 </FormLabel>
                 <FormControl>
-                    <Slider :min="10" :max="1000" :step="10"  v-bind="componentField"></Slider>
+                    <Slider :min="100" :max="1000" :step="10"  v-bind="componentField"></Slider>
                 </FormControl>
                 <FormMessage />
             </FormItem>

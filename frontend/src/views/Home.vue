@@ -79,11 +79,16 @@ const params = computed({
   },
   set() {},
 });
+
 const setActiveBot = async () => {
   try {
     llm.unloadModel();
     activeBot.value = await db.getActiveBot();
     llm.activeBot.value = activeBot.value;
+
+    watch(activeBot.value, (oldVal, newVal) => {
+      db.updateBot(JSON.parse(JSON.stringify(activeBot.value)))
+    })
   } catch (e) {
     activeBot.value = null;
   }
@@ -329,7 +334,7 @@ const showRightSidebar = inject('showRightSidebar');
               </div>
               <Slider
                 v-model="activeBot.params.max_gen_len"
-                :step="5"
+                :step="10"
                 :min="100"
                 :max="4000"
               ></Slider>
