@@ -219,10 +219,10 @@ const showRightSidebar = inject('showRightSidebar');
       <div class="messages flex-grow relative">
         <div class="loading-screen text-center items-center mt-24">
           <template v-if="isErrorLoadingModel">
-            <Badge variant="destructive" class="text-lg mb-3"
+            <!-- <Badge variant="destructive" class="text-lg mb-3"
               >Error Loading Model</Badge
             >
-            <Text type="h4">Please change to another model</Text>
+            <Text type="h4">Please change to another model</Text> -->
           </template>
           <template v-else-if="isModelLoading">
             <Loading name="spinner"></Loading>
