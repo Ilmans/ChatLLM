@@ -15,8 +15,6 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@acme/counter": ["libs/counter/src/index.ts"],
-      "@frontend/*": ["./apps/frontend/src/*"],
       "tvmjs": ["./libs/tvmjs/src/index.ts"],
     }
   },
