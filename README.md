@@ -19,3 +19,6 @@ pnpm run build
 ```
 pnpm run dev
 ```
+
+# License
+This project is under MIT License
