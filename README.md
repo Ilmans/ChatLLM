@@ -12,7 +12,7 @@ cd ChatLLM
 
 2. Install
 ```
-pnpm run build
+pnpm install
 ```
 
 3. Run
